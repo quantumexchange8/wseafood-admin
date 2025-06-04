@@ -7,17 +7,7 @@ import {onMounted, ref, watchEffect} from "vue";
 import {usePage} from "@inertiajs/vue3";
 import {
     IconLayoutDashboard,
-    IconUsers,
-    IconUsersGroup,
-    IconTemplate,
     IconCategory,
-    IconCoinMonero,
-    IconHistory,
-    IconClockDollar,
-    IconAdjustmentsDollar,
-    IconTag,
-    IconClipboardData,
-    IconPhotoCog,
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
 //
@@ -50,6 +40,10 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             'px-5 py-3': !sidebarState.isOpen && !sidebarState.isHovered,
         }"
     >
+        <SidebarCategoryLabel
+            :title="'Main Menu'"
+        />
+
         <!-- Dashboard -->
         <SidebarLink
             :title="'Dashboard'"
@@ -61,27 +55,24 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             </template>
         </SidebarLink>
 
-        <SidebarCategoryLabel
-            :title="'Product'"
-        />
-        <SidebarLink
-            :title="'Create Product'"
-            :href="route('dashboard')"
-            :active="route().current('profile.edit')"
+        <SidebarCollapsible
+            title="Category"
+            :active="route().current('category.*')"
         >
             <template #icon>
-                <IconLayoutDashboard :size="20" stroke-width="1.5" />
+                <IconCategory size="20" stroke-width="1.5" />
             </template>
-        </SidebarLink>
+            <SidebarCollapsibleItem
+                :title="'Category List'"
+                :href="route('category.index')"
+                :active="route().current('category.index')"
+            />
 
-        <SidebarLink
-            :title="'Product List'"
-            :href="route('dashboard')"
-            :active="route().current('profile.edit')"
-        >
-            <template #icon>
-                <IconLayoutDashboard :size="20" stroke-width="1.5" />
-            </template>
-        </SidebarLink>
+            <SidebarCollapsibleItem
+                :title="'Create Category'"
+                :href="route('category.create')"
+                :active="route().current('category.create')"
+            />
+        </SidebarCollapsible>
     </nav>
 </template>

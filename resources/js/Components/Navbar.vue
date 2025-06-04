@@ -57,61 +57,53 @@ const handleLogOut = () => {
         aria-label="secondary"
         class="sticky top-0 z-20 py-2 px-3 md:px-5 bg-surface-50 dark:bg-surface-950 flex items-center gap-3 transition-colors duration-200 w-full"
     >
-        <Button
-            type="button"
-            severity="secondary"
-            rounded
-            variant="outlined"
-            @click="sidebarState.isOpen = !sidebarState.isOpen"
-        >
-            <template #icon>
-                <IconMenu2 size="18" stroke-width="1.5" />
-            </template>
-        </Button>
-
-        <div class="flex items-center justify-end w-full">
+        <div class="w-full flex justify-between">
             <Button
                 type="button"
                 severity="secondary"
                 rounded
-                variant="text"
-                @click="() => { toggleDarkMode() }"
+                variant="outlined"
+                @click="sidebarState.isOpen = !sidebarState.isOpen"
             >
                 <template #icon>
-                    <IconSun v-if="!isDark" size="20" stroke-width="1.5" />
-                    <IconMoon v-if="isDark" size="20" stroke-width="1.5" />
+                    <IconMenu2 size="18" stroke-width="1.5" />
                 </template>
             </Button>
-
-            <Button
-                type="button"
-                severity="secondary"
-                rounded
-                variant="text"
-            >
-                <template #icon>
-                    <IconWorld size="20" stroke-width="1.5" />
-                </template>
-            </Button>
-
-            <Button
-                type="button"
-                severity="secondary"
-                rounded
-                variant="text"
-                @click="handleLogOut"
-            >
-                <template #icon>
-                    <IconLogout size="20" stroke-width="1.5" />
-                </template>
-            </Button>
-
-            <Link
-                class="w-12 h-12 p-2 items-center justify-center rounded-full hover:cursor-pointer hover:bg-surface-100 hidden md:block"
-                :href="route('profile.edit')"
-            >
-<!--                <ProfilePhoto class="w-8 h-8" />-->
-            </Link>
+            <div class="flex items-center justify-end w-full">
+                <Button
+                    type="button"
+                    severity="secondary"
+                    rounded
+                    variant="text"
+                    @click="() => { toggleDarkMode() }"
+                >
+                    <template #icon>
+                        <IconSun v-if="!isDark" size="20" stroke-width="1.5" />
+                        <IconMoon v-if="isDark" size="20" stroke-width="1.5" />
+                    </template>
+                </Button>
+                <Button
+                    type="button"
+                    severity="secondary"
+                    rounded
+                    variant="text"
+                >
+                    <template #icon>
+                        <IconWorld size="20" stroke-width="1.5" />
+                    </template>
+                </Button>
+                <Button
+                    type="button"
+                    severity="secondary"
+                    rounded
+                    variant="text"
+                    @click="handleLogOut"
+                >
+                    <template #icon>
+                        <IconLogout size="20" stroke-width="1.5" />
+                    </template>
+                </Button>
+            </div>
         </div>
     </nav>
 
