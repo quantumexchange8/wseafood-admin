@@ -2,7 +2,7 @@
     @apply inline-flex items-center justify-center
         bg-primary-100 dark:bg-primary-500/15
         text-primary-700 dark:text-primary-300
-        text-sm font-bold py-1 px-2 rounded-md gap-1
+        text-xxs font-bold py-1 px-3 rounded-md gap-1
 }
 
 .p-tag-icon {

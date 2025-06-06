@@ -1,18 +1,26 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { Button } from 'primevue';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
-import { Card, Chip } from 'primevue';
 import { IconDownload } from '@tabler/icons-vue';
+import { Button, Dialog, Chip, Card, DataTable, Column, IconField, InputIcon, InputText, Tag, ProgressSpinner, Popover, Select, ToggleSwitch } from 'primevue';
+
 
 const clicked = () => {
     console.log('Button clicked!');
 };
 
 const visible = ref(false);
+
+const products = ref(
+    [
+        { id: '1000', name: 'Apple iPhone 14 Pro', category: 'Smartphone', quantity: 10 },
+        { id: '1001', name: 'Samsung Galaxy S22 Ultra', category: 'Smartphone', quantity: 5 },
+        { id: '1002', name: 'Google Pixel 6 Pro', category: 'Smartphone', quantity: 8 },
+        { id: '1003', name: 'OnePlus 9 Pro', category: 'Smartphone', quantity: 12 },
+        { id: '1004', name: 'Sony Xperia 1 III', category: 'Smartphone', quantity: 7 }
+    ]
+);
 </script>
 
 <template>
@@ -33,9 +41,22 @@ const visible = ref(false);
                     </div>
 
                     <div class="p-4 flex gap-2">
-                        <Button label="Button CTA" @click="visible = true" />
-
-                        
+                        <DataTable :value="products" tableStyle="min-width: 50rem">
+                            <Column field="id" header="Code" sortable></Column>
+                            <Column field="name" header="Name" sortable></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                            <Column
+                                field="status"
+                                header="Status"
+                            >
+                                <template #body="{ data }">
+                                    <ToggleSwitch
+                                        v-model="data.status"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
                     </div>
                     <div class="p-4">
                         <Button label="Button CTA" size="small" @click="visible = true" />

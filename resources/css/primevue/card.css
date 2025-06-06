@@ -1,10 +1,9 @@
 .p-card {
-    @apply flex flex-col /*items-start*/ rounded-xl
+    @apply flex flex-col rounded-xl
         bg-surface-0 dark:bg-surface-900 
         text-surface-700 dark:text-surface-0
         shadow-dialog
-        min-w-[240px] p-4 gap-4
-        border-[1px] border-solid border-[#f0f0f3]
+        border border-solid border-[#f0f0f3]
 }
 
 .p-card-header {
@@ -12,11 +11,11 @@
 }
 
 .p-card-caption {
-    @apply flex flex-col gap-2
+    @apply flex flex-col gap-2 w-full border-b border-solid
 }
 
 .p-card-body {
-    @apply flex flex-col items-start gap-3 self-stretch
+    @apply flex flex-col items-start self-stretch
 }
 
 .p-card-title {
@@ -25,4 +24,8 @@
 
 .p-card-subtitle {
     @apply text-surface-500 dark:text-surface-400
+}
+
+.p-card-content {
+    @apply w-full
 }

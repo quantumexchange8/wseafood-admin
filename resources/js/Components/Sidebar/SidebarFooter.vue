@@ -40,7 +40,7 @@ const user = usePage().props.auth.user;
 
             <div v-if="sidebarState.isOpen || sidebarState.isHovered" class="flex flex-col text-sm">
                 <div class="flex items-center gap-1 font-semibold">
-                    <span class="max-w-28 truncate">{{ user.first_name }} {{ user.last_name }}</span>
+                    <span class="max-w-28 truncate">{{ user.full_name }}</span>
                 </div>
                 <span class="text-xs text-surface-500 dark:text-surface-400 max-w-36 truncate">{{ user.email }}</span>
             </div>

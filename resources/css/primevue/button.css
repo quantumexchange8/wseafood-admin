@@ -6,7 +6,7 @@
         border border-primary enabled:hover:border-primary-emphasis enabled:active:border-primary-emphasis-alt
         focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary
         px-4 py-3 transition-colors duration-200 gap-2 rounded-xl
-        disabled:cursor-default
+        disabled:cursor-default shadow-input
 }
 
 .p-button-icon-right {
@@ -43,6 +43,10 @@
 
 .p-button-sm .p-button-icon {
     @apply text-sm
+}
+
+.p-button-sm.p-button-icon-only {
+    @apply w-8 h-8 p-2 gap-0
 }
 
 .p-button-lg {

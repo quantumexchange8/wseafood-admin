@@ -33,7 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('category')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('category.index');
         Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
-        // Route::post('/', [CategoryController::class, 'store'])->name('category.store');
+        Route::post('/create', [CategoryController::class, 'store'])->name('category.store');
+        Route::get('/fetch_category', [CategoryController::class, 'fetchCategory'])->name('category.fetch');
         // Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
         // Route::put('/{category}', [CategoryController::class, 'update'])->name('category.update');
         // Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
