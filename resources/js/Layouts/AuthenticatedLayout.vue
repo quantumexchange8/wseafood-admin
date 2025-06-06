@@ -3,6 +3,8 @@ import {Head} from "@inertiajs/vue3";
 import { sidebarState } from "@/Composables";
 import Sidebar from "@/Components/Sidebar/Sidebar.vue";
 import Navbar from "@/Components/Navbar.vue";
+import ToastList from "@/Components/ToastList.vue";
+import Toast from 'primevue/toast';
 
 defineProps({
     title: String
@@ -32,6 +34,8 @@ defineProps({
             <!-- Page Content -->
             <main class="flex flex-1 justify-center items-start px-3 pt-3 pb-12 md:px-5 md:pt-5">
                 <div class="w-full max-w-[1440px]">
+                    <Toast />
+                    <ToastList />
                     <slot />
                 </div>
             </main>

@@ -6,6 +6,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from "vue";
 
 const category_form = ref(null);
+const disableBtn = ref(false);
 
 const submitForm = () => {
     if(category_form.value) {
@@ -31,7 +32,7 @@ const submitForm = () => {
                         {{ $t('public.create_category_caption') }}
                     </div>
                 </div>
-                <CategoryForm ref="category_form" />
+                <CategoryForm ref="category_form" @formSubmitted="(state) => { disableBtn = state }" />
             </div>
         </div>
 
@@ -48,6 +49,7 @@ const submitForm = () => {
                 severity="primary"
                 :label="$t('public.submit')"
                 @click.prevent="submitForm"
+                :disabled="disableBtn"
             />
         </div>
 

@@ -11,7 +11,6 @@ const props = defineProps({
 });
 
 const { formatDateTime } = generalFormat();
-console.log(props.category);
 
 </script>
 
@@ -26,7 +25,7 @@ console.log(props.category);
                         {{ $t('public.category_list') }}
                     </div>
                     <div class="self-stretch text-sm">
-                        {{ $t('public.last_update_on') }}: {{ formatDateTime(category.updated_at) }}
+                        {{ $t('public.last_update_on') }}: {{ category?formatDateTime(category.updated_at):'' }}
                     </div>
                 </div>
                 <Button

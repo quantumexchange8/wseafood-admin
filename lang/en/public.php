@@ -29,4 +29,6 @@ return [
     'category_thumbnail' => 'Category Thumbnail',
     'change' => 'Change',
     'remove' => 'Remove',
+    'category_created' => 'Category Created Successfully',
+    'category_created_caption' => 'You\'ve created a category named ',
 ];

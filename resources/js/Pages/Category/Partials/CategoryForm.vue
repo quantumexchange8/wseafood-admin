@@ -43,15 +43,23 @@ const removeCategoryPhoto = () => {
 };
 
 const submitForm = () => {
+    emit('formSubmitted', true);
+
     form.post(route('category.store'), {
         onSuccess: () => {
             form.reset();
-        }
+            emit('formSubmitted', false);
+        },
+        onError: () => {
+            emit('formSubmitted', false);
+        },
     })
 };
 
+const emit = defineEmits(['formSubmitted']);
+
 defineExpose({
-    submitForm,
+    submitForm
 });
 </script>
 

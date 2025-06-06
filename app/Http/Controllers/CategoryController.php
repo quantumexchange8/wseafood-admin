@@ -26,6 +26,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'status' => 'required',
             'description' => 'nullable|string',
         ]);
 
@@ -40,7 +41,11 @@ class CategoryController extends Controller
 
         }
 
-        return redirect()->route('category.index')->with('success', 'Category created successfully.');
+        return redirect()->route('category.index')->with('toast', [
+            'title' => trans('public.category_created'),
+            'message' => trans('public.category_created_caption'). $category->name,
+            'type' => 'success'
+        ]);
     }
 
     public function fetchCategory(Request $request)
