@@ -8,6 +8,8 @@ import {usePage} from "@inertiajs/vue3";
 import {
     IconLayoutDashboard,
     IconCategory,
+    IconHierarchy,
+    IconBowlChopsticks,
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
 //
@@ -41,12 +43,12 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
         }"
     >
         <SidebarCategoryLabel
-            :title="'Main Menu'"
+            :title="$t('public.main_menu')"
         />
 
         <!-- Dashboard -->
         <SidebarLink
-            :title="'Dashboard'"
+            :title="$t('public.dashboard')"
             :href="route('dashboard')"
             :active="route().current('dashboard')"
         >
@@ -56,22 +58,62 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
         </SidebarLink>
 
         <SidebarCollapsible
-            title="Category"
+            :title="$t('public.category')"
             :active="route().current('category.*')"
         >
             <template #icon>
                 <IconCategory size="20" stroke-width="1.5" />
             </template>
             <SidebarCollapsibleItem
-                :title="'Category List'"
+                :title="$t('public.category_list')"
                 :href="route('category.index')"
                 :active="route().current('category.index')"
             />
 
             <SidebarCollapsibleItem
-                :title="'Create Category'"
+                :title="$t('public.create_category')"
                 :href="route('category.create')"
                 :active="route().current('category.create')"
+            />
+        </SidebarCollapsible>
+
+        <SidebarCollapsible
+            :title="$t('public.modifier_group')"
+            :active="route().current('modifier_group.*')"
+        >
+            <template #icon>
+                <IconHierarchy size="20" stroke-width="1.5" />
+            </template>
+            <SidebarCollapsibleItem
+                :title="$t('public.modifier_group_list')"
+                :href="route('modifier_group.index')"
+                :active="route().current('modifier_group.index')"
+            />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.create_modifier_group')"
+                :href="route('modifier_group.create')"
+                :active="route().current('modifier_group.create')"
+            />
+        </SidebarCollapsible>
+
+        <SidebarCollapsible
+            :title="$t('public.product')"
+            :active="route().current('product.*')"
+        >
+            <template #icon>
+                <IconBowlChopsticks size="20" stroke-width="1.5" />
+            </template>
+            <SidebarCollapsibleItem
+                :title="$t('public.product_list')"
+                :href="route('product.index')"
+                :active="route().current('product.index')"
+            />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.create_product')"
+                :href="route('product.create')"
+                :active="route().current('product.create')"
             />
         </SidebarCollapsible>
     </nav>

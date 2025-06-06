@@ -88,6 +88,18 @@ class CategoryController extends Controller
                 'data' => $fetchedCategory,
             ]);
         }
+        else {
+            $categories = Category::all()->map(function ($category) {
+                $category->category_thumbnail = $category->getFirstMediaUrl('category_thumbnail');
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'category_thumbnail' => $category->category_thumbnail,
+                ];
+            });
+
+            return response()->json(['success' => true, 'data' => $categories]);
+        }
 
         return response()->json(['success' => false, 'data' => []]);
     }

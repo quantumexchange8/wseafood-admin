@@ -15,8 +15,6 @@ const { formatDateTime } = generalFormat();
 </script>
 
 <template>
-    <Head :title="$t('public.category')" />
-
     <AuthenticatedLayout :title="$t('public.category')" >
         <div class="flex px-4 pt-2 pb-5 flex-col items-center gap-4 flex-1">
             <div class="flex items-center justify-center gap-4 self-stretch">

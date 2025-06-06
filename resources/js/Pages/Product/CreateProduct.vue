@@ -1,35 +1,35 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CategoryForm from '@/Pages/Category/Partials/CategoryForm.vue';
+import ProductForm from '@/Pages/Product/Partials/ProductForm.vue';
 import { Button } from 'primevue';
 import { ref } from "vue";
 
-const category_form = ref(null);
+const product_form = ref(null);
 const disableBtn = ref(false);
 
 const submitForm = () => {
-    if(category_form.value) {
-        category_form.value.submitForm();
+    if(product_form.value) {
+        product_form.value.submitForm();
     } else {
-        console.error("CategoryForm component is not available.");
+        console.error("ProductForm component is not available.");
     }
 };
 
 </script>
 
 <template>
-    <AuthenticatedLayout :title="$t('public.create_category')">
+    <AuthenticatedLayout :title="$t('public.create_product')">
         <div class="px-4 pt-2 pb-5 flex items-start gap-4">
             <div class="flex flex-col items-start gap-5 flex-1">
                 <div class="flex flex-col items-start self-stretch">
                     <h1 class="text-2xl font-bold">
-                        {{ $t('public.create_category') }}
+                        {{ $t('public.create_meal_item') }}
                     </h1>
                     <div class="self-stretch text-sm">
-                        {{ $t('public.create_category_caption') }}
+                        {{ $t('public.create_meal_item_caption') }}
                     </div>
                 </div>
-                <CategoryForm ref="category_form" @formSubmitted="disableBtn = $event" />
+                <ProductForm ref="product_form" @formSubmitted="disableBtn = $event" />
             </div>
         </div>
 
@@ -39,7 +39,7 @@ const submitForm = () => {
                 severity="secondary"
                 outlined
                 :label="$t('public.cancel')"
-                @click="() => $inertia.visit(route('category.index'))"
+                @click="() => $inertia.visit(route('product.index'))"
             />
             <Button
                 type="button"

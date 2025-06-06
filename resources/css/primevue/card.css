@@ -7,7 +7,7 @@
 }
 
 .p-card-header {
-    @apply rounded-lg flex justify-center items-center self-stretch
+    @apply border-b border-solid border-slate-200
 }
 
 .p-card-caption {
