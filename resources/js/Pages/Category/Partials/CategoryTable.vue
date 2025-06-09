@@ -117,11 +117,11 @@ const clearFilterGlobal = () => {
     filters.value['global'].value = null;
 }
 
-// watchEffect(() => {
-//     if (usePage().props.toast !== null) {
-//         loadLazyData();
-//     }
-// });
+watchEffect(() => {
+    if (usePage().props.toast !== null) {
+        loadLazyData();
+    }
+});
 
 </script>
 <template>
@@ -148,9 +148,8 @@ const clearFilterGlobal = () => {
 
         <!-- filter button -->
         <Button
-            class="flex gap-2 items-center w-full md:w-fit font-bold"
+            class="flex gap-2 items-center w-full md:w-fit font-bold !bg-white"
             severity="secondary"
-            size="small"
             outlined
             @click="toggle"
         >
@@ -229,7 +228,7 @@ const clearFilterGlobal = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block">
+                            <span class="block text-nowrap">
                                 {{ $t('public.visibility') }}
                             </span>
                         </template>
@@ -245,7 +244,7 @@ const clearFilterGlobal = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block">
+                            <span class="block text-nowrap">
                                 {{ $t('public.category_name') }}
                             </span>
                         </template>
@@ -272,7 +271,7 @@ const clearFilterGlobal = () => {
                         class="w-[100px] text-nowrap"
                     >
                         <template #header>
-                            <span class="block">
+                            <span class="block text-nowrap">
                                 {{ $t('public.number_of_product') }}
                             </span>
                         </template>
@@ -288,7 +287,7 @@ const clearFilterGlobal = () => {
                         class="w-[100px]"
                     >
                         <template #header>
-                            <span class="block">
+                            <span class="block text-nowrap">
                                 {{ $t('public.action') }}
                             </span>
                         </template>
@@ -331,12 +330,12 @@ const clearFilterGlobal = () => {
             <!-- Filter status -->
             <div class="flex flex-col gap-2 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    Filter By Status
+                    {{ $t('public.filter_by_status') }}
                 </div>
                 <Select
                     v-model="filters['status'].value"
                     :options="status"
-                    placeholder="Select Status"
+                    :placeholder="$t('public.select_status')"
                     class="w-full"
                     showClear
                 >

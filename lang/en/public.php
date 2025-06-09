@@ -57,4 +57,6 @@ return [
     'modifier_group_list' => 'Modifier Group List',
     'create_modifier_group' => 'Create Modifier Group',
     'create_modifier_group_caption' => 'Add modifier group for customer to customise their meals 🍜',
+    'filter_by_status' => 'Filter By Status',
+    'select_status' => 'Select Status',
 ];
