@@ -66,7 +66,7 @@ defineExpose({
 <template>
     <form @submit.prevent="submitForm" class="flex flex-col items-start gap-4 self-stretch">
         <Card class="w-full">
-            <template #header>
+            <template #title>
                 <div class="px-5 py-3 flex justify-between items-center self-stretch">
                     <div class="text-lg font-bold">
                         {{ $t('public.category_detail') }}

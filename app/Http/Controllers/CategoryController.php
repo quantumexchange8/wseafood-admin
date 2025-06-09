@@ -38,12 +38,11 @@ class CategoryController extends Controller
 
         if($request->hasFile('category_thumbnail')) {
             $category->addMedia($request->category_thumbnail)->toMediaCollection('category_thumbnail');
-
         }
 
-        return redirect()->route('category.index')->with('toast', [
+        return redirect()->back()->with('toast', [
             'title' => trans('public.category_created'),
-            'message' => trans('public.category_created_caption'). $category->name,
+            'message' => trans('public.category_created_caption'). $request->name,
             'type' => 'success'
         ]);
     }

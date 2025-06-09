@@ -57,6 +57,10 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             </template>
         </SidebarLink>
 
+        <SidebarCategoryLabel
+            :title="$t('public.item_management')"
+        />
+
         <SidebarCollapsible
             :title="$t('public.category')"
             :active="route().current('category.*')"

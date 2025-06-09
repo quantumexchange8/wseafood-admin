@@ -4,17 +4,21 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ModifierGroupController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('locale/{locale}', function ($locale) {
+    App::setLocale($locale);
+    Session::put("locale", $locale);
+
+    return redirect()->back();
+});
+
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Redirect::route('login');
 });
 
 Route::middleware('auth')->group(function () {

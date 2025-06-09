@@ -160,7 +160,7 @@ const clearFilterGlobal = () => {
     </div>
 
     <Card class="w-full">
-        <template #header>
+        <template #title>
             <div class="p-4 flex justify-between items-center gap-2 self-stretch">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold">

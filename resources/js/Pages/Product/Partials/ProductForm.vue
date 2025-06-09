@@ -1,11 +1,12 @@
 <script setup>
 import { Card, Button, InputText, RadioButton, Avatar,Select, InputNumber } from 'primevue';
-import { useForm } from '@inertiajs/vue3';
-import { onMounted, ref, watch } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { onMounted, ref, watchEffect } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
 import axios from 'axios';
 import { IconPlus, IconUpload } from '@tabler/icons-vue';
-
+import CreateCategoryModal from '@/Pages/Product/Partials/CreateCategoryModal.vue';
+import InputError from '@/Components/InputError.vue';
 
 const props = defineProps({
     product: Object,
@@ -13,12 +14,28 @@ const props = defineProps({
 
 const categories = ref([]);
 const loadingCategories = ref(false);
+const createCategoryModal = ref(false);
+const newCategoryFlag = ref(false);
+
+const form = useForm({
+    name: {},
+    status: '',
+    product_photo: null,
+    photo_action:'',
+    sale_price: '',
+    category_id: '',
+});
 
 const getCategories = async () => {
     loadingCategories.value = true;
     try {
         const response = await axios.get(route('category.fetch'));
         categories.value = response.data.data;
+
+        if(newCategoryFlag.value) {
+            form.category_id = categories.value.length > 0 ? categories.value[categories.value.length - 1].id : '';
+            newCategoryFlag.value = false;
+        }
 
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -31,46 +48,44 @@ onMounted(() => {
     getCategories();
 });
 
-const { formatNameLabel } = generalFormat();
-
-const form = useForm({
-    name: '',
-    status: '',
-    category_thumbnail: null,
-    photo_action:'',
-    sale_price: '',
-    category_id: '',
+watchEffect(() => {
+    if (usePage().props.toast !== null) {
+        getCategories();
+        newCategoryFlag.value = true;
+    }
 });
 
-const selectedCategoryPhoto = ref(null) //ref(props.category.category_thumbnail);
-const handleUploadCategoryPhoto = (event) => {
-    const categoryPhotoInput = event.target;
-    const file = categoryPhotoInput.files[0];
+const { formatNameLabel } = generalFormat();
+
+const selectedProductPhoto = ref(null) //ref(props.category.category_thumbnail);
+const handleUploadProductPhoto = (event) => {
+    const productPhotoInput = event.target;
+    const file = productPhotoInput.files[0];
 
     if (file) {
         // Display the selected image
         const reader = new FileReader();
         reader.onload = () => {
-            selectedCategoryPhoto.value = reader.result;
+            selectedProductPhoto.value = reader.result;
         };
         reader.readAsDataURL(file);
-        form.category_thumbnail = event.target.files[0];
+        form.product_photo = event.target.files[0];
         form.photo_action = '';
     } else {
-        selectedCategoryPhoto.value = null;
+        selectedProductPhoto.value = null;
     }
 };
 
-const removeCategoryPhoto = () => {
-    selectedCategoryPhoto.value = null;
-    form.category_thumbnail = null;
+const removeProductPhoto = () => {
+    selectedProductPhoto.value = null;
+    form.product_photo = null;
     form.photo_action = 'remove';
 };
 
 const submitForm = () => {
     emit('formSubmitted', true);
 
-    form.post(route('category.store'), {
+    form.post(route('product.store'), {
         onSuccess: () => {
             form.reset();
             emit('formSubmitted', false);
@@ -80,6 +95,8 @@ const submitForm = () => {
         },
     })
 };
+
+const availableLocales = JSON.parse(usePage().props.availableLocales);
 
 const emit = defineEmits(['formSubmitted']);
 
@@ -91,7 +108,7 @@ defineExpose({
 <template>
     <form @submit.prevent="submitForm" class="flex flex-col items-start gap-4 self-stretch">
         <Card class="w-full">
-            <template #header>
+            <template #title>
                 <div class="px-5 py-3 flex justify-between items-center self-stretch">
                     <div class="text-lg font-bold">
                         {{ $t('public.meal_detail') }}
@@ -103,26 +120,31 @@ defineExpose({
             </template>
             <template #content>
                 <div class="py-5 flex flex-col items-start gap-5 self-stretch">
-                    <div class="px-5 flex items-center gap-5 self-stretch">
+                    <div
+                        v-for="locale in availableLocales"
+                        :key="locale"
+                        class="px-5 flex items-center gap-5 self-stretch"
+                    >
                         <div class="w-1/5 flex items-center gap-1">
-                            <label for="item-name" class="text-sm">
-                                {{ $t('public.item_name') }}
+                            <label :for="`item-name-${locale.value}`" class="text-sm">
+                                {{ $t('public.item_name') }} ({{ locale.label }})
                             </label>
                             <div class="text-xs text-red-500">
                                 *
                             </div>
                         </div>
                         <InputText
-                            v-model="form.name"
-                            id="item-name"
+                            v-model="form.name[locale.value]"
+                            :id="`item-name-${locale.value}`"
                             class="w-1/3"
-                            placeholder="e.g. Signature Fish"
+                            :placeholder="$t('public.meal_item_name_placeholder', locale.value)"
                         />
+                        <InputError :message="form.errors.name" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
                         <div class="w-1/5 flex items-center gap-1">
-                            <label for="category" class="text-sm">
+                            <label for="category_field" class="text-sm">
                                 {{ $t('public.category') }}
                             </label>
                             <div class="text-xs text-red-500">
@@ -131,18 +153,32 @@ defineExpose({
                         </div>
                         <Select
                             v-model="form.category_id"
+                            labelId="category_field"
                             :options="categories"
                             optionValue="id"
                             optionLabel="name"
-                            placeholder="Select Category"
+                            :placeholder="$t('public.select_category')"
                             class="w-1/3"
                             showClear
                             filter
-                            :disabled="loadingCategories"
+                            :loading="loadingCategories"
                         >
                             <template #value="slotProps">
-                                <div v-if="slotProps.value" class="flex items-center">
-                                    {{ slotProps.value.name ?? categories.find(c => c.id === slotProps.value)?.name }}
+                                <div v-if="slotProps.value" class="flex items-center gap-2">
+                                    <Avatar
+                                        v-if="categories.find(c => c.id === slotProps.value)?.category_thumbnail"
+                                        :image="categories.find(c => c.id === slotProps.value).category_thumbnail"
+                                        class="w-6 h-6"
+                                    />
+                                    <Avatar
+                                        v-else
+                                        :label="formatNameLabel(categories.find(c => c.id === slotProps.value)?.name)"
+                                        class="w-6 h-6 text-xs"
+                                        size="large"
+                                    />
+                                    <span>
+                                        {{ categories.find(c => c.id === slotProps.value)?.name }}
+                                    </span>
                                 </div>
                                 <span v-else>{{ slotProps.placeholder }}</span>
                             </template>
@@ -165,6 +201,23 @@ defineExpose({
                                     </span>
                                 </div>
                             </template>
+
+                            <template #footer>
+                                <div class="p-4 flex items-center justify-center">
+                                    <Button
+                                        type="button"
+                                        severity="secondary"
+                                        outlined
+                                        :label="$t('public.create_new_category')"
+                                        @click="createCategoryModal = true"
+                                        class="w-full"
+                                    >
+                                        <template #icon>
+                                            <IconPlus :size="20"/>
+                                        </template>
+                                    </Button>
+                                </div>
+                            </template>
                         </Select>
                     </div>
 
@@ -180,7 +233,7 @@ defineExpose({
                         <div class="w-1/3">
                             <InputNumber
                                 v-model="form.sale_price"
-                                id="price"
+                                inputId="price"
                                 class="w-full"
                                 placeholder="0.00"
                                 :min="0"
@@ -219,7 +272,7 @@ defineExpose({
         </Card>
 
         <Card class="w-full">
-            <template #header>
+            <template #title>
                 <div class="px-5 py-3 flex justify-between items-center self-stretch">
                     <div class="text-lg font-bold">
                         {{ $t('public.modifier_group') }}
@@ -244,7 +297,7 @@ defineExpose({
         </Card>
 
         <Card class="w-full">
-            <template #header>
+            <template #title>
                 <div class="px-5 py-3 flex justify-between items-center self-stretch">
                     <div class="text-lg font-bold">
                         {{ $t('public.image') }}
@@ -255,45 +308,38 @@ defineExpose({
                 </div>
             </template>
             <template #content>
-                <div class="px-5 py-5">
+                <input
+                    ref="productPhotoInput"
+                    id="product_photo_input"
+                    type="file"
+                    class="hidden"
+                    accept="image/*"
+                    @change="handleUploadProductPhoto"
+                />
+                <div class="px-5 py-5 flex items-center gap-4">
                     <Button
+                        v-if="!selectedProductPhoto"
                         type="button"
                         :label="$t('public.upload')"
+                        @click.prevent="$refs.productPhotoInput.click()"
                     >
                         <template #icon>
                             <IconUpload :size="20"/>
                         </template>
                     </Button>
-                </div>
-
-                <div class="px-5 flex items-center gap-5 self-stretch">
-                    <div class="w-1/5 flex items-center gap-1">
-                        <div class="text-sm">
-                            {{ $t('public.category_thumbnail') }}
-                        </div>
-                        <div class="text-xs text-red-500">
-                            *
-                        </div>
-                    </div>
-                    <div class="flex items-end gap-5 self-stretch">
+                    <div v-if="selectedProductPhoto" class="flex items-end gap-5 self-stretch">
                         <Avatar
-                            v-if="selectedCategoryPhoto"
-                            :image="selectedCategoryPhoto"
+                            v-if="selectedProductPhoto"
+                            :image="selectedProductPhoto"
                             class="w-20 h-20"
-                        />
-                        <Avatar
-                            v-else
-                            :label="formatNameLabel(form.name)"
-                            class="w-20 h-20"
-                            size="large"
                         />
                         <input
-                            ref="categoryPhotoInput"
-                            id="category_photo_input"
+                            ref="productPhotoInput"
+                            id="product_photo_input"
                             type="file"
                             class="hidden"
                             accept="image/*"
-                            @change="handleUploadCategoryPhoto"
+                            @change="handleUploadProductPhoto"
                         />
                         <div class="flex flex-col md:flex-row justify-end items-end gap-5 self-stretch">
                             <Button
@@ -301,15 +347,15 @@ defineExpose({
                                 severity="secondary"
                                 outlined
                                 :label="$t('public.change')"
-                                @click.prevent="$refs.categoryPhotoInput.click()"
+                                @click.prevent="$refs.productPhotoInput.click()"
                             />
                             <Button
                                 type="button"
                                 severity="danger"
                                 outlined
                                 :label="$t('public.remove')"
-                                :disabled="!selectedCategoryPhoto || form.processing"
-                                @click.prevent="removeCategoryPhoto"
+                                :disabled="!selectedProductPhoto || form.processing"
+                                @click.prevent="removeProductPhoto"
                             />
                         </div>
                     </div>
@@ -317,4 +363,6 @@ defineExpose({
             </template>
         </Card>
     </form>
+
+    <CreateCategoryModal :visible="createCategoryModal" @update:visible="val => createCategoryModal = val" />
 </template>

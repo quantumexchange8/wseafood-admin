@@ -7,45 +7,33 @@ import {
     IconMoon,
     IconSun
 } from '@tabler/icons-vue';
-// import ProfilePhoto from "@/Components/ProfilePhoto.vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
-import Menu from 'primevue/menu';
-import Button from "primevue/button";
+import { Button, Popover } from "primevue";
 import {ref} from "vue";
-// import {loadLanguageAsync} from "laravel-vue-i18n";
+import {loadLanguageAsync} from "laravel-vue-i18n";
 
 defineProps({
     title: String
 })
 
-// const menu = ref();
-// const locales = ref([
-//     {
-//         label: 'English',
-//         command: () => {
-//             changeLanguage('en');
-//         }
-//     },
-//     {
-//         label: '中文',
-//         command: () => {
-//             changeLanguage('tw')
-//         }
-//     }
-// ]);
-//
-// const toggle = (event) => {
-//     menu.value.toggle(event);
-// };
-//
-// const changeLanguage = async (langVal) => {
-//     try {
-//         await loadLanguageAsync(langVal);
-//         await axios.get(`/locale/${langVal}`);
-//     } catch (error) {
-//         console.error('Error changing locale:', error);
-//     }
-// };
+const op = ref();
+const toggle = (event) => {
+    op.value.toggle(event);
+}
+
+const currentLocale = ref(usePage().props.locale);
+const locales = JSON.parse(usePage().props.availableLocales);
+
+const changeLanguage = async (langVal) => {
+    try {
+        op.value.toggle(false)
+        currentLocale.value = langVal;
+        await loadLanguageAsync(langVal);
+        await axios.get(`/locale/${langVal}`);
+    } catch (error) {
+        console.error('Error changing locale:', error);
+    }
+};
 
 const handleLogOut = () => {
     router.post(route('logout'))
@@ -87,6 +75,7 @@ const handleLogOut = () => {
                     severity="secondary"
                     rounded
                     variant="text"
+                    @click="toggle"
                 >
                     <template #icon>
                         <IconWorld size="20" stroke-width="1.5" />
@@ -107,11 +96,16 @@ const handleLogOut = () => {
         </div>
     </nav>
 
-<!--    <Menu-->
-<!--        ref="menu"-->
-<!--        id="overlay_menu"-->
-<!--        :model="locales"-->
-<!--        :popup="true"-->
-<!--        class="w-32"-->
-<!--    />-->
+    <Popover unstyled ref="op">
+        <div class="py-2 flex flex-col items-center w-[120px] bg-white">
+            <div
+                v-for="locale in locales"
+                class="p-3 flex items-center gap-3 self-stretch text-sm hover:bg-gray-100 hover:cursor-pointer"
+                :class="{'bg-primary-50 text-primary-500': locale.value === currentLocale}"
+                @click="changeLanguage(locale.value)"
+            >
+                {{ locale.label }}
+            </div>
+        </div>
+    </Popover>
 </template>

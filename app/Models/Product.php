@@ -14,4 +14,8 @@ class Product extends Model
         'reward_point',
         'set_meal',
     ];
+
+    protected $casts = [
+    'name' => 'array',
+    ];
 }
