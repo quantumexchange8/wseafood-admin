@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CategoryTable from '@/Pages/Category/Partials/CategoryTable.vue';
-import { Head } from '@inertiajs/vue3';
 import { Button } from 'primevue';
 import { IconPlus } from '@tabler/icons-vue';
 import { generalFormat } from '@/Composables/format';

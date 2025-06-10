@@ -9,6 +9,7 @@ return [
     'loading_data' => 'Loading data...',
     'visibility' => 'Visibility',
     'category_name' => 'Category Name',
+    'category_name_placeholder' => 'e.g. BBQ Series',
     'number_of_product' => 'No. of Product',
     'action' => 'Action',
     'active' => 'Active',
@@ -59,4 +60,5 @@ return [
     'create_modifier_group_caption' => 'Add modifier group for customer to customise their meals 🍜',
     'filter_by_status' => 'Filter By Status',
     'select_status' => 'Select Status',
+    'all' => 'All',
 ];

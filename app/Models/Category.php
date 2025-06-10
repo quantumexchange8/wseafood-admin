@@ -21,4 +21,7 @@ class Category extends Model implements HasMedia
         'description',
     ];
     
+    protected $casts = [
+    'name' => 'array',
+    ];
 }

@@ -7,12 +7,14 @@ import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
+import {useLangObserver} from "@/Composables/localeObserver.js";
 
 const props = defineProps({
     category: Object,
 });
 
 const { formatNameLabel } = generalFormat();
+const { locale } = useLangObserver();
 
 const isLoading = ref(false);
 const dt = ref(null);
@@ -257,11 +259,11 @@ watchEffect(() => {
                                 />
                                 <Avatar
                                     v-else
-                                    :label="formatNameLabel(data.name)"
+                                    :label="formatNameLabel(data.name[locale] ?? data.name['en'])"
                                     class="w-10 h-10"
                                     size="large"
                                 />
-                                <span>{{ data.name }}</span>
+                                <span>{{ data.name[locale] ?? data.name['en'] }}</span>
                             </div>
                         </template>
                     </Column>

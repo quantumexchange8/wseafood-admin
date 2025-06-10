@@ -25,7 +25,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|array',
+            'name.*' => 'required|string|max:255',
             'status' => 'required',
             'description' => 'nullable|string',
         ]);
@@ -42,7 +43,7 @@ class CategoryController extends Controller
 
         return redirect()->back()->with('toast', [
             'title' => trans('public.category_created'),
-            'message' => trans('public.category_created_caption'). $request->name,
+            'message' => trans('public.category_created_caption'). $request->name[app()->getLocale()],
             'type' => 'success'
         ]);
     }

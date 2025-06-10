@@ -1,17 +1,22 @@
 <script setup>
 import { Card, Button, InputText, RadioButton, Avatar } from 'primevue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
+import InputError from '@/Components/InputError.vue';
+import {useLangObserver} from "@/Composables/localeObserver.js";
 
 const props = defineProps({
     category: Object,
 });
 
 const { formatNameLabel } = generalFormat();
+const {locale} = useLangObserver();
+
+const availableLocales = JSON.parse(usePage().props.availableLocales);
 
 const form = useForm({
-    name: '',
+    name: {},
     status: '',
     category_thumbnail: null,
     photo_action:'',
@@ -78,21 +83,26 @@ defineExpose({
             </template>
             <template #content>
                 <div class="py-5 flex flex-col items-start gap-5 self-stretch">
-                    <div class="px-5 flex items-center gap-5 self-stretch">
+                    <div
+                        v-for="lang in availableLocales"
+                        :key="lang"
+                        class="px-5 flex items-center gap-5 self-stretch"
+                    >
                         <div class="w-1/5 flex items-center gap-1">
-                            <label for="category-name" class="text-sm">
-                                {{ $t('public.category_name') }}
+                            <label :for="`category-name-${lang.value}`" class="text-sm">
+                                {{ $t('public.category_name') }} ({{ lang.label }})
                             </label>
                             <div class="text-xs text-red-500">
                                 *
                             </div>
                         </div>
                         <InputText
-                            v-model="form.name"
-                            id="category-name"
+                            v-model="form.name[lang.value]"
+                            :id="`category-name-${lang.value}`"
                             class="w-1/3"
-                            placeholder="e.g. BBQ Series"
+                            :placeholder="$t('public.category_name_placeholder')"
                         />
+                        <InputError :message="form.errors.name" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
@@ -118,6 +128,7 @@ defineExpose({
                                 </label>
                             </div>
                         </div>
+                        <InputError :message="form.errors.status" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
@@ -137,7 +148,7 @@ defineExpose({
                             />
                             <Avatar
                                 v-else
-                                :label="formatNameLabel(form.name)"
+                                :label="formatNameLabel(form.name[locale])"
                                 class="w-20 h-20"
                                 size="large"
                             />
@@ -166,6 +177,7 @@ defineExpose({
                                     @click.prevent="removeCategoryPhoto"
                                 />
                             </div>
+                            <InputError :message="form.errors.category_thumbnail" />
                         </div>
                     </div>
                 </div>
