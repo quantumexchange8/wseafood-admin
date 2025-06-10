@@ -1,12 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Button } from 'primevue';
-import { IconPlus } from '@tabler/icons-vue';
+import { IconPlus, IconUpload } from '@tabler/icons-vue';
 import { generalFormat } from '@/Composables/format';
+import ProductView from '@/Pages/Product/Partials/ProductView.vue';
 
 const props = defineProps({
     product: Object,
-    all: Object,
+    categories: Object,
 });
 
 const { formatDateTime } = generalFormat();
@@ -24,17 +25,33 @@ const { formatDateTime } = generalFormat();
                         {{ $t('public.last_update_on') }}: {{ product?formatDateTime(product.updated_at):'' }}
                     </div>
                 </div>
-                <Button
-                    type="button"
-                    :label="$t('public.create_product')"
-                    @click="() => $inertia.visit(route('product.create'))"
-                >
-                    <template #icon>
-                        <IconPlus :size="20"/>
-                    </template>
-                </Button>
+                <div class="flex items-center gap-3">
+                    <Button
+                        type="button"
+                        severity="secondary"
+                        outlined
+                    >
+                        <IconUpload
+                            :size="16"
+                            stroke-width="1.5"
+                        />
+                        <span class="text-sm font-bold">
+                            {{ $t('public.export') }}
+                        </span>
+                    </Button>
+                    <Button
+                        type="button"
+                        :label="$t('public.create_product')"
+                        @click="() => $inertia.visit(route('product.create'))"
+                    >
+                        <template #icon>
+                            <IconPlus :size="20"/>
+                        </template>
+                    </Button>
+                </div>
             </div>
-            
+
+            <ProductView :categories="categories" />
         </div>
     </AuthenticatedLayout>
 </template>

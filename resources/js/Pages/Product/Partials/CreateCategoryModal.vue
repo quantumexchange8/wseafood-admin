@@ -43,6 +43,8 @@ const submitForm = () => {
     form.post(route('category.store'), {
         onSuccess: () => {
             form.reset();
+            selectedCategoryPhoto.value = null;
+            form.category_thumbnail = null;
             modalVisible.value = false;
         },
     })

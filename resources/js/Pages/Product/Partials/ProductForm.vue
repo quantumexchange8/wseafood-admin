@@ -7,10 +7,13 @@ import axios from 'axios';
 import { IconPlus, IconUpload } from '@tabler/icons-vue';
 import CreateCategoryModal from '@/Pages/Product/Partials/CreateCategoryModal.vue';
 import InputError from '@/Components/InputError.vue';
+import {useLangObserver} from "@/Composables/localeObserver.js";
 
 const props = defineProps({
     product: Object,
 });
+
+const { locale } = useLangObserver();
 
 const categories = ref([]);
 const loadingCategories = ref(false);
@@ -121,23 +124,23 @@ defineExpose({
             <template #content>
                 <div class="py-5 flex flex-col items-start gap-5 self-stretch">
                     <div
-                        v-for="locale in availableLocales"
-                        :key="locale"
+                        v-for="lang in availableLocales"
+                        :key="lang"
                         class="px-5 flex items-center gap-5 self-stretch"
                     >
                         <div class="w-1/5 flex items-center gap-1">
-                            <label :for="`item-name-${locale.value}`" class="text-sm">
-                                {{ $t('public.item_name') }} ({{ locale.label }})
+                            <label :for="`item-name-${lang.value}`" class="text-sm">
+                                {{ $t('public.item_name') }} ({{ lang.label }})
                             </label>
                             <div class="text-xs text-red-500">
                                 *
                             </div>
                         </div>
                         <InputText
-                            v-model="form.name[locale.value]"
-                            :id="`item-name-${locale.value}`"
+                            v-model="form.name[lang.value]"
+                            :id="`item-name-${lang.value}`"
                             class="w-1/3"
-                            :placeholder="$t('public.meal_item_name_placeholder', locale.value)"
+                            :placeholder="$t('public.meal_item_name_placeholder')"
                         />
                         <InputError :message="form.errors.name" />
                     </div>
@@ -172,12 +175,12 @@ defineExpose({
                                     />
                                     <Avatar
                                         v-else
-                                        :label="formatNameLabel(categories.find(c => c.id === slotProps.value)?.name)"
+                                        :label="formatNameLabel(categories.find(c => c.id === slotProps.value)?.name[locale] ?? categories.find(c => c.id === slotProps.value)?.name['en'])"
                                         class="w-6 h-6 text-xs"
                                         size="large"
                                     />
                                     <span>
-                                        {{ categories.find(c => c.id === slotProps.value)?.name }}
+                                        {{ categories.find(c => c.id === slotProps.value)?.name[locale] ?? categories.find(c => c.id === slotProps.value)?.name['en'] }}
                                     </span>
                                 </div>
                                 <span v-else>{{ slotProps.placeholder }}</span>
@@ -192,12 +195,12 @@ defineExpose({
                                     />
                                     <Avatar
                                         v-else
-                                        :label="formatNameLabel(slotProps.option.name)"
+                                        :label="formatNameLabel(slotProps.option.name[locale] ?? slotProps.option.name['en'])"
                                         class="w-10 h-10"
                                         size="large"
                                     />
                                     <span>
-                                        {{ slotProps.option.name }}
+                                        {{ slotProps.option.name[locale] ?? slotProps.option.name['en'] }}
                                     </span>
                                 </div>
                             </template>
@@ -219,6 +222,7 @@ defineExpose({
                                 </div>
                             </template>
                         </Select>
+                        <InputError :message="form.errors.category_id" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
@@ -241,6 +245,7 @@ defineExpose({
                                 prefix="RM "
                             />
                         </div>
+                        <InputError :message="form.errors.sale_price" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
@@ -266,6 +271,7 @@ defineExpose({
                                 </label>
                             </div>
                         </div>
+                        <InputError :message="form.errors.status" />
                     </div>
                 </div>
             </template>
@@ -359,6 +365,7 @@ defineExpose({
                             />
                         </div>
                     </div>
+                    <InputError :message="form.errors.product_photo" />
                 </div>
             </template>
         </Card>

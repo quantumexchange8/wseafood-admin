@@ -2,12 +2,12 @@
     @apply flex flex-col rounded-xl
         bg-surface-0 dark:bg-surface-900 
         text-surface-700 dark:text-surface-0
-        shadow-dialog
+        shadow-item
         border border-solid border-[#f0f0f3]
 }
 
 .p-card-header {
-    @apply border-b border-solid border-slate-200
+    @apply rounded-lg flex justify-center items-center self-stretch
 }
 
 .p-card-caption {
@@ -27,5 +27,5 @@
 }
 
 .p-card-content {
-    @apply w-full
+    @apply w-full h-full
 }
