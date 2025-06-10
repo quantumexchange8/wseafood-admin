@@ -22,6 +22,7 @@ export default {
                 'table': '0 -1px 16.9px 0 rgba(0, 0, 0, 0.05)',
                 'dropdown': '0px 4px 8px 0 rgba(9, 9, 11, 0.05)',
                 'toast': '0 4px 20px 0 rgba(12, 17, 29, 0.08)',
+                'item': '0px -1px 16.9px 0px rgba(0, 0, 0, 0.05)',
             },
             fontSize: {
                 xxs: ['10px', '16px'],

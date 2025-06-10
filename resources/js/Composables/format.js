@@ -17,6 +17,18 @@ export function generalFormat() {
         }
     }
 
+    function formatAmount(amount, decimalPlaces = 2, currencySymbol = '$') {
+        const isNegative = amount < 0; // Check if the amount is negative
+        const absoluteAmount = Math.abs(amount).toFixed(decimalPlaces); // Format absolute value
+
+        const [integerPart, decimalPart] = absoluteAmount.split('.');
+        const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        const formattedAmount = decimalPlaces > 0 ? `${integerWithCommas}.${decimalPart}` : integerWithCommas;
+
+        return isNegative ? `-${currencySymbol}${formattedAmount}` : `${currencySymbol}${formattedAmount}`;
+    }
+
     const formatRgbaColor = (hex, opacity) => {
         const r = parseInt(hex.slice(0, 2), 16);
         const g = parseInt(hex.slice(2, 4), 16);
@@ -35,6 +47,7 @@ export function generalFormat() {
 
     return {
         formatDateTime,
+        formatAmount,
         formatRgbaColor,
         formatNameLabel
     };
