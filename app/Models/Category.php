@@ -21,10 +21,6 @@ class Category extends Model implements HasMedia
         'status',
         'description',
     ];
-    
-    protected $casts = [
-    'name' => 'array',
-    ];
 
     public function products(): HasMany
     {

@@ -19,7 +19,4 @@ class Product extends Model implements HasMedia
         'set_meal',
     ];
 
-    protected $casts = [
-    'name' => 'array',
-    ];
 }

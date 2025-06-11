@@ -174,12 +174,12 @@ defineExpose({
                                     />
                                     <Avatar
                                         v-else
-                                        :label="formatNameLabel(categories.find(c => c.id === slotProps.value)?.name[locale] ?? categories.find(c => c.id === slotProps.value)?.name['en'])"
+                                        :label="formatNameLabel(JSON.parse(categories.find(c => c.id === slotProps.value)?.name)[locale] ?? JSON.parse(categories.find(c => c.id === slotProps.value)?.name)['en'])"
                                         class="w-6 h-6 text-xs"
                                         size="large"
                                     />
                                     <span>
-                                        {{ categories.find(c => c.id === slotProps.value)?.name[locale] ?? categories.find(c => c.id === slotProps.value)?.name['en'] }}
+                                        {{ JSON.parse(categories.find(c => c.id === slotProps.value)?.name)[locale] ?? JSON.parse(categories.find(c => c.id === slotProps.value)?.name)['en'] }}
                                     </span>
                                 </div>
                                 <span v-else>{{ slotProps.placeholder }}</span>

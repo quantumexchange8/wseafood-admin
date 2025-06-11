@@ -31,7 +31,7 @@ const { locale } = useLangObserver();
             />
             <Avatar
             v-else
-            :label="formatNameLabel(product.name[locale] ?? product.name['en'])"
+            :label="formatNameLabel(JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'])"
             :class="layout === 'grid' ? 'w-40 h-40' : 'w-24 h-24'"
             size="large"
             />

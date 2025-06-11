@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Category;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -24,12 +25,23 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|array',
-            'name.*' => 'required|string|max:255',
-            'status' => 'required|string',
-            'description' => 'nullable|string',
-        ]);
+        $rules = [
+            'name' => ['required', 'array'],
+            'status' => ['required', 'string'],
+            'description' => ['nullable'],
+        ];
+
+        foreach(config('app.available_locales') as $locale) {
+            $rules["name.$locale"] = ['required'];
+        }
+
+        $attributeNames = [
+            'name.*' => trans('public.category_name'),
+            'status' => trans('public.visibility'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
 
         $category = Category::create([
             'name' => $request->name,

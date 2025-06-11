@@ -138,9 +138,6 @@ defineExpose({
                             <div class="text-sm">
                                 {{ $t('public.category_thumbnail') }}
                             </div>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
                         </div>
                         <div class="flex items-end gap-5 self-stretch">
                             <Avatar

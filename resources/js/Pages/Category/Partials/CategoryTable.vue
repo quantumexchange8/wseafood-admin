@@ -256,12 +256,12 @@ watchEffect(() => {
                                 />
                                 <Avatar
                                     v-else
-                                    :label="formatNameLabel(data.name[locale] ?? data.name['en'])"
+                                    :label="formatNameLabel(JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'])"
                                     class="w-10 h-10"
                                     size="large"
                                 />
                                 <span>
-                                    {{ data.name[locale] ?? data.name['en'] }}
+                                    {{ JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'] }}
                                 </span>
                             </div>
                         </template>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -28,16 +29,29 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|array',
-            'name.*' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'sale_price' => 'required|numeric|min:0',
-            'status' => 'required|string',
-            'reward_point' => 'nullable|numeric|min:0',
-            'set_meal' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        $rules = [
+            'name' => ['required', 'array'],
+            'category_id' => ['required', 'string', 'max:255'],
+            'sale_price' => ['required', 'numeric', 'min:0'],
+            'status' => ['required', 'string'],
+            'reward_point' => ['nullable'],
+            'set_meal' => ['nullable'],
+            'description' => ['nullable'],
+        ];
+
+        foreach(config('app.available_locales') as $locale) {
+            $rules["name.$locale"] = ['required'];
+        }
+
+        $attributeNames = [
+            'name.*' => trans('public.item_name'),
+            'category_id' => trans('public.category'),
+            'sale_price' => trans('public.sale_price'),
+            'status' => trans('public.visibility'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
 
         $product = Product::create([
             'name' => $request->name,

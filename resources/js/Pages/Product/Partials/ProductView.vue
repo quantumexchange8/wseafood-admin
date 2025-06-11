@@ -255,7 +255,7 @@ function selectCategory(index) {
                             : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                         ]"
                 >
-                    {{ category.name[locale] ?? category.name['en'] }}
+                    {{ JSON.parse(category.name)[locale] ?? JSON.parse(category.name)['en'] }}
                 </div>
             </div>
         </template>
@@ -264,7 +264,7 @@ function selectCategory(index) {
             <LoadingMask
                 v-if="isLoading"
                 :layout="layout"
-                :productCount="productCount"
+                :productCount="fetchedProduct.length"
             />
             
             <div 
@@ -286,7 +286,7 @@ function selectCategory(index) {
                     </template>
                     <template #title>
                         <div class="px-4 pb-1.5 font-bold">
-                            {{ product.name[locale] ?? product.name['en'] }}
+                            {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                         </div>
                     </template>
                     <template #content>
@@ -309,7 +309,7 @@ function selectCategory(index) {
             <LoadingMask
                 v-if="isLoading"
                 :layout="layout"
-                :productCount="productCount"
+                :productCount="fetchedProduct.length"
             />
 
             <div 
@@ -333,7 +333,7 @@ function selectCategory(index) {
                         <div class="h-full flex flex-col justify-between items-start self-stretch">
                             <div class="flex flex-col items-start gap-2 self-stretch">
                                 <div class="font-bold">
-                                    {{ product.name[locale] ?? product.name['en'] }}
+                                    {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                                 </div>
                                 <div>
                                     {{ formatAmount(product.price, 2, 'RM') }}
