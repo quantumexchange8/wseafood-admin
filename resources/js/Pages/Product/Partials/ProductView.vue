@@ -9,13 +9,14 @@ import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
+import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
 
 const props = defineProps({
     categories: Object,
     productCount: Number,
 });
 
-const { formatNameLabel, formatAmount } = generalFormat();
+const { formatAmount } = generalFormat();
 const { locale } = useLangObserver();
 
 const layout = ref('grid');
@@ -277,19 +278,10 @@ function selectCategory(index) {
                 >
                     <template #header>
                         <div class="w-full p-4 flex justify-center items-center">
-                            <div class="w-full px-3 py-10 flex justify-center items-center self-stretch rounded-lg bg-slate-100">
-                                <Avatar
-                                    v-if="product.product_photo"
-                                    :image="product.product_photo"
-                                    class="w-40 h-40"
-                                />
-                                <Avatar
-                                    v-else
-                                    :label="formatNameLabel(product.name[locale] ?? product.name['en'])"
-                                    class="w-40 h-40"
-                                    size="large"
-                                />
-                            </div>
+                            <ProductPhoto 
+                                :product="product"
+                                :layout="layout"
+                            />
                         </div>
                     </template>
                     <template #title>
@@ -331,19 +323,10 @@ function selectCategory(index) {
                 >
                     <template #header>
                         <div class="w-full flex justify-center items-center">
-                            <div class="w-full px-2 py-2 flex justify-center items-center self-stretch rounded-lg bg-slate-100">
-                                <Avatar
-                                    v-if="product.product_photo"
-                                    :image="product.product_photo"
-                                    class="w-24 h-24"
-                                />
-                                <Avatar
-                                    v-else
-                                    :label="formatNameLabel(product.name[locale] ?? product.name['en'])"
-                                    class="w-24 h-24"
-                                    size="large"
-                                />
-                            </div>
+                            <ProductPhoto 
+                                :product="product"
+                                :layout="layout"
+                            />
                         </div>
                     </template>
                     <template #content>

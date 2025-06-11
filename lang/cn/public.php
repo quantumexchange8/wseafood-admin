@@ -60,4 +60,5 @@ return [
     'filter_by_status' => '按状态筛选',
     'select_status' => '选择状态',
     'all' => '全部',
+    'item_hidden' => '此商品已被隐藏',
 ];

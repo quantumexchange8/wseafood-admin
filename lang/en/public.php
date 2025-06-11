@@ -61,4 +61,5 @@ return [
     'filter_by_status' => 'Filter By Status',
     'select_status' => 'Select Status',
     'all' => 'All',
+    'item_hidden' => 'This item has been hidden',
 ];
