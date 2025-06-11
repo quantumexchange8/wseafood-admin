@@ -141,7 +141,7 @@ defineExpose({
                             class="w-1/3"
                             :placeholder="$t('public.meal_item_name_placeholder')"
                         />
-                        <InputError :message="form.errors.name" />
+                        <InputError :message="form.errors[`name.${lang.value}`]" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">
@@ -194,12 +194,12 @@ defineExpose({
                                     />
                                     <Avatar
                                         v-else
-                                        :label="formatNameLabel(slotProps.option.name[locale] ?? slotProps.option.name['en'])"
+                                        :label="formatNameLabel(JSON.parse(slotProps.option.name)[locale] ?? JSON.parse(slotProps.option.name)['en'])"
                                         class="w-10 h-10"
                                         size="large"
                                     />
                                     <span>
-                                        {{ slotProps.option.name[locale] ?? slotProps.option.name['en'] }}
+                                        {{ JSON.parse(slotProps.option.name)[locale] ?? JSON.parse(slotProps.option.name)['en'] }}
                                     </span>
                                 </div>
                             </template>

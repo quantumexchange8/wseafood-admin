@@ -104,7 +104,7 @@ defineExpose({
                             class="w-1/3"
                             :placeholder="$t('public.category_name_placeholder')"
                         />
-                        <InputError :message="form.errors.name" />
+                        <InputError :message="form.errors[`name.${lang.value}`]" />
                     </div>
 
                     <div class="px-5 flex items-center gap-5 self-stretch">

@@ -108,7 +108,7 @@ const removeCategoryPhoto = () => {
                         class="w-full"
                         :placeholder="$t('public.category_name_placeholder')"
                     />
-                    <InputError :message="form.errors.name" />
+                    <InputError :message="form.errors[`name.${lang.value}`]" />
                 </div>
                 <div class="flex flex-col items-start gap-3">
                     <div class="font-bold">
