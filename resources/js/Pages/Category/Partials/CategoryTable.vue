@@ -236,7 +236,7 @@ watchEffect(() => {
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
-                                v-model="data.status"
+                                :model-value="data.status === 'active' ? true : false"
                             />
                         </template>
                     </Column>

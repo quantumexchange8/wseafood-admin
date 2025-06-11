@@ -115,13 +115,13 @@ const removeCategoryPhoto = () => {
                     </div>
                     <div class="flex items-center gap-5">
                         <div class="flex items-center gap-3">
-                            <RadioButton v-model="form.status" inputId="status-display" value="1" />
+                            <RadioButton v-model="form.status" inputId="status-display" value="active" />
                             <label for="status-display" class="text-sm">
                                 {{ $t('public.display') }}
                             </label>
                         </div>
                         <div class="flex items-center gap-3">
-                            <RadioButton v-model="form.status" inputId="status-hidden" value="0" />
+                            <RadioButton v-model="form.status" inputId="status-hidden" value="inactive" />
                             <label for="status-hidden" class="text-sm">
                                 {{ $t('public.hidden') }}
                             </label>

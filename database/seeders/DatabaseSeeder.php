@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'city' => 'Testville',
             'state' => 'TS',
             'zip' => '12345',
-            'status' => 1,
+            'status' => 'active',
         ]);
     }
 }

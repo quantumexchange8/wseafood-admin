@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('point_logs', function (Blueprint $table) {
+        Schema::create('modifier_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('type');
-            $table->decimal('amount', 13, 2);
-            $table->double('earning_point');
-            $table->double('old_point');
-            $table->double('new_point');
+            $table->string('modifier_name');
+            $table->unsignedBigInteger('modifier_group_id');
+            $table->decimal('price', 13, 2);
+            $table->string('status');
+            $table->string('default');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('point_logs');
+        Schema::dropIfExists('modifier_items');
     }
 };

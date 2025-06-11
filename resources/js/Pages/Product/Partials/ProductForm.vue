@@ -259,13 +259,13 @@ defineExpose({
                         </div>
                         <div class="flex items-center gap-5">
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.status" inputId="display" value="1" />
+                                <RadioButton v-model="form.status" inputId="display" value="active" />
                                 <label for="display" class="text-sm">
                                     {{ $t('public.display') }}
                                 </label>
                             </div>
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.status" inputId="hidden" value="0" />
+                                <RadioButton v-model="form.status" inputId="hidden" value="inactive" />
                                 <label for="hidden" class="text-sm">
                                     {{ $t('public.hidden') }}
                                 </label>

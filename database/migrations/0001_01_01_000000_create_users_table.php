@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
-            $table->string('status')->default(0);
+            $table->string('status')->default('active');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
