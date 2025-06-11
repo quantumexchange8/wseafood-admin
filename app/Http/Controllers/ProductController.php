@@ -10,12 +10,14 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $product = Product::select('updated_at')->orderByDesc('updated_at')->first();
+        $product_last_update = Product::select('updated_at')->orderByDesc('updated_at')->first();
+        $product_count = Product::count();
         $categories = Category::select('id', 'name')->get();
 
         return inertia('Product/ProductList', [
-            'product' => $product,
+            'product' => $product_last_update,
             'categories' => $categories,
+            'productCount' => $product_count,
         ]);
     }
 
@@ -31,7 +33,7 @@ class ProductController extends Controller
             'name.*' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'sale_price' => 'required|numeric|min:0',
-            'status' => 'required',
+            'status' => 'required|string',
             'reward_point' => 'nullable|numeric|min:0',
             'set_meal' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -51,7 +53,7 @@ class ProductController extends Controller
             $product->addMedia($request->product_photo)->toMediaCollection('product_photo');
         }
 
-        return redirect()->route('dashboard')->with('toast', [
+        return redirect()->back()->with('toast', [
             'title' => trans('public.category_created'),
             'message' => trans('public.category_created_caption'). $request->name[app()->getLocale()],
             'type' => 'success'
@@ -90,9 +92,9 @@ class ProductController extends Controller
             //     $query->orderByDesc('created_at');
             // }
 
-            // $fetchedCategory = $query->paginate($data['rows']);
+            $fetchedProduct = $query->paginate($data['rows']);
 
-            $fetchedProduct = $query->get()->transform(function($product) {
+            $fetchedProduct->getCollection()->transform(function($product) {
                 $product->product_photo = $product->getFirstMediaUrl('product_photo');
                 return $product;
             });

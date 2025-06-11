@@ -27,7 +27,7 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|array',
             'name.*' => 'required|string|max:255',
-            'status' => 'required',
+            'status' => 'required|string',
             'description' => 'nullable|string',
         ]);
 
@@ -65,7 +65,7 @@ class CategoryController extends Controller
 
             // status
             if ($data['filters']['status']['value']) {
-                $query->where('status', $data['filters']['status']['value']['value']);
+                $query->where('status', $data['filters']['status']['value']);
             }
 
             if ($data['sortField'] && $data['sortOrder']) {
@@ -79,7 +79,7 @@ class CategoryController extends Controller
 
             $fetchedCategory->getCollection()->transform(function ($category) {
                 $category->category_thumbnail = $category->getFirstMediaUrl('category_thumbnail');
-                $category->status = $category->status == 1 ? true : false;
+                $category->product_count = $category->products()->count();
                 return $category;
             });
 

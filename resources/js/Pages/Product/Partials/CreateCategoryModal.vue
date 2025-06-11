@@ -13,7 +13,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['update:visible']);
+const emit = defineEmits(['update:visible', 'update:category']);
 
 const { formatNameLabel } = generalFormat();
 const { locale } = useLangObserver();
@@ -46,6 +46,7 @@ const submitForm = () => {
             selectedCategoryPhoto.value = null;
             form.category_thumbnail = null;
             modalVisible.value = false;
+            emit('update:category', true);
         },
     })
 };

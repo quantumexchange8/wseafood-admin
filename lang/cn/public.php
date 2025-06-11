@@ -9,6 +9,7 @@ return [
     'loading_data' => '正在加载数据...',
     'visibility' => '可见性',
     'category_name' => '类别名称',
+    'category_name_placeholder' => '例如：烧烤系列',
     'number_of_product' => '商品数量',
     'action' => '操作',
     'active' => '启用',
@@ -49,10 +50,14 @@ return [
     'select_category' => '选择类别',
     'create_new_category' => '创建新类别',
     'meal_item_name_placeholder' => '例如：招牌鱼',
-
+    'meal_item_created' => '餐品创建成功',
+    'meal_item_created_caption' => '您已创建一个名为',
     'modifier_group' => '修改项分组',
     'modifier_group_caption' => '允许定制餐品',
     'modifier_group_list' => '修改项分组清单',
     'create_modifier_group' => '创建修改项分组',
     'create_modifier_group_caption' => '添加修改项分组，让顾客自定义他们的餐品 🍜',
+    'filter_by_status' => '按状态筛选',
+    'select_status' => '选择状态',
+    'all' => '全部',
 ];

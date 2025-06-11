@@ -8,6 +8,7 @@ import ProductView from '@/Pages/Product/Partials/ProductView.vue';
 const props = defineProps({
     product: Object,
     categories: Object,
+    productCount: Number,
 });
 
 const { formatDateTime } = generalFormat();
@@ -51,7 +52,10 @@ const { formatDateTime } = generalFormat();
                 </div>
             </div>
 
-            <ProductView :categories="categories" />
+            <ProductView
+                :categories="categories"
+                :productCount="productCount"
+            />
         </div>
     </AuthenticatedLayout>
 </template>

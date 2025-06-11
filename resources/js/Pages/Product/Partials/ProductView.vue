@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, Avatar, SelectButton, ProgressSpinner } from 'primevue';
+import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, Avatar, SelectButton, Popover, Select } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -8,9 +8,11 @@ import { IconSearch, IconAdjustments, IconXboxX, IconLayoutListFilled, IconLayou
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
+import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 
 const props = defineProps({
     categories: Object,
+    productCount: Number,
 });
 
 const { formatNameLabel, formatAmount } = generalFormat();
@@ -19,9 +21,9 @@ const { locale } = useLangObserver();
 const layout = ref('grid');
 const options = ref(['list', 'grid']);
 const isLoading = ref(false);
-// const dt = ref(null);
+const dv = ref(null);
 const fetchedProduct = ref([]);
-// const totalRecords = ref(0);
+const totalRecords = ref(props.productCount);
 const first = ref(0);
 
 const filters = ref({
@@ -41,9 +43,9 @@ const loadLazyData = (event) => {
     try {
         setTimeout(async () => {
             const params = {
-                // page: JSON.stringify(event?.page + 1),
-                // sortField: event?.sortField,
-                // sortOrder: event?.sortOrder,
+                page: JSON.stringify(event?.page + 1),
+                sortField: event?.sortField,
+                sortOrder: event?.sortOrder,
                 include: [],
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
@@ -52,37 +54,34 @@ const loadLazyData = (event) => {
             const response = await fetch(url);
             const results = await response.json();
 
-            fetchedProduct.value = results?.data;
+            fetchedProduct.value = results?.data?.data;
 
-            // totalRecords.value = results?.data?.total;
+            totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
         fetchedProduct.value = [];
-        // totalRecords.value = 0;
+        totalRecords.value = 0;
         isLoading.value = false;
     }
 };
 
-// const onPage = (event) => {
-//     lazyParams.value = event;
-//     loadLazyData(event);
-// };
-// const onSort = (event) => {
-//     lazyParams.value = event;
-//     loadLazyData(event);
-// };
-// const onFilter = (event) => {
-//     lazyParams.value.filters = filters.value ;
-//     loadLazyData(event);
-// };
+const onPage = (event) => {
+    lazyParams.value = event;
+    loadLazyData(event);
+};
+const onSort = (event) => {
+    lazyParams.value = event;
+    loadLazyData(event);
+};
+const onFilter = (event) => {
+    lazyParams.value.filters = filters.value ;
+    loadLazyData(event);
+};
 
 //filter status
-const status = ref([
-    { label: 'active', value: '1',},
-    { label: 'inactive', value: '0',}
-]);
+const status = ref(['active', 'inactive']);
 
 //filter toggle
 const op = ref();
@@ -92,10 +91,9 @@ const toggle = (event) => {
 
 onMounted(() => {
     lazyParams.value = {
-        // first: dt.value.first,
-        // rows: dt.value.rows,
-        // sortField: null,
-        // sortOrder: null,
+        first: dv.value.first,
+        rows: dv.value.rows,
+        sortField: null,
         filters: filters.value
     };
 
@@ -144,24 +142,45 @@ function selectCategory(index) {
 </script>
 
 <template>
-    <DataView :value="fetchedProduct" :layout="layout" class="w-full">
+    <DataView
+        :value="fetchedProduct"
+        :layout="layout"
+        class="w-full"
+        :lazy="true"
+        paginator
+        :rows="12"
+        :first="first"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+        :currentPageReportTemplate="$t('public.paginator_caption')"
+        v-model:filters="filters"
+        ref="dv"
+        dataKey="id"
+        :totalRecords="totalRecords"
+        @page="onPage($event)"
+        @sort="onSort($event)"
+        @filter="onFilter($event)"
+        :globalFilterFields="['name', 'status']"
+    >
         <template #empty>
-            <div v-if="isLoading">
-                <div class="flex flex-col justify-center items-center gap-5 self-stretch">
-                    <ProgressSpinner
-                        strokeWidth="4"
-                        class="w-16 h-16"
-                    />
-                    <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
-                        {{ $t('public.loading_data') }}
-                    </span>
-                </div>
+            <div
+                v-if="productCount === 0"
+            >
+                <Empty :title="$t('public.no_data_found')" />
             </div>
-
-            <div v-if="fetchedProduct.length === 0 && !isLoading">
-                <Empty
-                    :title="$t('public.no_data_found')"
+            <div
+                v-else
+            >
+                <LoadingMask
+                    v-if="isLoading"
+                    :isLoading="true"
+                    :layout="layout"
+                    :productCount="productCount"
                 />
+                <div 
+                    v-else
+                >
+                    <Empty :title="$t('public.no_data_found')" />
+                </div>
             </div>
         </template>
 
@@ -241,7 +260,16 @@ function selectCategory(index) {
         </template>
 
         <template #grid="slotProps">
-            <div class="pt-5 grid grid-cols-3 xl:grid-cols-4 items-stretch content-start gap-4 shrink-0 self-stretch">
+            <LoadingMask
+                v-if="isLoading"
+                :layout="layout"
+                :productCount="productCount"
+            />
+            
+            <div 
+                v-else
+                class="py-5 grid grid-cols-3 xl:grid-cols-4 items-stretch content-start gap-4 shrink-0 self-stretch"
+            >
                 <Card
                     v-for="(product, index) in slotProps.items"
                     :key="index"
@@ -276,7 +304,7 @@ function selectCategory(index) {
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
                                 <ToggleSwitch
-                                    :model-value="product.status === '1' ? true : false"
+                                    :model-value="product.status === 'active' ? true : false"
                                 />
                             </div>
                         </div>
@@ -286,7 +314,16 @@ function selectCategory(index) {
         </template>
 
         <template #list="slotProps">
-            <div class="pt-5 grid grid-cols-2 xl:grid-cols-3 items-stretch content-start gap-4 shrink-0 self-stretch flex-wrap">
+            <LoadingMask
+                v-if="isLoading"
+                :layout="layout"
+                :productCount="productCount"
+            />
+
+            <div 
+                v-else
+                class="py-5 grid grid-cols-2 xl:grid-cols-3 items-stretch content-start gap-4 shrink-0 self-stretch"
+            >
                 <Card
                     v-for="(product, index) in slotProps.items"
                     :key="index"
@@ -320,7 +357,7 @@ function selectCategory(index) {
                                 </div>
                             </div>
                             <ToggleSwitch
-                                :model-value="product.status === '1' ? true : false"
+                                :model-value="product.status === 'active' ? true : false"
                             />
                         </div>
                     </template>
@@ -328,4 +365,44 @@ function selectCategory(index) {
             </div>
         </template>
     </DataView>
+
+    <Popover ref="op">
+        <div class="flex flex-col gap-6 w-60">
+            <!-- Filter status -->
+            <div class="flex flex-col gap-2 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.filter_by_status') }}
+                </div>
+                <Select
+                    v-model="filters['status'].value"
+                    :options="status"
+                    :placeholder="$t('public.select_status')"
+                    class="w-full"
+                    showClear
+                >
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex items-center">
+                            {{ $t(`public.${slotProps.value}`) }}
+                        </div>
+                        <span v-else>{{ slotProps.placeholder }}</span>
+                    </template>
+
+                    <template #option="slotProps">
+                        <div>
+                            {{ $t(`public.${slotProps.option}`) }}
+                        </div>
+                    </template>
+                </Select>
+            </div>
+
+            <Button
+                type="button"
+                outlined
+                class="w-full"
+                @click="clearAll"
+            >
+                {{ $t('public.clear_all') }}
+            </Button>
+        </div>
+    </Popover>
 </template>

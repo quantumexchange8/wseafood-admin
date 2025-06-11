@@ -76,10 +76,7 @@ const onFilter = (event) => {
 };
 
 //filter status
-const status = ref([
-    { label: 'active', value: '1',},
-    { label: 'inactive', value: '0',}
-]);
+const status = ref(['active', 'inactive']);
 
 //filter toggle
 const op = ref();
@@ -263,7 +260,9 @@ watchEffect(() => {
                                     class="w-10 h-10"
                                     size="large"
                                 />
-                                <span>{{ data.name[locale] ?? data.name['en'] }}</span>
+                                <span>
+                                    {{ data.name[locale] ?? data.name['en'] }}
+                                </span>
                             </div>
                         </template>
                     </Column>
@@ -279,7 +278,7 @@ watchEffect(() => {
                         </template>
                         <template #body="{ data }">
                             <span>
-                                210
+                                {{ data.product_count }}
                             </span>
                         </template>
                     </Column>
@@ -343,14 +342,14 @@ watchEffect(() => {
                 >
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center">
-                            {{ $t(`public.${slotProps.value.label}`) }}
+                            {{ $t(`public.${slotProps.value}`) }}
                         </div>
                         <span v-else>{{ slotProps.placeholder }}</span>
                     </template>
 
                     <template #option="slotProps">
                         <div>
-                            {{ $t(`public.${slotProps.option.label}`) }}
+                            {{ $t(`public.${slotProps.option}`) }}
                         </div>
                     </template>
                 </Select>

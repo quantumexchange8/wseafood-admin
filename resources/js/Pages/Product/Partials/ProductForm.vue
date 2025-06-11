@@ -54,7 +54,6 @@ onMounted(() => {
 watchEffect(() => {
     if (usePage().props.toast !== null) {
         getCategories();
-        newCategoryFlag.value = true;
     }
 });
 
@@ -371,5 +370,9 @@ defineExpose({
         </Card>
     </form>
 
-    <CreateCategoryModal :visible="createCategoryModal" @update:visible="val => createCategoryModal = val" />
+    <CreateCategoryModal 
+        :visible="createCategoryModal" 
+        @update:visible="createCategoryModal = $event" 
+        @update:category="newCategoryFlag = $event"
+    />
 </template>
