@@ -310,7 +310,7 @@ const updateStatus = (product) => {
                                     :model-value="product.status === 'active' ? true : false"
                                     @click="updateStatus(product)"
                                     readonly
-                                    />
+                                />
                             </div>
                         </div>
                     </template>
@@ -354,6 +354,8 @@ const updateStatus = (product) => {
                             </div>
                             <ToggleSwitch
                                 :model-value="product.status === 'active' ? true : false"
+                                @click="updateStatus(product)"
+                                readonly
                             />
                         </div>
                     </template>
@@ -402,5 +404,5 @@ const updateStatus = (product) => {
         </div>
     </Popover>
 
-    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="product"/>
+    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="'product'"/>
 </template>
