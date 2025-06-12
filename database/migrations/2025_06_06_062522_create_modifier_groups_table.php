@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('modifier_groups', function (Blueprint $table) {
             $table->id();
             $table->string('group_name');
-            $table->string('display_name');
+            $table->json('display_name');
             $table->string('group_type');
             $table->integer('min_selection');
-            $table->integer('max_selection');
-            $table->string('override');
+            $table->integer('max_selection')->nullable();
+            $table->boolean('override');
             $table->string('status');
             $table->timestamps();
         });

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->decimal('price', 13, 2);
             $table->string('status');
-            $table->unsignedBigInteger('modifier_group_id')->nullable();
             $table->decimal('reward_point', 13, 2)->nullable();
             $table->string('set_meal')->nullable();
             $table->longText('description')->nullable();

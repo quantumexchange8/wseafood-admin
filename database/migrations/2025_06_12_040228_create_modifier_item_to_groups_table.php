@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modifier_items', function (Blueprint $table) {
+        Schema::create('modifier_item_to_groups', function (Blueprint $table) {
             $table->id();
-            $table->json('modifier_name');
-            $table->decimal('price', 13, 2);
+            $table->unsignedBigInteger('modifier_group_id');
+            $table->unsignedBigInteger('modifier_item_id');
+            $table->boolean('default');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modifier_items');
+        Schema::dropIfExists('modifier_item_to_groups');
     }
 };

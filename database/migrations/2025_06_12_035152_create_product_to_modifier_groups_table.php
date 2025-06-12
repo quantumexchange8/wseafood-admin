@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modifier_items', function (Blueprint $table) {
+        Schema::create('product_to_modifier_groups', function (Blueprint $table) {
             $table->id();
-            $table->json('modifier_name');
-            $table->decimal('price', 13, 2);
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('modifier_group_id');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modifier_items');
+        Schema::dropIfExists('product_to_modifier_groups');
     }
 };

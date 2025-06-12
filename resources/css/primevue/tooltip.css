@@ -1,5 +1,5 @@
 .p-tooltip {
-    @apply absolute hidden max-w-48
+    @apply absolute hidden max-w-72
 }
 
 .p-tooltip-right,
@@ -13,7 +13,7 @@
 }
 
 .p-tooltip-text {
-    @apply whitespace-pre-line break-words  bg-surface-700 text-surface-0 py-2 px-3
+    @apply whitespace-pre-line bg-surface-700 text-surface-0 py-1 px-3 text-center text-xxs
         rounded-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]
 }
 

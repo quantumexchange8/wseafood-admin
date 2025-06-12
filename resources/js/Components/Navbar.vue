@@ -58,7 +58,7 @@ const handleLogOut = () => {
                 </template>
             </Button>
             <div class="flex items-center justify-end w-full">
-                <Button
+                <!-- <Button
                     type="button"
                     severity="secondary"
                     rounded
@@ -69,7 +69,7 @@ const handleLogOut = () => {
                         <IconSun v-if="!isDark" size="20" stroke-width="1.5" />
                         <IconMoon v-if="isDark" size="20" stroke-width="1.5" />
                     </template>
-                </Button>
+                </Button> -->
                 <Button
                     type="button"
                     severity="secondary"
