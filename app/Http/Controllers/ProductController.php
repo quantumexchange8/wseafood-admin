@@ -121,4 +121,24 @@ class ProductController extends Controller
 
         return response()->json(['success' => false, 'data' => []]);
     }
+
+    public function updateStatus(Request $request)
+    {
+        $product = Product::find($request->id);
+
+        if($request->status === 'active') {
+            $product->status = 'inactive';
+        } else {
+            $product->status = 'active';
+        }
+        $product->save();
+
+        $locale = app()->getLocale();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.status_updated'),
+            'message' => trans('public.status_updated_caption'). json_decode($request->name)->$locale,
+            'type' => 'success'
+        ]);
+    }
 }

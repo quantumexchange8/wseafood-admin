@@ -62,4 +62,11 @@ return [
     'select_status' => 'Select Status',
     'all' => 'All',
     'item_hidden' => 'This item has been hidden',
+    'change_status_header' => 'Change Status Confirmation',
+    'change_status_message_hide' => 'Are you sure to hide ',
+    'change_status_message_show' => 'Are you sure to show ',
+    'status_updated' => 'Status Updated Successfully',
+    'status_updated_caption' => 'The status has been updated: ',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
 ];

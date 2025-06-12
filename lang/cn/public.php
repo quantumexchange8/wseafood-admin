@@ -61,4 +61,11 @@ return [
     'select_status' => '选择状态',
     'all' => '全部',
     'item_hidden' => '此商品已被隐藏',
+    'change_status_header' => '更改状态确认',
+    'change_status_message_hide' => '您确定要隐藏 ',
+    'change_status_message_show' => '您确定要显示 ',
+    'status_updated' => '状态更新成功',
+    'status_updated_caption' => '状态已更新：',
+    'save' => '保存',
+    'cancel' => '取消',
 ];

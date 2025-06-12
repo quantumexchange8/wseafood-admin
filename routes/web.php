@@ -40,7 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('category.index');
         Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
         Route::post('/create', [CategoryController::class, 'store'])->name('category.store');
-        Route::get('/fetch_category', [CategoryController::class, 'fetchCategory'])->name('category.fetch');
+        Route::get('/fetch-category', [CategoryController::class, 'fetchCategory'])->name('category.fetch');
+        Route::post('/update-status', [CategoryController::class, 'updateStatus'])->name('category.updateStatus');
         // Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
         // Route::put('/{category}', [CategoryController::class, 'update'])->name('category.update');
         // Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
@@ -55,7 +56,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('product.index');
         Route::get('/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/create', [ProductController::class, 'store'])->name('product.store');
-        Route::get('/fetch_product', [ProductController::class, 'fetchProduct'])->name('product.fetch');
+        Route::get('/fetch-product', [ProductController::class, 'fetchProduct'])->name('product.fetch');
+        Route::post('/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
         // Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
         // Route::put('/{product}', [ProductController::class, 'update'])->name('product.update');
         // Route::delete('/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
@@ -70,7 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ModifierGroupController::class, 'index'])->name('modifier_group.index');
         Route::get('/create', [ModifierGroupController::class, 'create'])->name('modifier_group.create');
         Route::post('/create', [ModifierGroupController::class, 'store'])->name('modifier_group.store');
-        Route::get('/fetch_modifier_group', [ModifierGroupController::class, 'fetchModifierGroup'])->name('modifier_group.fetch');
+        Route::get('/fetch-modifier-group', [ModifierGroupController::class, 'fetchModifierGroup'])->name('modifier_group.fetch');
         // Route::get('/{modifier_group}/edit', [ModifierGroupController::class, 'edit'])->name('modifier_group.edit');
         // Route::put('/{modifier_group}', [ModifierGroupController::class, 'update'])->name('modifier_group.update');
         // Route::delete('/{modifier_group}', [ModifierGroupController::class, 'destroy'])->name('modifier_group.destroy');

@@ -8,6 +8,7 @@ import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUplo
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
+import UpdateStatusConfirmation from '@/Pages/Product/Partials/UpdateStatusConfirmation.vue';
 
 const props = defineProps({
     category: Object,
@@ -21,6 +22,7 @@ const dt = ref(null);
 const fetchedCategory = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
+const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -121,6 +123,14 @@ watchEffect(() => {
         loadLazyData();
     }
 });
+
+const updateStatus = (category) => {
+    if(updateStatusConfirm.value) {
+        updateStatusConfirm.value.changeStatus(category);
+    } else {
+        console.error("Update Status Confirmation is not available");
+    }
+};
 
 </script>
 <template>
@@ -234,6 +244,8 @@ watchEffect(() => {
                         <template #body="{ data }">
                             <ToggleSwitch
                                 :model-value="data.status === 'active' ? true : false"
+                                @click="updateStatus(data)"
+                                readonly
                             />
                         </template>
                     </Column>
@@ -365,4 +377,6 @@ watchEffect(() => {
             </Button>
         </div>
     </Popover>
+
+    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="'category'"/>
 </template>

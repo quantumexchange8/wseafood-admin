@@ -2,7 +2,7 @@
 @import './button';
 
 .p-confirmdialog .p-dialog-content {
-    @apply flex items-center gap-4
+    @apply flex items-center gap-4 min-w-80
 }
 
 .p-confirmdialog-icon {

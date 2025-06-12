@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, Avatar, SelectButton, Popover, Select } from 'primevue';
+import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, SelectButton, Popover, Select, ConfirmDialog } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -10,6 +10,7 @@ import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
+import UpdateStatusConfirmation from '@/Pages/Product/Partials/UpdateStatusConfirmation.vue';
 
 const props = defineProps({
     categories: Object,
@@ -26,6 +27,7 @@ const dv = ref(null);
 const fetchedProduct = ref([]);
 const totalRecords = ref(props.productCount);
 const first = ref(0);
+const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -140,6 +142,15 @@ function selectCategory(index) {
 
     loadLazyData()
 }
+
+const updateStatus = (product) => {
+    if(updateStatusConfirm.value) {
+        updateStatusConfirm.value.changeStatus(product);
+    } else {
+        console.error("Update Status Confirmation is not available");
+    }
+};
+
 </script>
 
 <template>
@@ -297,7 +308,9 @@ function selectCategory(index) {
                                 </div>
                                 <ToggleSwitch
                                     :model-value="product.status === 'active' ? true : false"
-                                />
+                                    @click="updateStatus(product)"
+                                    readonly
+                                    />
                             </div>
                         </div>
                     </template>
@@ -388,4 +401,6 @@ function selectCategory(index) {
             </Button>
         </div>
     </Popover>
+
+    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="product"/>
 </template>

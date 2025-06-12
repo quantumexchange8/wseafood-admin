@@ -115,4 +115,24 @@ class CategoryController extends Controller
 
         return response()->json(['success' => false, 'data' => []]);
     }
+
+    public function updateStatus(Request $request)
+    {
+        $category = Category::find($request->id);
+
+        if($request->status === 'active') {
+            $category->status = 'inactive';
+        } else {
+            $category->status = 'active';
+        }
+        $category->save();
+
+        $locale = app()->getLocale();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.status_updated'),
+            'message' => trans('public.status_updated_caption'). json_decode($request->name)->$locale,
+            'type' => 'success'
+        ]);
+    }
 }
