@@ -16,6 +16,7 @@ const {locale} = useLangObserver();
 const availableLocales = JSON.parse(usePage().props.availableLocales);
 
 const form = useForm({
+    prefix: '',
     name: {},
     status: '',
     category_thumbnail: null,
@@ -85,6 +86,24 @@ defineExpose({
             </template>
             <template #content>
                 <div class="py-5 flex flex-col items-start gap-5 self-stretch">
+                    <div class="px-5 flex items-center gap-5 self-stretch">
+                        <div class="w-1/5 flex items-center gap-1">
+                            <label for="category-prefix" class="text-sm">
+                                {{ $t('public.category_prefix') }}
+                            </label>
+                            <div class="text-xs text-red-500">
+                                *
+                            </div>
+                        </div>
+                        <InputText
+                            v-model="form.prefix"
+                            id="category-prefix"
+                            class="w-1/3"
+                            :placeholder="$t('public.category_prefix_placeholder')"
+                        />
+                        <InputError :message="form.errors.prefix" />
+                    </div>
+
                     <div
                         v-for="lang in availableLocales"
                         :key="lang"

@@ -33,6 +33,7 @@ watch(modalVisible, (val) => {
 });
 
 const form = useForm({
+    prefix: '',
     name: {},
     status: '',
     category_thumbnail: null,
@@ -94,6 +95,18 @@ const removeCategoryPhoto = () => {
 
         <form @submit.prevent="submitForm" class="p-5 flex items-start flex-col gap-6">
             <div class="w-full grid grid-cols-2 gap-6">
+                <div class="flex flex-col items-start gap-3">
+                    <label for="category-prefix" class="font-bold">
+                        {{ $t('public.category_prefix') }}
+                    </label>
+                    <InputText
+                        v-model="form.prefix"
+                        id="category-prefix"
+                        class="w-full"
+                        :placeholder="$t('public.category_prefix_placeholder')"
+                    />
+                    <InputError :message="form.errors.prefix" />
+                </div>
                 <div
                     v-for="lang in availableLocales"
                     :key="lang"
@@ -114,7 +127,7 @@ const removeCategoryPhoto = () => {
                     <div class="font-bold">
                         {{ $t('public.visibility') }}
                     </div>
-                    <div class="flex items-center gap-5">
+                    <div class="h-full flex justify-center items-center gap-5">
                         <div class="flex items-center gap-3">
                             <RadioButton v-model="form.status" inputId="status-display" value="active" />
                             <label for="status-display" class="text-sm">

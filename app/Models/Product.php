@@ -12,6 +12,7 @@ class Product extends Model implements HasMedia
     use InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
+        'product_code',
         'name',
         'category_id',
         'price',
@@ -20,9 +21,17 @@ class Product extends Model implements HasMedia
         'set_meal',
     ];
 
-    private function generateProductCode()
+    public function generateProductCode($category_id)
     {
-        return '';
+        $count = ($this->where('category_id', $category_id)->count())+1;
+        $formattedCount = str_pad($count, 3, '0', STR_PAD_LEFT);
+
+        $category = Category::find($category_id);
+        $prefix = $category->prefix;
+
+        $productCode = $prefix.$formattedCount;
+
+        return $productCode;
     }
 
 }

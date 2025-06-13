@@ -1,5 +1,5 @@
 <script setup>
-import { Card, Button, InputText, RadioButton, InputNumber, Checkbox, IconField, InputIcon } from 'primevue';
+import { Card, Button, InputText, RadioButton, InputNumber, Checkbox, IconField, InputIcon, DataTable, Tag } from 'primevue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
@@ -10,7 +10,7 @@ import { IconPlus } from '@tabler/icons-vue';
 import SelectModifierItemModal from '@/Pages/ModifierGroup/Partials/SelectModifierItemModal.vue';
 
 const props = defineProps({
-    category: Object,
+    itemCount: Number,
 });
 
 const { formatNameLabel } = generalFormat();
@@ -20,6 +20,7 @@ const availableLocales = JSON.parse(usePage().props.availableLocales);
 
 const noMax = ref(false);
 const selectModalVisible = ref(false);
+const addedItem = ref();
 
 const form = useForm({
     group_name: '',
@@ -60,6 +61,11 @@ watch(() => form.group_type, () => {
     } else {
         form.min = 1;
     }
+});
+
+watch((addedItem), () => {
+    console.log(addedItem.value);
+    
 });
 
 </script>
@@ -167,7 +173,7 @@ watch(() => form.group_type, () => {
                                     v-model="form.min"
                                     placeholder="0"
                                     :min="0"
-                                    inputClass="pl-12 w-full"
+                                    inputClass="pl-12 w-full text-center"
                                     readonly
                                 />
                             </div>
@@ -183,7 +189,7 @@ watch(() => form.group_type, () => {
                                 <InputText
                                     v-if="noMax"
                                     modelValue="∞"
-                                    class="pl-12 w-full text-[18px]"
+                                    class="pl-12 w-full text-[18px] text-center"
                                     readonly
                                 />
                                 <InputNumber
@@ -191,7 +197,7 @@ watch(() => form.group_type, () => {
                                     v-model="form.max"
                                     placeholder="0"
                                     :min="0"
-                                    inputClass="pl-12 w-full"
+                                    inputClass="pl-12 w-full text-center"
                                 />
                             </div>
                         </div>
@@ -242,13 +248,37 @@ watch(() => form.group_type, () => {
         <Card class="w-full">
             <template #title>
                 <div class="px-5 py-3 flex justify-between items-center self-stretch">
-                    <div class="text-lg font-bold">
-                        {{ $t('public.add_modifier_item') }}
+                    <div class="flex items-center gap-4">
+                        <div class="text-lg font-bold">
+                            {{ $t('public.add_modifier_item') }}
+                        </div>
+                        <Tag v-if="addedItem" rounded>
+                            {{ `${addedItem.length} items` }}
+                        </Tag>
                     </div>
+                    <Button
+                        type="button"
+                        size="small"
+                        variant="text"
+                        :label="$t('public.create_product')"
+                        @click="() => $inertia.visit(route('product.create'))"
+                    >
+                        <template #icon>
+                            <IconPlus :size="20"/>
+                        </template>
+                    </Button>
                 </div>
             </template>
             <template #content>
-                <div class="p-5 flex items-center self-stretch">
+                <DataTable
+                    v-if="addedItem"
+                >
+                    <!-- row order -->
+                </DataTable>
+                <div 
+                    v-else
+                    class="p-5 flex items-center self-stretch"
+                >
                     <Button
                         type="button"
                         :label="$t('public.add')"
@@ -290,7 +320,7 @@ watch(() => form.group_type, () => {
                 severity="secondary"
                 outlined
                 :label="$t('public.cancel')"
-                @click="() => $inertia.visit(route('modifier_group.index'))"
+                @click="() => $inertia.visit(route('modifier.group.index'))"
             />
             <Button
                 type="submit"
@@ -301,5 +331,10 @@ watch(() => form.group_type, () => {
         </div>
     </form>
 
-    <SelectModifierItemModal :visible="selectModalVisible" />
+    <SelectModifierItemModal
+        :visible="selectModalVisible" 
+        :itemCount="itemCount"
+        @update:visible="selectModalVisible = $event" 
+        @update:addItem="addedItem = $event"
+    />
 </template>

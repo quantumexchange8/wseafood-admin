@@ -233,15 +233,18 @@ defineExpose({
                                 *
                             </div>
                         </div>
-                        <div class="w-1/3">
+                        <div class="relative w-1/3">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-sm">
+                            RM
+                            </span>
                             <InputNumber
                                 v-model="form.sale_price"
-                                inputId="price"
-                                class="w-full"
                                 placeholder="0.00"
                                 :min="0"
                                 :maxFractionDigits="2"
-                                prefix="RM "
+                                inputClass="pl-12 w-full"
+                                inputId="price"
+                                fluid
                             />
                         </div>
                         <InputError :message="form.errors.sale_price" />

@@ -27,7 +27,6 @@ class ModifierController extends Controller
     {
         $rules = [
             'modifier_name' => ['required', 'array'],
-            'price' => ['required', 'numeric', 'min:0'],
         ];
 
         foreach(config('app.available_locales') as $locale) {
@@ -36,7 +35,6 @@ class ModifierController extends Controller
 
         $attributeNames = [
             'modifier_name.*' => trans('public.modifier_name'),
-            'price' => trans('public.price'),
         ];
 
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
@@ -44,7 +42,6 @@ class ModifierController extends Controller
 
         $item = ModifierItem::create([
             'modifier_name' => json_encode($request->modifier_name),
-            'price' => $request->price,
         ]);
 
         return redirect()->back()->with('toast', [

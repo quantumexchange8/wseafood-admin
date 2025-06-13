@@ -26,6 +26,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $rules = [
+            'prefix' => ['required', 'string', 'max:50'],
             'name' => ['required', 'array'],
             'status' => ['required', 'string'],
             'description' => ['nullable'],
@@ -36,6 +37,7 @@ class CategoryController extends Controller
         }
 
         $attributeNames = [
+            'prefix' => trans('public.category_prefix'),
             'name.*' => trans('public.category_name'),
             'status' => trans('public.visibility'),
         ];
@@ -45,6 +47,7 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => json_encode($request->name),
+            'prefix' => $request->prefix,
             'status' => $request->status,
             'description' => $request->description,
         ]);

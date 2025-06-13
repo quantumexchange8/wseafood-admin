@@ -296,7 +296,7 @@ const updateStatus = (product) => {
                     </template>
                     <template #title>
                         <div class="px-4 pb-1.5 font-bold">
-                            {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
+                            {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                         </div>
                     </template>
                     <template #content>

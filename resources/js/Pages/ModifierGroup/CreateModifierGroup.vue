@@ -4,6 +4,9 @@ import ModifierGroupForm from '@/Pages/ModifierGroup/Partials/ModifierGroupForm.
 import { Button } from 'primevue';
 import { ref } from 'vue';
 
+const props = defineProps({
+    itemCount: Number,
+});
 </script>
 
 <template>
@@ -18,7 +21,7 @@ import { ref } from 'vue';
                         {{ $t('public.create_modifier_group_caption') }}
                     </div>
                 </div>
-                <ModifierGroupForm />
+                <ModifierGroupForm :itemCount='itemCount' />
             </div>
         </div>
 

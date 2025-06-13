@@ -98,5 +98,8 @@ return [
     'modifier_name' => 'Modifier Name',
     'modifier_name_placeholder' => 'e.g. Large',
     'price' => 'Price',
-    
+    'modifier_item_created' => 'Modifier item created successfully',
+    'modifier_item_created_caption' => 'You\'ve created a modifier item named ',
+    'category_prefix' => 'Category Code Prefix',
+    'category_prefix_placeholder' => 'e.g. BQ'
 ];

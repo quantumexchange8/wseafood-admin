@@ -1,21 +1,41 @@
 <script setup>
-import { Dialog, Button, InputText, InputNumber } from 'primevue';
-import { useForm } from '@inertiajs/vue3';
+import { Dialog, Button, InputText } from 'primevue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import InputError from '@/Components/InputError.vue';
 
 const props = defineProps({
     visible: Boolean,
 });
 
+const emit = defineEmits(['update:visible', 'update:itemCreated']);
+
 const show = ref(false);
+const availableLocales = JSON.parse(usePage().props.availableLocales);
+
 
 const form = useForm({
-    name: '',
-    price: null,
+    modifier_name: {},
 });
+
+const submitForm = () => {
+    form.post(route('modifier.item.store'), {
+        onSuccess: () => {
+            form.reset();
+            show.value = false;
+            emit('update:itemCreated', true);
+        },
+    })
+};
 
 watch(() => props.visible, (val) => {
     show.value = val;
+});
+
+watch(show, (val) => {
+    if (val !== props.visible) {
+        emit('update:visible', val);
+    }
 });
 
 </script>
@@ -33,30 +53,38 @@ watch(() => props.visible, (val) => {
             @submit.prevent="submitForm"
             class="p-5 flex flex-col gap-5 self-stretch"
         >
-            <div class="flex flex-col items-start gap-3 self-stretch">
-                <label for="name" class="font-bold">
-                    {{ $t('public.modifier_name') }}
+            <div 
+                v-for="lang in availableLocales"
+                :key="lang"
+                class="flex flex-col items-start gap-3 self-stretch"
+            >
+                <label :for="`name-${lang.value}`" class="font-bold">
+                    {{ $t('public.modifier_name') }} ({{ lang.label }})
                 </label>
                 <InputText 
-                    v-model="form.name"
+                    v-model="form.modifier_name[lang.value]"
+                    :id="`name-${lang.value}`"
                     class="w-full"
                     :placeholder="$t('public.modifier_name_placeholder')"
                 />
-            </div>
-            <div class="flex flex-col items-start gap-3 self-stretch">
-                <label for="name" class="font-bold">
-                    {{ $t('public.price') }}
-                </label>
-                <InputNumber
-                    v-model="form.price"
-                    inputId="price"
-                    class="w-full"
-                    placeholder="0.00"
-                    :min="0"
-                    :maxFractionDigits="2"
-                    prefix="RM "
-                />
+                <InputError :message="form.errors[`modifier_name.${lang.value}`]" />
             </div>
         </form>
+        <template #footer>
+            <Button
+                type="button"
+                label="Cancel"
+                severity="secondary"
+                outlined
+                @click="show = false"
+                :disabled="form.processing"
+            />
+            <Button
+                type="submit"
+                label="Create"
+                @click="submitForm"
+                :disabled="form.processing"
+            />
+        </template>
     </Dialog>
 </template>

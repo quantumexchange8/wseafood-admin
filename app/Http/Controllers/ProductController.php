@@ -53,7 +53,10 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
         $validator->validate();
 
+        $productClass = new Product();
+
         $product = Product::create([
+            'product_code' => $productClass->generateProductCode($request->category_id),
             'name' => json_encode($request->name),
             'category_id' => $request->category_id,
             'price' => $request->sale_price,
