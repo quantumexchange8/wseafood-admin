@@ -19,8 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'full_name',
         'email',
         'email_verified_at',
         'verify',
@@ -60,14 +59,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    protected $appends = [
-        'full_name',
-    ];
-
-    public function getFullNameAttribute(): string
-    {
-        return trim("{$this->first_name} {$this->last_name}");
     }
 }

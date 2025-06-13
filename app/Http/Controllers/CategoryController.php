@@ -44,7 +44,7 @@ class CategoryController extends Controller
         $validator->validate();
 
         $category = Category::create([
-            'name' => $request->name,
+            'name' => json_encode($request->name),
             'status' => $request->status,
             'description' => $request->description,
         ]);

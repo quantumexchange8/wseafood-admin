@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ModifierItem extends Model
+class ProductToModifierGroup extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'modifier_name',
+        'product_id',
+        'modifier_group_id',
     ];
 
 }

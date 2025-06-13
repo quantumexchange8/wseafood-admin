@@ -90,14 +90,14 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             </template>
             <SidebarCollapsibleItem
                 :title="$t('public.modifier_group_list')"
-                :href="route('modifier_group.index')"
-                :active="route().current('modifier_group.index')"
+                :href="route('modifier.group.index')"
+                :active="route().current('modifier.group.index')"
             />
 
             <SidebarCollapsibleItem
                 :title="$t('public.create_modifier_group')"
-                :href="route('modifier_group.create')"
-                :active="route().current('modifier_group.create')"
+                :href="route('modifier.group.create')"
+                :active="route().current('modifier.group.create')"
             />
         </SidebarCollapsible>
 

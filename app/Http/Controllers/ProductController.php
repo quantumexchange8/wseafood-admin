@@ -31,7 +31,7 @@ class ProductController extends Controller
     {
         $rules = [
             'name' => ['required', 'array'],
-            'category_id' => ['required', 'string', 'max:255'],
+            'category_id' => ['required'],
             'sale_price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string'],
             'reward_point' => ['nullable'],
@@ -54,7 +54,7 @@ class ProductController extends Controller
         $validator->validate();
 
         $product = Product::create([
-            'name' => $request->name,
+            'name' => json_encode($request->name),
             'category_id' => $request->category_id,
             'price' => $request->sale_price,
             'status' => $request->status,
@@ -99,12 +99,12 @@ class ProductController extends Controller
                 $query->where('category_id', $data['filters']['category']['value']);
             }
 
-            // if ($data['sortField'] && $data['sortOrder']) {
-            //     $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
-            //     $query->orderBy($data['sortField'], $order);
-            // } else {
-            //     $query->orderByDesc('created_at');
-            // }
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->orderByDesc('created_at');
+            }
 
             $fetchedProduct = $query->paginate($data['rows']);
 

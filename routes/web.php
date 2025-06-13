@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ModifierGroupController;
+use App\Http\Controllers\ModifierController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
@@ -69,13 +69,23 @@ Route::middleware('auth')->group(function () {
      * ==============================
      */
     Route::prefix('modifier-group')->group(function () {
-        Route::get('/', [ModifierGroupController::class, 'index'])->name('modifier_group.index');
-        Route::get('/create', [ModifierGroupController::class, 'create'])->name('modifier_group.create');
-        Route::post('/create', [ModifierGroupController::class, 'store'])->name('modifier_group.store');
-        Route::get('/fetch-modifier-group', [ModifierGroupController::class, 'fetchModifierGroup'])->name('modifier_group.fetch');
-        // Route::get('/{modifier_group}/edit', [ModifierGroupController::class, 'edit'])->name('modifier_group.edit');
-        // Route::put('/{modifier_group}', [ModifierGroupController::class, 'update'])->name('modifier_group.update');
-        // Route::delete('/{modifier_group}', [ModifierGroupController::class, 'destroy'])->name('modifier_group.destroy');
+        Route::get('/', [ModifierController::class, 'index'])->name('modifier.group.index');
+        Route::get('/create', [ModifierController::class, 'create'])->name('modifier.group.create');
+        Route::post('/create', [ModifierController::class, 'storeGroup'])->name('modifier.group.store');
+        Route::get('/fetch-modifier-group', [ModifierController::class, 'fetchModifierGroup'])->name('modifier.group.fetch');
+        // Route::get('/{modifier_group}/edit', [ModifierController::class, 'edit'])->name('modifier_group.edit');
+        // Route::put('/{modifier_group}', [ModifierController::class, 'update'])->name('modifier_group.update');
+        // Route::delete('/{modifier_group}', [ModifierController::class, 'destroy'])->name('modifier_group.destroy');
+    });
+
+    /**
+     * ==============================
+     *           Modifier Item
+     * ==============================
+     */
+    Route::prefix('modifier-item')->group(function () {
+        Route::post('/create', [ModifierController::class, 'storeItem'])->name('modifier.item.store');
+        Route::get('/fetch-modifier-item', [ModifierController::class, 'fetchModifierItem'])->name('modifier.item.fetch');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

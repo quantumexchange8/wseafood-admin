@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('override');
             $table->string('status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

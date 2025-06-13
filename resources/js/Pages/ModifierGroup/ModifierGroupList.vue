@@ -27,7 +27,7 @@ const { formatDateTime } = generalFormat();
                     <Button
                         type="button"
                         :label="$t('public.create_modifier_group')"
-                        @click="() => $inertia.visit(route('modifier_group.create'))"
+                        @click="() => $inertia.visit(route('modifier.group.create'))"
                     >
                         <template #icon>
                             <IconPlus :size="20"/>

@@ -184,7 +184,6 @@ const updateStatus = (product) => {
             >
                 <LoadingMask
                     v-if="isLoading"
-                    :isLoading="true"
                     :layout="layout"
                     :productCount="productCount"
                 />

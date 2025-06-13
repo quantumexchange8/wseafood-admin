@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use InteractsWithMedia, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +19,7 @@ class Category extends Model implements HasMedia
      */
     protected $fillable = [
         'name',
+        'prefix',
         'status',
         'description',
     ];

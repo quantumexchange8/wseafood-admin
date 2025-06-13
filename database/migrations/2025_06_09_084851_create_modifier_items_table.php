@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('modifier_items', function (Blueprint $table) {
             $table->id();
             $table->json('modifier_name');
-            $table->decimal('price', 13, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

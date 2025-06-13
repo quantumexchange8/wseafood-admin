@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('product_code');
             $table->json('name');
             $table->unsignedBigInteger('category_id');
             $table->decimal('price', 13, 2);
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('set_meal')->nullable();
             $table->longText('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
