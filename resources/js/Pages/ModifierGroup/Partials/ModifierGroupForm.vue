@@ -9,9 +9,11 @@ import IconAlertTooltip from '@/Pages/ModifierGroup/Partials/IconAlertTooltip.vu
 import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-vue';
 import SelectModifierItemModal from '@/Pages/ModifierGroup/Partials/SelectModifierItemModal.vue';
 import EditPriceModal from '@/Pages/ModifierGroup/Partials/EditPriceModal.vue';
+import SelectMealItemModal from '@/Pages/ModifierGroup/Partials/SelectMealItemModal.vue';
 
 const props = defineProps({
     itemCount: Number,
+    categoryCount: Number,
 });
 
 const { formatAmount } = generalFormat();
@@ -25,6 +27,7 @@ const addedItem = ref();
 const addedItemUpdate = ref();
 const editPriceVisible = ref(false);
 const priceItem = ref(null);
+const selectMealVisible = ref(false);   
 
 const form = useForm({
     group_name: '',
@@ -497,6 +500,7 @@ watch((addedItem), () => {
                     <Button
                         type="button"
                         :label="$t('public.add')"
+                        @click="selectMealVisible = true"
                     >
                         <template #icon>
                             <IconPlus :size="20" />
@@ -536,5 +540,11 @@ watch((addedItem), () => {
         :item="priceItem" 
         @update:visible="editPriceVisible = $event" 
         @update:priceUpdated="updateItemPrice($event)"
+    />
+
+    <SelectMealItemModal
+        :visible="selectMealVisible"
+        :categoryCount="categoryCount"
+        @update:visible="selectMealVisible = $event" 
     />
 </template>

@@ -107,5 +107,6 @@ return [
     'default' => 'Default',
     'edit_price' => 'Edit Price',
     'price_error_message' => 'Please enter a valid price',
+    'search' => 'Search',
     
 ];
