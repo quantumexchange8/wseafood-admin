@@ -101,5 +101,11 @@ return [
     'modifier_item_created' => 'Modifier item created successfully',
     'modifier_item_created_caption' => 'You\'ve created a modifier item named ',
     'category_prefix' => 'Category Code Prefix',
-    'category_prefix_placeholder' => 'e.g. BQ'
+    'category_prefix_placeholder' => 'e.g. BQ',
+    'add_another_item' => 'Add another item',
+    'status' => 'Status',
+    'default' => 'Default',
+    'edit_price' => 'Edit Price',
+    'price_error_message' => 'Please enter a valid price',
+    
 ];

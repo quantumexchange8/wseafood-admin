@@ -83,7 +83,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
 
         <SidebarCollapsible
             :title="$t('public.modifier_group')"
-            :active="route().current('modifier_group.*')"
+            :active="route().current('modifier.*')"
         >
             <template #icon>
                 <IconHierarchy size="20" stroke-width="1.5" />

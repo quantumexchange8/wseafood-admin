@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('modifier_group_id');
             $table->unsignedBigInteger('modifier_item_id');
             $table->integer('position');
+            $table->string('status');
             $table->decimal('price', 13, 2);
             $table->boolean('default');
             $table->timestamps();

@@ -30,9 +30,9 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
             $table->string('status')->default('active');
-            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

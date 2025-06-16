@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ModifierItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ModifierController extends Controller
@@ -42,6 +43,7 @@ class ModifierController extends Controller
 
         $item = ModifierItem::create([
             'modifier_name' => json_encode($request->modifier_name),
+            'slug' => Str::slug($request->modifier_name['en']),
         ]);
 
         return redirect()->back()->with('toast', [
@@ -73,7 +75,6 @@ class ModifierController extends Controller
                 $query->orderByDesc('created_at');
             }
 
-            // $fetchedProduct = $query->paginate($data['rows']);
             $fetchedItem = $query->get();
 
             return response()->json([

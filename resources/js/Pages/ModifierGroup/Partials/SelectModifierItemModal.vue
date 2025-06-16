@@ -13,6 +13,7 @@ import Empty from '@/Components/Empty.vue';
 const props = defineProps({
     visible: Boolean,
     itemCount: Number,
+    updateChecked: Object,
 });
 
 const emit = defineEmits(['update:visible', 'update:addItem']);
@@ -25,7 +26,11 @@ const isLoading = ref(false);
 const dv = ref(null);
 const fetchedItem = ref([]);
 const newItemFlag = ref(false);
-const checkedItem = ref([]);
+const checkedItem = ref();
+
+if(props.updateChecked) {
+    checkedItem.value = props.updateChecked;
+}
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -54,7 +59,7 @@ const loadLazyData = (event) => {
             fetchedItem.value = results?.data;
             
             if(newItemFlag.value) {
-                const newItemId = fetchedItem.value.length > 0 ? fetchedItem.value[0].id : '';
+                const newItemId = fetchedItem.value.length > 0 ? fetchedItem.value[0] : '';
                 checkedItem.value.push(newItemId);
                 newItemFlag.value = false;
             }
@@ -111,6 +116,10 @@ watch(show, (val) => {
     if (val !== props.visible) {
         emit('update:visible', val);
     }
+});
+
+watch(() => props.updateChecked, () => {
+    checkedItem.value = props.updateChecked;
 });
 
 const addItem = () => {

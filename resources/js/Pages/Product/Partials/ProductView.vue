@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, SelectButton, Popover, Select, ConfirmDialog } from 'primevue';
+import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, SelectButton, Popover, Select } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';

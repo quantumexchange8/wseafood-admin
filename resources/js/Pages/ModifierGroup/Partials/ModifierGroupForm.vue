@@ -1,19 +1,20 @@
 <script setup>
-import { Card, Button, InputText, RadioButton, InputNumber, Checkbox, IconField, InputIcon, DataTable, Tag } from 'primevue';
+import { Card, Button, InputText, RadioButton, InputNumber, Checkbox, DataTable, Tag, Column, ToggleSwitch, ProgressSpinner } from 'primevue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
 import InputError from '@/Components/InputError.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import IconAlertTooltip from '@/Pages/ModifierGroup/Partials/IconAlertTooltip.vue';
-import { IconPlus } from '@tabler/icons-vue';
+import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-vue';
 import SelectModifierItemModal from '@/Pages/ModifierGroup/Partials/SelectModifierItemModal.vue';
+import EditPriceModal from '@/Pages/ModifierGroup/Partials/EditPriceModal.vue';
 
 const props = defineProps({
     itemCount: Number,
 });
 
-const { formatNameLabel } = generalFormat();
+const { formatAmount } = generalFormat();
 const { locale } = useLangObserver();
 
 const availableLocales = JSON.parse(usePage().props.availableLocales);
@@ -21,6 +22,9 @@ const availableLocales = JSON.parse(usePage().props.availableLocales);
 const noMax = ref(false);
 const selectModalVisible = ref(false);
 const addedItem = ref();
+const addedItemUpdate = ref();
+const editPriceVisible = ref(false);
+const priceItem = ref(null);
 
 const form = useForm({
     group_name: '',
@@ -31,6 +35,7 @@ const form = useForm({
     override: '0',
     modifier_item: {},
     product: {},
+    defaultItem: null,
 });
 
 const submitForm = () => {
@@ -46,6 +51,37 @@ console.log(form);
     //     },
     // })
 };
+
+const reorderItem = (event) => {
+    addedItemUpdate.value = event.value;
+}
+const updateItemStatus = (id) => {
+    let item = addedItemUpdate.value.find(item => item.id === id);
+
+    if(item.status === 'active') {
+        item.status = 'inactive';
+    } else {
+        item.status = 'active';
+    }
+};
+
+const removeItem = (id) => {
+    if (addedItem.value && id !== undefined) {
+        addedItem.value = addedItem.value.filter(item => item.id !== id);
+    }
+}
+
+const priceModal = (item) => {
+    priceItem.value = item;
+    editPriceVisible.value = true;
+}
+
+const updateItemPrice = (data) => {
+    const id = data.id;
+    const price = data.price;
+    const item = addedItemUpdate.value.find(item => item.id === id);
+    item.price = price;
+}
 
 watch((noMax), () => {
     if(noMax.value) {
@@ -64,8 +100,37 @@ watch(() => form.group_type, () => {
 });
 
 watch((addedItem), () => {
-    console.log(addedItem.value);
-    
+    if(addedItem.value.length > 0 && !addedItemUpdate.value) {
+        addedItemUpdate.value = addedItem.value;
+        
+        addedItemUpdate.value.forEach(item => {
+            item.status = 'active';
+            item.price = 0;
+        });
+    }
+
+    if (addedItem.value && addedItemUpdate.value) {
+        // Remove items from addedItemUpdate that are no longer in addedItem
+        addedItemUpdate.value = addedItemUpdate.value.filter(item =>
+            addedItem.value.some(newItem => newItem.id === item.id)
+        );
+
+        // Add new items from addedItem to addedItemUpdate
+        addedItem.value.forEach(newItem => {
+            if (!addedItemUpdate.value.some(item => item.id === newItem.id)) {
+                newItem.status = 'active';
+                newItem.price = 0;
+
+                addedItemUpdate.value.push({
+                    ...newItem
+                });
+            }
+        });
+    }
+
+    if(addedItem.value.length < 1) {
+        addedItemUpdate.value = null;
+    }
 });
 
 </script>
@@ -252,16 +317,20 @@ watch((addedItem), () => {
                         <div class="text-lg font-bold">
                             {{ $t('public.add_modifier_item') }}
                         </div>
-                        <Tag v-if="addedItem" rounded>
-                            {{ `${addedItem.length} items` }}
+                        <Tag 
+                            v-if="addedItemUpdate" 
+                            rounded
+                        >
+                            {{ `${addedItemUpdate.length} items` }}
                         </Tag>
                     </div>
                     <Button
+                        v-if="addedItemUpdate"
                         type="button"
                         size="small"
                         variant="text"
-                        :label="$t('public.create_product')"
-                        @click="() => $inertia.visit(route('product.create'))"
+                        :label="$t('public.add_another_item')"
+                        @click="selectModalVisible = true"
                     >
                         <template #icon>
                             <IconPlus :size="20"/>
@@ -271,9 +340,132 @@ watch((addedItem), () => {
             </template>
             <template #content>
                 <DataTable
-                    v-if="addedItem"
+                    v-if="addedItemUpdate"
+                    :value="addedItemUpdate"
+                    @rowReorder="reorderItem"
                 >
-                    <!-- row order -->
+                    <template #loading>
+                        <div class="flex flex-col gap-2 items-center justify-center">
+                            <ProgressSpinner
+                                strokeWidth="4"
+                                class="w-10 h-10"
+                            />
+                            <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
+                                {{ $t('public.loading_data') }}
+                            </span>
+                        </div>
+                    </template>
+
+                    <template v-if="addedItemUpdate.length > 0">
+                        <Column
+                            field="status"
+                            class="w-[100px]"
+                        >
+                            <template #header>
+                                <div class="w-full flex justify-center text-xs font-bold">
+                                    {{ $t('public.status') }}
+                                </div>
+                            </template>
+                            <template #body="{ data }">
+                                <div class="flex justify-center items-center">
+                                    <ToggleSwitch
+                                        :model-value="data.status"
+                                        true-value="active"
+                                        false-value="inactive"
+                                        @change="updateItemStatus(data.id)"
+                                    />
+                                </div>
+                            </template>
+                        </Column>
+                        <Column
+                            field="modifier_name"
+                        >
+                            <template #header>
+                                <div class="text-xs font-bold">
+                                    {{ $t('public.modifier_name') }}
+                                </div>
+                            </template>
+                            <template #body="{ data }">
+                                <span class="text-sm font-bold">
+                                    {{ JSON.parse(data.modifier_name)[locale] ?? JSON.parse(data.modifier_name)['en'] }}
+                                </span>
+                            </template>
+                        </Column>
+                        <Column
+                            field="price"
+                            class="w-[110px]"
+                        >
+                            <template #header>
+                                <div class="w-full flex justify-center text-xs font-bold">
+                                    {{ $t('public.price') }}
+                                </div>
+                            </template>
+                            <template #body="{ data }">
+                                <span class="text-sm text-nowrap">
+                                    + {{ formatAmount(data.price, 2, 'RM') }}
+                                </span>
+                            </template>
+                        </Column>
+                        <Column
+                            field="default"
+                            class="w-[100px]"
+                        >
+                            <template #header>
+                                <div class="w-full flex justify-center text-xs font-bold">
+                                    {{ $t('public.default') }}
+                                </div>
+                            </template>
+                            <template #body="{ data }">
+                                <div class="flex justify-center items-center">
+                                    <RadioButton
+                                        v-model="form.defaultItem"
+                                        :value="data.id"
+                                    />
+                                </div>
+                            </template>
+                        </Column>
+                        <Column
+                            field="action"
+                            class="w-[100px]"
+                        >
+                            <template #header>
+                                <div class="w-full flex justify-end text-xs font-bold">
+                                    {{ $t('public.action') }}
+                                </div>
+                            </template>
+                            <template #body="{ data }">
+                                <div class="flex items-center gap-3">
+                                    <Button
+                                        type="button"
+                                        severity="secondary"
+                                        outlined
+                                        size="small"
+                                        class="rounded-full"
+                                        icon="IconPencil"
+                                        @click="priceModal(data)"
+                                    >
+                                        <template #icon>
+                                            <IconPencil :size="14" stroke-width="1.5"/>
+                                        </template>
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        severity="secondary"
+                                        outlined
+                                        size="small"
+                                        class="rounded-full"
+                                        @click="removeItem(data.id)"
+                                    >
+                                        <template #icon>
+                                            <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
+                                        </template>
+                                    </Button>
+
+                                </div>
+                            </template>
+                        </Column>
+                        <Column rowReorder headerStyle="width: 3rem" :reorderableColumn="false" />
+                    </template>
                 </DataTable>
                 <div 
                     v-else
@@ -334,7 +526,15 @@ watch((addedItem), () => {
     <SelectModifierItemModal
         :visible="selectModalVisible" 
         :itemCount="itemCount"
+        :updateChecked="addedItem"
         @update:visible="selectModalVisible = $event" 
         @update:addItem="addedItem = $event"
+    />
+
+    <EditPriceModal 
+        :visible="editPriceVisible" 
+        :item="priceItem" 
+        @update:visible="editPriceVisible = $event" 
+        @update:priceUpdated="updateItemPrice($event)"
     />
 </template>

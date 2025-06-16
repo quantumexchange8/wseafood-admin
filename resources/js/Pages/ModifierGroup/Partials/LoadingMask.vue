@@ -20,7 +20,7 @@ const count = computed(() => {
                 class="w-full py-4 px-5 flex items-center gap-4 border-b border-solid"
             >
                 <div class='flex flex-col items-start gap-1'>
-                    <Skeleton width='4rem' />
+                    <Skeleton width='4rem' height="1.5rem" />
                 </div>
             </div>
         </div>

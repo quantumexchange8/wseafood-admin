@@ -11,6 +11,7 @@ class ModifierItem extends Model
 
     protected $fillable = [
         'modifier_name',
+        'slug'
     ];
 
 }
