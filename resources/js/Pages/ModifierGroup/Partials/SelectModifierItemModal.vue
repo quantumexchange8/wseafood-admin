@@ -1,5 +1,5 @@
 <script setup>
-import { Dialog, IconField, InputIcon, InputText, Button, DataView, Checkbox } from 'primevue';
+import { Dialog, IconField, InputIcon, InputText, Button, DataView, Checkbox, useToast } from 'primevue';
 import { IconSearch, IconXboxX, IconPlus } from '@tabler/icons-vue';
 import { ref, watch, onMounted, watchEffect } from 'vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
@@ -9,6 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 import CreateModifierItemModal from '@/Pages/ModifierGroup/Partials/CreateModifierItemModal.vue';
 import LoadingMask from '@/Pages/ModifierGroup/Partials/LoadingMask.vue';
 import Empty from '@/Components/Empty.vue';
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
     visible: Boolean,
@@ -20,13 +21,14 @@ const emit = defineEmits(['update:visible', 'update:addItem']);
 
 const { locale } = useLangObserver();
 
+const toast = useToast();
 const show = ref(false);
 const createModalVisible = ref(false);
 const isLoading = ref(false);
 const dv = ref(null);
 const fetchedItem = ref([]);
 const newItemFlag = ref(false);
-const checkedItem = ref();
+const checkedItem = ref([]);
 
 if(props.updateChecked) {
     checkedItem.value = props.updateChecked;
@@ -124,6 +126,12 @@ watch(() => props.updateChecked, () => {
 
 const addItem = () => {
     emit('update:addItem', checkedItem.value);
+    toast.add({ 
+        severity: 'success', 
+        summary: trans('public.modifier_item_added_success'), 
+        detail: trans('public.modifier_item_added_success_caption'), 
+        life: 3000 
+    })
     show.value = false;
 }
 

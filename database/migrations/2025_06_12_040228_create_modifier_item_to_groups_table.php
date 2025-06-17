@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('position');
             $table->string('status');
             $table->decimal('price', 13, 2);
-            $table->boolean('default');
+            $table->boolean('default')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

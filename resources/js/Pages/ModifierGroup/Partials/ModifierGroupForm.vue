@@ -10,6 +10,7 @@ import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-vue';
 import SelectModifierItemModal from '@/Pages/ModifierGroup/Partials/SelectModifierItemModal.vue';
 import EditPriceModal from '@/Pages/ModifierGroup/Partials/EditPriceModal.vue';
 import SelectMealItemModal from '@/Pages/ModifierGroup/Partials/SelectMealItemModal.vue';
+import MealItemPhoto from '@/Pages/ModifierGroup/Partials/MealItemPhoto.vue';
 
 const props = defineProps({
     itemCount: Number,
@@ -27,7 +28,10 @@ const addedItem = ref();
 const addedItemUpdate = ref();
 const editPriceVisible = ref(false);
 const priceItem = ref(null);
-const selectMealVisible = ref(false);   
+const selectMealVisible = ref(false);
+const selectedMeal = ref();
+const selectedMealKeys = ref();
+const selectMealItemModalRef = ref();
 
 const form = useForm({
     group_name: '',
@@ -35,24 +39,23 @@ const form = useForm({
     group_type: 'optional',
     min: 0,
     max: 1,
-    override: '0',
-    modifier_item: {},
-    product: {},
-    defaultItem: null,
+    modifier_items: {},
+    meals: {},
+    default_item: null,
 });
 
 const submitForm = () => {
+    form.modifier_items = addedItemUpdate.value;
+    form.meals = selectedMeal.value;
+
 console.log(form);
 
-    // form.post(route('category.store'), {
-    //     onSuccess: () => {
-    //         form.reset();
-    //         emit('formSubmitted', false);
-    //     },
-    //     onError: () => {
-    //         emit('formSubmitted', false);
-    //     },
-    // })
+    form.post(route('modifier.group.store'), {
+        onSuccess: () => {
+            form.reset();
+        },
+        onError: () => {},
+    })
 };
 
 const reorderItem = (event) => {
@@ -85,6 +88,22 @@ const updateItemPrice = (data) => {
     const item = addedItemUpdate.value.find(item => item.id === id);
     item.price = price;
 }
+
+const assignMeal = (data) => {
+    selectedMeal.value = data[0];
+    selectedMealKeys.value = data[1];
+}
+
+const onRemoveMealItem = (product) => {
+    // Remove from selectedMeal
+    if (selectedMeal.value && Array.isArray(selectedMeal.value)) {
+        selectedMeal.value = selectedMeal.value.filter(item => item.key !== product.key);
+    }
+    // Ask the modal to update its selectedkey and emit the new keys
+    if (selectMealItemModalRef.value) {
+        selectMealItemModalRef.value.removeNodeAndChildren(product.key);
+    }
+};
 
 watch((noMax), () => {
     if(noMax.value) {
@@ -281,34 +300,6 @@ watch((addedItem), () => {
                         </div>
                         <InputError :message="form.errors.max"/>
                     </div>
-
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <div class="text-sm">
-                                {{ $t('public.allow_override') }}
-                            </div>
-                            <IconAlertTooltip :message="$t('public.allow_override_tooltip')" />
-                        </div>
-                        <div class="flex items-center gap-5">
-                            <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.override" inputId="not_allowed" value="0" />
-                                <div class="flex items-center gap-2">
-                                    <label for="not_allowed" class="text-sm">
-                                        {{ $t('public.not_allowed') }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.override" inputId="allowed" value="1" />
-                                <div class="flex items-center gap-2">
-                                    <label for="allowed" class="text-sm">
-                                        {{ $t('public.allowed') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <InputError :message="form.errors.override" />
-                    </div>
                 </div>
             </template>
         </Card>
@@ -324,7 +315,7 @@ watch((addedItem), () => {
                             v-if="addedItemUpdate" 
                             rounded
                         >
-                            {{ `${addedItemUpdate.length} items` }}
+                            {{ addedItemUpdate.length }} {{ $t('public.items') }}
                         </Tag>
                     </div>
                     <Button
@@ -421,7 +412,7 @@ watch((addedItem), () => {
                             <template #body="{ data }">
                                 <div class="flex justify-center items-center">
                                     <RadioButton
-                                        v-model="form.defaultItem"
+                                        v-model="form.default_item"
                                         :value="data.id"
                                     />
                                 </div>
@@ -472,7 +463,7 @@ watch((addedItem), () => {
                 </DataTable>
                 <div 
                     v-else
-                    class="p-5 flex items-center self-stretch"
+                    class="p-5 flex items-center self-stretch gap-4"
                 >
                     <Button
                         type="button"
@@ -483,21 +474,50 @@ watch((addedItem), () => {
                             <IconPlus :size="20" />
                         </template>
                     </Button>
+
+                    <InputError :message="form.errors.modifier_items" />
                 </div>
             </template>
         </Card>
 
         <Card class="w-full">
             <template #title>
-                <div class="px-5 py-3 flex justify-between items-center self-stretch">
+                <div class="px-5 py-3 flex items-center self-stretch gap-4">
                     <div class="text-lg font-bold">
                         {{ $t('public.add_to_meal_item') }}
                     </div>
+                    <Tag 
+                        v-if="selectedMeal && selectedMeal.length > 0" 
+                        rounded
+                    >
+                        {{ selectedMeal.length }} {{ $t('public.linked_items') }}
+                    </Tag>
                 </div>
             </template>
             <template #content>
-                <div class="p-5 flex items-center self-stretch">
+                <div class="p-5 flex items-center self-stretch gap-4">
+                    <div 
+                        v-if="selectedMeal && selectedMeal.length > 0"
+                        class="flex items-center gap-4"
+                    >
+                        <MealItemPhoto 
+                            :products="selectedMeal"
+                            @remove="onRemoveMealItem"
+                        />
+                        <div 
+                            class="w-32 h-32 flex flex-col justify-center items-center gap-2.5 rounded-lg border border-dashed border-primary-500 bg-primary-50 cursor-pointer hover:bg-primary-100 transition-colors"
+                            @click="selectMealVisible = true"
+                        >
+                            <div class="flex flex-col justify-center items-center gap-1">
+                                <IconPlus :size="24" class="text-primary-400" />
+                                <div class="text-sm text-primary-500">
+                                    {{ $t('public.add_more') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <Button
+                        v-else
                         type="button"
                         :label="$t('public.add')"
                         @click="selectMealVisible = true"
@@ -506,6 +526,7 @@ watch((addedItem), () => {
                             <IconPlus :size="20" />
                         </template>
                     </Button>
+                    <InputError :message="form.errors.meals" />
                 </div>
             </template>
         </Card>
@@ -543,8 +564,12 @@ watch((addedItem), () => {
     />
 
     <SelectMealItemModal
+        ref="selectMealItemModalRef"
         :visible="selectMealVisible"
         :categoryCount="categoryCount"
+        :updateSelected="selectedMealKeys"
         @update:visible="selectMealVisible = $event" 
+        @update:addMeal="assignMeal($event)"
+        @update:selectedKeys="selectedMealKeys = $event"
     />
 </template>

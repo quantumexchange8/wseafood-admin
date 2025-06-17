@@ -1,8 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ModifierGroupForm from '@/Pages/ModifierGroup/Partials/ModifierGroupForm.vue';
-import { Button } from 'primevue';
-import { ref } from 'vue';
 
 const props = defineProps({
     itemCount: Number,

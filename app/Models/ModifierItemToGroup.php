@@ -13,6 +13,7 @@ class ModifierItemToGroup extends Model
         'modifier_group_id',
         'modifier_item_id',
         'position',
+        'status',
         'price',
         'default',
     ];

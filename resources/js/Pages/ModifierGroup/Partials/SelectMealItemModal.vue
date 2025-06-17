@@ -1,111 +1,34 @@
 <script setup>
-import { Dialog, IconField, InputIcon, InputText, Button, DataView, Checkbox, Tree, Avatar } from 'primevue';
-import { IconSearch, IconXboxX, IconPlus } from '@tabler/icons-vue';
-import { ref, watch, onMounted, watchEffect } from 'vue';
+import { Dialog, Button, Tree, Avatar, Tag, useToast } from 'primevue';
+import { ref, watch, onMounted, watchEffect, computed } from 'vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import {generalFormat} from "@/Composables/format.js";
-import { debounce } from 'lodash';
-import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import LoadingMask from '@/Pages/ModifierGroup/Partials/LoadingMask.vue';
-import Empty from '@/Components/Empty.vue';
-import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
     visible: Boolean,
     categoryCount: Number,
-    updateChecked: Object,
+    updateSelected: Object,
 });
 
-const emit = defineEmits(['update:visible', 'update:addItem']);
+const emit = defineEmits(['update:visible', 'update:addMeal', 'update:selectedKeys']);
 
 const { locale } = useLangObserver();
 const { formatNameLabel,formatAmount } = generalFormat();
 
+const toast = useToast();
 const show = ref(false);
 const isLoading = ref(false);
 const fetchedItem = ref([]);
-const checkedItem = ref();
 const selectedkey = ref();
-
-const nodes = ref([
-    {
-        id: '0',
-        label: 'Introduction',
-        children: [
-            { key: '0-0', label: 'What is Vue.js?', data: 'https://vuejs.org/guide/introduction.html#what-is-vue', type: 'url' },
-            { key: '0-1', label: 'Quick Start', data: 'https://vuejs.org/guide/quick-start.html#quick-start', type: 'url' },
-            { key: '0-2', label: 'Creating a Vue Application', data: 'https://vuejs.org/guide/essentials/application.html#creating-a-vue-application', type: 'url' },
-            { key: '0-3', label: 'Conditional Rendering', data: 'https://vuejs.org/guide/essentials/conditional.html#conditional-rendering', type: 'url' }
-        ]
-    },
-    {
-        id: '1',
-        label: 'Components In-Depth',
-        children: [
-            { key: '1-0', label: 'Component Registration', data: 'https://vuejs.org/guide/components/registration.html#component-registration', type: 'url' },
-            { key: '1-1', label: 'Props', data: 'https://vuejs.org/guide/components/props.html#props', type: 'url' },
-            { key: '1-2', label: 'Components Events', data: 'https://vuejs.org/guide/components/events.html#component-events', type: 'url' },
-            { key: '1-3', label: 'Slots', data: 'https://vuejs.org/guide/components/slots.html#slots', type: 'url' }
-        ]
-    }
-]);
-
-if(props.updateChecked) {
-    checkedItem.value = props.updateChecked;
-}
-
-// const filters = ref({
-//     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-//     name: { value: null, matchMode: FilterMatchMode.EQUALS },
-// });
-
-// const lazyParams = ref({});
-
-// const loadLazyData = (event) => {
-//     isLoading.value = true;
-
-//     lazyParams.value.filters = filters.value;
-//     try {
-//         setTimeout(async () => {
-//             const params = {
-//                 sortField: event?.sortField,
-//                 sortOrder: event?.sortOrder,
-//                 include: [],
-//                 lazyEvent: JSON.stringify(lazyParams.value)
-//             };
-
-//             const url = route('modifier.categoryProduct.fetch', params);
-//             const response = await fetch(url);
-//             const results = await response.json();
-
-//             fetchedItem.value = results?.data;
-//         console.log(fetchedItem.value);
-
-//             isLoading.value = false;
-
-//         }, 100);
-//     }  catch (e) {
-//         fetchedItem.value = [];
-//         isLoading.value = false;
-//     }
-// };
-
-// const onPage = (event) => {
-//     lazyParams.value = event;
-//     loadLazyData(event);
-// };
-// const onFilter = (event) => {
-//     lazyParams.value.filters = filters.value ;
-//     loadLazyData(event);
-// };
 
 const loadLazyData = async () => {
     try{
         isLoading.value = true
         const response = await axios.get(route('modifier.categoryProduct.fetch'));
         fetchedItem.value = response.data.data;
-        console.log(fetchedItem.value);
         
     } catch (e) {
         console.log(e);
@@ -116,24 +39,8 @@ const loadLazyData = async () => {
 }
 
 onMounted(() => {
-    // lazyParams.value = {
-    //     sortField: null,
-    //     filters: filters.value
-    // };
-
     loadLazyData();
 })
-
-// watch(
-//     filters.value['global'],
-//     debounce(() => {
-//         loadLazyData();
-//     }, 300)
-// );
-
-// const clearFilterGlobal = () => {
-//     filters.value['global'].value = null;
-// }
 
 watchEffect(() => {
     if (usePage().props.toast !== null) {
@@ -143,6 +50,12 @@ watchEffect(() => {
 
 watch(() => props.visible, (val) => {
     show.value = val;
+
+    if(val) {
+        if(props.updateSelected) {
+            selectedkey.value = props.updateSelected;
+        }
+    }
 });
 
 watch(show, (val) => {
@@ -151,14 +64,113 @@ watch(show, (val) => {
     }
 });
 
-watch(() => props.updateChecked, () => {
-    checkedItem.value = props.updateChecked;
-});
+const getSelectedLeafNodes = (nodes, keys) => {
+    let selected = [];
+    if (Array.isArray(nodes)) {
+        nodes.forEach(node => {
+            if (node.children && node.children.length) {
+                selected = selected.concat(getSelectedLeafNodes(node.children, keys));
+            } else if (keys && keys[node.key] && keys[node.key].checked) {
+                selected.push(node);
+            }
+        });
+    }
+    return selected;
+};
 
 const addItem = () => {
-    emit('update:addItem', checkedItem.value);
+    const selectedLeafNodes = getSelectedLeafNodes(fetchedItem.value, selectedkey.value);
+
+    emit('update:addMeal', [selectedLeafNodes, selectedkey.value]);
+    toast.add({ 
+        severity: 'success', 
+        summary: trans('public.meal_item_added_success'), 
+        detail: trans('public.meal_item_added_success_caption'), 
+        life: 3000 
+    })
     show.value = false;
 }
+
+const totalSelectedItem = computed(() => {
+    let count = 0;
+    const nodes = fetchedItem.value;
+    const keys = selectedkey.value;
+
+    const countSelectedChildren = (nodes) => {
+        let total = 0;
+        if (Array.isArray(nodes)) {
+            nodes.forEach(node => {
+                if (node.children && node.children.length) {
+                    total += countSelectedChildren(node.children);
+                } else if (keys && keys[node.key] && keys[node.key].checked) {
+                    total += 1;
+                }
+            });
+        }
+        return total;
+    };
+    count = countSelectedChildren(nodes);
+    return count;
+})
+
+const cancelAction = () => {
+    selectedkey.value = null;
+    show.value = false;
+};
+
+function updateParentSelectionState(nodes, selectedKeys) {
+    // Recursively update parent nodes
+    const updateNode = (node) => {
+        if (node.children && node.children.length) {
+            let checkedCount = 0;
+            let partialCount = 0;
+            node.children.forEach(child => {
+                updateNode(child);
+                const key = child.key;
+                if (selectedKeys[key]?.checked) checkedCount++;
+                if (selectedKeys[key]?.partialChecked) partialCount++;
+            });
+
+            if (checkedCount === node.children.length) {
+                selectedKeys[node.key] = { checked: true, partialChecked: false };
+            } else if (checkedCount > 0 || partialCount > 0) {
+                selectedKeys[node.key] = { checked: false, partialChecked: true };
+            } else {
+                delete selectedKeys[node.key];
+            }
+        }
+    };
+
+    if (Array.isArray(nodes)) {
+        nodes.forEach(updateNode);
+    }
+}
+
+function removeNodeAndChildren(key) {
+    // Helper to recursively remove a node and its children from selectedkey
+    const removeRecursively = (nodes, keyToRemove) => {
+        if (!Array.isArray(nodes)) return;
+        nodes.forEach(node => {
+            if (node.key === keyToRemove) {
+                // Remove this node and all its children
+                delete selectedkey.value[node.key];
+                if (node.children && node.children.length) {
+                    node.children.forEach(child => removeRecursively([child], child.key));
+                }
+            } else if (node.children && node.children.length) {
+                removeRecursively(node.children, keyToRemove);
+            }
+        });
+    };
+    removeRecursively(fetchedItem.value, key);
+    updateParentSelectionState(fetchedItem.value, selectedkey.value);
+    
+    emit('update:selectedKeys', { ...selectedkey.value });
+}
+
+defineExpose({
+    removeNodeAndChildren
+})
 
 </script>
 
@@ -184,62 +196,73 @@ const addItem = () => {
             class="px-5 py-4 w-full"
         >
             <template #loadingicon>
-                <LoadingMask :itemCount="3" />
+                <LoadingMask :itemCount="categoryCount" />
             </template>
 
-            <!-- <template #default="slotProps">
-                <b>{{ slotProps.node.label }}</b>
-            </template>
-            <template #url="slotProps">
-                <a :href="slotProps.node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-0 hover:text-primary">{{ slotProps.node.label }}</a>
-            </template> -->
             <template #default="slotProps">
-                <b>{{ slotProps.node.name }}</b>
+            <div class="flex items-center gap-2">
+                <div class="font-bold">
+                    {{ JSON.parse(slotProps.node.name)[locale] ?? JSON.parse(slotProps.node.name)['en'] }}
+                </div>
+                <Tag 
+                    v-if="slotProps.node.children && slotProps.node.children.length"
+                    :value="`${slotProps.node.children.filter(child => selectedkey && selectedkey[child.key] && selectedkey[child.key].checked).length} ${$t('public.selected')}`"
+                    rounded
+                    v-show="slotProps.node.children.filter(child => selectedkey && selectedkey[child.key] && selectedkey[child.key].checked).length > 0"
+                />
+            </div>
             </template>
             <template #meal="slotProps">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10">
-                        <Avatar
-                            v-if="slotProps.node.product_photo"
-                            :image="slotProps.node.product_photo"
-                            class="w-10 h-10"
-                        />
-                        <Avatar
-                            v-else
-                            :label="formatNameLabel(JSON.parse(slotProps.node.name)[locale] ?? JSON.parse(slotProps.node.name)['en'])"
-                            class="w-10 h-10"
-                        />
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10">
+                <Avatar
+                    v-if="slotProps.node.product_photo"
+                    :image="slotProps.node.product_photo"
+                    class="w-10 h-10"
+                />
+                <Avatar
+                    v-else
+                    :label="formatNameLabel(JSON.parse(slotProps.node.name)[locale] ?? JSON.parse(slotProps.node.name)['en'])"
+                    class="w-10 h-10"
+                />
+                </div>
+                <div class="flex flex-col items-start gap-1">
+                <div class="flex items-start gap-2">
+                    <div class="font-bold">
+                    {{ slotProps.node.key }}
                     </div>
-                    <div class="flex flex-col items-start gap-1">
-                        <div class="flex items-start gap-2">
-                            <div class="font-bold">
-                                {{ slotProps.node.key }}
-                            </div>
-                            <div class="font-bold">
-                                {{ formatNameLabel(JSON.parse(slotProps.node.name)[locale] ?? JSON.parse(slotProps.node.name)['en']) }}
-                            </div>
-                        </div>
-                        <div>
-                            {{ slotProps.node.price }}
-                        </div>
+                    <div class="font-bold">
+                    {{ JSON.parse(slotProps.node.name)[locale] ?? JSON.parse(slotProps.node.name)['en'] }}
                     </div>
                 </div>
+                <div>
+                    {{ formatAmount(slotProps.node.price, 2, 'RM') }}
+                </div>
+                </div>
+            </div>
             </template>
         </Tree>
 
         <template #footer>
-            <Button
-                type="button"
-                label="Cancel"
-                severity="secondary"
-                outlined
-                @click="show = false"
-            />
-            <Button
-                type="submit"
-                label="Add"
-                @click="addItem"
-            />
+            <div class="w-full flex justify-between items-center">
+                <div class="text-sm text-slate-400">
+                    {{ $t('public.selected') }}: {{ totalSelectedItem }}
+                </div>
+                <div class="flex gap-3">
+                    <Button
+                        type="button"
+                        label="Cancel"
+                        severity="secondary"
+                        outlined
+                        @click="cancelAction"
+                    />
+                    <Button
+                        type="submit"
+                        label="Add"
+                        @click="addItem"
+                    />
+                </div>
+            </div>
         </template>
     </Dialog>
 </template>

@@ -15,7 +15,6 @@ class ModifierGroup extends Model
         'group_type',
         'min_selection',
         'max_selection',
-        'override',
         'status',
     ];
 }

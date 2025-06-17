@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('group_type');
             $table->integer('min_selection');
             $table->integer('max_selection')->nullable();
-            $table->boolean('override');
             $table->string('status');
             $table->timestamps();
             $table->softDeletes();
