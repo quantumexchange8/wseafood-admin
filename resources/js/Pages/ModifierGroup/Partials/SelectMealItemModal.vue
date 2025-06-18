@@ -251,14 +251,14 @@ defineExpose({
                 <div class="flex gap-3">
                     <Button
                         type="button"
-                        label="Cancel"
+                        :label="$t('public.cancel')"
                         severity="secondary"
                         outlined
                         @click="cancelAction"
                     />
                     <Button
                         type="submit"
-                        label="Add"
+                        :label="$t('public.add')"
                         @click="addItem"
                     />
                 </div>

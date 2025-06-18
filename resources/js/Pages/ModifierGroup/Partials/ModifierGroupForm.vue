@@ -5,7 +5,7 @@ import { ref, watch } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
 import InputError from '@/Components/InputError.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
-import IconAlertTooltip from '@/Pages/ModifierGroup/Partials/IconAlertTooltip.vue';
+import IconAlertTooltip from '@/Components/IconAlertTooltip.vue';
 import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-vue';
 import SelectModifierItemModal from '@/Pages/ModifierGroup/Partials/SelectModifierItemModal.vue';
 import EditPriceModal from '@/Pages/ModifierGroup/Partials/EditPriceModal.vue';

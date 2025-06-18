@@ -248,14 +248,14 @@ const addItem = () => {
         <template #footer>
             <Button
                 type="button"
-                label="Cancel"
+                :label="$t('public.cancel')"
                 severity="secondary"
                 outlined
                 @click="show = false"
             />
             <Button
                 type="submit"
-                label="Add"
+                :label="$t('public.add')"
                 @click="addItem"
             />
         </template>

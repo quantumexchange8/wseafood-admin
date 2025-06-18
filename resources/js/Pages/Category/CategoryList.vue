@@ -7,6 +7,7 @@ import { generalFormat } from '@/Composables/format';
 
 const props = defineProps({
     category: Object,
+    categoryCount: Number,
 });
 
 const { formatDateTime } = generalFormat();
@@ -36,7 +37,7 @@ const { formatDateTime } = generalFormat();
                 </Button>
             </div>
 
-            <CategoryTable :category="category"/>
+            <CategoryTable :category="category" :categoryCount="categoryCount"/>
         </div>
     </AuthenticatedLayout>
 </template>

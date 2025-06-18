@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Select, ToggleSwitch, Avatar, SelectButton } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, DatePicker, Slider, Avatar } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -8,14 +8,14 @@ import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUplo
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
-import UpdateStatusConfirmation from '@/Pages/Product/Partials/UpdateStatusConfirmation.vue';
+import PointAdjustmentModal from './PointAdjustmentModal.vue';
+import DeleteConfirmation from '@/Components/DeleteConfirmation.vue';
 
 const props = defineProps({
-    category: Object,
-    categoryCount: Number,
+    member: Object,
 });
 
-const { formatNameLabel } = generalFormat();
+const { formatNameLabel, formatDateTime } = generalFormat();
 const { locale } = useLangObserver();
 
 const isLoading = ref(false);
@@ -23,12 +23,16 @@ const dt = ref(null);
 const fetchedCategory = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const updateStatusConfirm = ref(null);
+const pointModalVisible = ref(false);
+const adjustMember = ref(null);
+const deleteConfirmModal = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     status: { value: null, matchMode: FilterMatchMode.EQUALS },
     name: { value: null, matchMode: FilterMatchMode.EQUALS },
+    pointRange: {value: null, matchMode: FilterMatchMode.BETWEEN},
+    date: {value: null, matchMode: FilterMatchMode.BETWEEN},
 });
 
 const lazyParams = ref({});
@@ -48,7 +52,7 @@ const loadLazyData = (event) => {
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
 
-            const url = route('category.fetch', params);
+            const url = route('member.fetch', params);
             const response = await fetch(url);
             const results = await response.json();
 
@@ -96,9 +100,7 @@ onMounted(() => {
         filters: filters.value
     };
 
-    if(props.categoryCount !== 0) {
-        loadLazyData();
-    }
+    loadLazyData();
 })
 
 watch(
@@ -108,13 +110,25 @@ watch(
     }, 300)
 );
 
-watch([filters.value['status']], () => {
-    loadLazyData()
-});
+// watch([filters.value['status']], () => {
+//     loadLazyData()
+// });
+
+// watch([filters.value['pointRange']], () => {
+//     setTimeout(() => {
+//         loadLazyData()
+//     }, 2000);
+// });
+
+const applyFilter = () => {
+    loadLazyData();
+};
 
 const clearAll = () => {
     filters.value['global'].value = null;
     filters.value['status'].value = null;
+    filters.value['pointRange'].value = [0, 2000];
+    filters.value['date'].value = null;
 };
 
 const clearFilterGlobal = () => {
@@ -127,11 +141,26 @@ watchEffect(() => {
     }
 });
 
-const updateStatus = (category) => {
-    if(updateStatusConfirm.value) {
-        updateStatusConfirm.value.changeStatus(category);
+const getSeverity = (status) => {
+    switch (status) {
+        case 'active':
+            return 'success';
+
+        case 'inactive':
+            return 'secondary';
+    }
+};
+
+const adjustPoint = (member) => {
+    adjustMember.value = member;
+    pointModalVisible.value = true;
+};
+
+const deleteMember = (member) => {
+    if(deleteConfirmModal.value) {
+        deleteConfirmModal.value.deleteItem(member.id, member.full_name, 'member.destroy');
     } else {
-        console.error("Update Status Confirmation is not available");
+        console.log('DeleteConfirmationModal unavailable');
     }
 };
 
@@ -175,10 +204,10 @@ const updateStatus = (category) => {
             <div class="p-4 flex justify-between items-center gap-2 self-stretch">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold">
-                        {{ $t('public.list_of_category') }}
+                        {{ $t('public.list_of_member') }}
                     </div>
                     <Tag rounded>
-                        <span>{{ totalRecords }} {{ $t('public.categories') }}</span>
+                        <span>{{ totalRecords }} {{ $t('public.member') }}</span>
                     </Tag>
                 </div>
                 <Button
@@ -214,7 +243,7 @@ const updateStatus = (category) => {
                 :globalFilterFields="['name', 'status']"
             >
                 <template #empty>
-                    <div v-if="fetchedCategory.length === 0 || categoryCount === 0">
+                    <div v-if="fetchedCategory.length === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -235,66 +264,106 @@ const updateStatus = (category) => {
 
                 <template v-if="fetchedCategory?.length > 0">
                     <Column
-                        field="status"
+                        field="id"
                         class="w-[100px]"
                         sortable
                     >
                         <template #header>
                             <span class="block text-nowrap">
-                                {{ $t('public.visibility') }}
+                                {{ $t('public.id') }}
                             </span>
                         </template>
                         <template #body="{ data }">
-                            <ToggleSwitch
-                                :model-value="data.status === 'active' ? true : false"
-                                @click="updateStatus(data)"
-                                readonly
-                            />
-                        </template>
-                    </Column>
-
-                    <Column
-                        field="name"
-                        sortable
-                    >
-                        <template #header>
-                            <span class="block text-nowrap">
-                                {{ $t('public.category_name') }}
-                            </span>
-                        </template>
-                        <template #body="{ data }">
-                            <div class="flex items-center gap-2">
-                                <Avatar
-                                    v-if="data.category_thumbnail"
-                                    :image="data.category_thumbnail"
-                                    class="w-10 h-10"
-                                />
-                                <Avatar
-                                    v-else
-                                    :label="formatNameLabel(JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'])"
-                                    class="w-10 h-10"
-                                    size="large"
-                                />
-                                <span>
-                                    {{ JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'] }}
-                                </span>
+                            <div class="text-sm">
+                                {{ data.id }}
                             </div>
                         </template>
                     </Column>
 
                     <Column
-                        field="number_product"
-                        class="w-[100px] text-nowrap"
+                        field="full_name"
+                        sortable
                     >
                         <template #header>
                             <span class="block text-nowrap">
-                                {{ $t('public.number_of_product') }}
+                                {{ $t('public.member') }}
                             </span>
                         </template>
                         <template #body="{ data }">
-                            <span>
-                                {{ data.product_count }}
+                            <div class="flex items-center gap-3 self-stretch">
+                                <Avatar
+                                    v-if="data.profile_photo"
+                                    :image="data.profile_photo"
+                                    class="w-10 h-10"
+                                />
+                                <Avatar
+                                    v-else
+                                    :label="formatNameLabel(data.full_name)"
+                                    class="w-10 h-10"
+                                    size="large"
+                                />
+                                <div class="flex flex-col gap-1 items-start">
+                                    <div class="text-sm font-bold">
+                                        {{ data.full_name }}
+                                    </div>
+                                    <div class="text-sm">
+                                        {{ data.phone }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="point"
+                        class="w-[100px] text-nowrap"
+                        sortable
+                    >
+                        <template #header>
+                            <div>
+                                {{ $t('public.point') }}
+                            </div>
+                        </template>
+                        <template #body="{ data }">
+                            <div class="text-sm">
+                                {{ data.point }} PTS
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="created_at"
+                        class="w-[100px] text-nowrap"
+                        sortable
+                    >
+                        <template #header>
+                            <div class="text-nowrap">
+                                {{ $t('public.joined_on') }}
+                            </div>
+                        </template>
+                        <template #body="{ data }">
+                            <div class="text-sm">
+                                {{ formatDateTime(data.created_at, false) }}
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="status"
+                        class="w-[100px] text-nowrap"
+                        sortable
+                    >
+                        <template #header>
+                            <span class="block text-nowrap">
+                                {{ $t('public.status') }}
                             </span>
+                        </template>
+                        <template #body="{ data }">
+                            <Tag 
+                                :value="$t(`public.${data.status}`)" 
+                                :severity="getSeverity(data.status)"
+                                rounded
+                            />
                         </template>
                     </Column>
 
@@ -315,7 +384,7 @@ const updateStatus = (category) => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
-                                    icon="IconPencil"
+                                    @click="adjustPoint(data)"
                                 >
                                     <template #icon>
                                         <IconPencil :size="14" stroke-width="1.5"/>
@@ -328,6 +397,7 @@ const updateStatus = (category) => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
+                                    @click="deleteMember(data)"
                                 >
                                     <template #icon>
                                         <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
@@ -337,49 +407,107 @@ const updateStatus = (category) => {
                         </template>
                     </Column>
                 </template>
+
             </DataTable>
         </template>
     </Card>
 
     <Popover ref="op">
         <div class="flex flex-col gap-6 w-60">
-            <!-- Filter status -->
-            <div class="flex flex-col gap-2 items-center self-stretch">
+            <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.filter_by_status') }}
+                    {{ $t('public.point_accumulated') }}
                 </div>
-                <Select
-                    v-model="filters['status'].value"
-                    :options="status"
-                    :placeholder="$t('public.select_status')"
-                    class="w-full"
-                    showClear
-                >
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center">
-                            {{ $t(`public.${slotProps.value}`) }}
+                <div class="w-full flex flex-col justify-center items-center gap-3">
+                    <Slider
+                        v-model="filters['pointRange'].value"
+                        range
+                        :min="0"
+                        :max="2000"
+                        :step="10"
+                        class="w-[90%]"
+                    />
+                    <div class="w-full flex justify-between items-center">
+                        <div class="text-xs">
+                            0 PTS
                         </div>
-                        <span v-else>{{ slotProps.placeholder }}</span>
-                    </template>
-
-                    <template #option="slotProps">
-                        <div>
-                            {{ $t(`public.${slotProps.option}`) }}
+                        <div class="text-xs">
+                            2000 PTS
                         </div>
-                    </template>
-                </Select>
+                    </div>
+                </div>
             </div>
 
-            <Button
-                type="button"
-                outlined
-                class="w-full"
-                @click="clearAll"
-            >
-                {{ $t('public.clear_all') }}
-            </Button>
+            <div class="flex flex-col gap-4 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.joined_date') }}
+                </div>
+                <div class="w-full flex items-center">
+                    <DatePicker
+                        v-model="filters['date'].value"
+                        selectionMode="range"
+                        :manualInput="false"
+                        dateFormat="dd/mm/yy"
+                        placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                        class="w-full"
+                    />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.status') }}
+                </div>
+                <div class="w-full flex justify-start items-start content-start gap-2">
+                    <Button
+                        v-for="data in status"
+                        type="button"
+                        severity="secondary"
+                        rounded
+                        :class="{'bg-gray-300' : filters['status'].value === data},
+                                'bg-white'"
+                        size="small"
+                        @click="filters['status'].value = data"
+                    >
+                        <div class="flex items-center gap-2">
+                            <div :class="[
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    'w-2 h-2 rounded-full'
+                                ]"
+                            ></div>
+                            <div class="text-xs font-bold">
+                                {{ $t(`public.${data}`) }}
+                            </div>
+                        </div>
+                    </Button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <Button
+                    type="button"
+                    outlined
+                    class="w-full"
+                    @click="clearAll"
+                >
+                    {{ $t('public.clear_all') }}
+                </Button>
+                <Button
+                    type="button"
+                    class="w-full"
+                    @click="applyFilter"
+                >
+                    {{ $t('public.apply') }}
+                </Button>
+            </div>
         </div>
     </Popover>
 
-    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="'category'"/>
+    <PointAdjustmentModal 
+        :visible="pointModalVisible"
+        :member="adjustMember"
+        @update:visible="pointModalVisible = $event"
+    />
+
+    <DeleteConfirmation ref="deleteConfirmModal" />
 </template>

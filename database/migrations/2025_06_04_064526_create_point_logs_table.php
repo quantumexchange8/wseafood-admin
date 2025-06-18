@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('type');
+            $table->string('adjust_type')->nullable();
             $table->decimal('amount', 13, 2);
             $table->double('earning_point');
             $table->double('old_point');
             $table->double('new_point');
+            $table->string('remark')->nullable();
             $table->timestamps();
         });
     }

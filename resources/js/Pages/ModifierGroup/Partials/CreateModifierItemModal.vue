@@ -73,7 +73,7 @@ watch(show, (val) => {
         <template #footer>
             <Button
                 type="button"
-                label="Cancel"
+                :label="$t('public.cancel')"
                 severity="secondary"
                 outlined
                 @click="show = false"
@@ -81,7 +81,7 @@ watch(show, (val) => {
             />
             <Button
                 type="submit"
-                label="Create"
+                :label="$t('public.create')"
                 @click="submitForm"
                 :disabled="form.processing"
             />

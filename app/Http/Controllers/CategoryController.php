@@ -12,9 +12,11 @@ class CategoryController extends Controller
     public function index()
     {
         $category = Category::select('updated_at')->orderByDesc('updated_at')->first();
+        $categoryCount = Category::all()->count();
 
         return Inertia::render('Category/CategoryList', [
-            'category' => $category
+            'category' => $category,
+            'categoryCount' => $categoryCount,
         ]);
     }
 

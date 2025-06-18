@@ -3,35 +3,15 @@ import SidebarLink from '@/Components/Sidebar/SidebarLink.vue'
 import SidebarCollapsible from '@/Components/Sidebar/SidebarCollapsible.vue'
 import SidebarCollapsibleItem from '@/Components/Sidebar/SidebarCollapsibleItem.vue'
 import { sidebarState } from '@/Composables'
-import {onMounted, ref, watchEffect} from "vue";
-import {usePage} from "@inertiajs/vue3";
 import {
     IconLayoutDashboard,
     IconCategory,
     IconHierarchy,
     IconBowlChopsticks,
+    IconUsers,
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
-//
-// const page = usePage();
-// const pendingDepositCounts = ref(page.props.getPendingDepositCount);
-// const pendingWithdrawalCounts = ref(page.props.pendingWithdrawalCounts);
-//
-// const getPendingCounts = async () => {
-//     try {
-//         const response = await axios.get(route('dashboard.getPendingCounts'));
-//         pendingDepositCounts.value = response.data.pendingDepositCounts;
-//         pendingWithdrawalCounts.value = response.data.pendingWithdrawalCounts;
-//     } catch (error) {
-//         console.error('Error pending counts:', error);
-//     }
-// };
-//
-// watchEffect(() => {
-//     if (usePage().props.toast !== null) {
-//         getPendingCounts();
-//     }
-// });
+
 </script>
 
 <template>
@@ -120,5 +100,19 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 :active="route().current('product.create')"
             />
         </SidebarCollapsible>
+
+        <SidebarCategoryLabel
+            :title="$t('public.user_management')"
+        />
+
+        <SidebarLink
+            :title="$t('public.member')"
+            :href="route('member.index')"
+            :active="route().current('member.index')"
+        >
+            <template #icon>
+                <IconUsers :size="20" stroke-width="1.5" />
+            </template>
+        </SidebarLink>
     </nav>
 </template>

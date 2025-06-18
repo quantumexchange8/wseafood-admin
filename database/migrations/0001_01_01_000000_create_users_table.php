@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('dob');
             $table->string('gender')->nullable();
-            $table->double('point')->default(0);
+            $table->integer('point')->default(0);
             $table->string('address1')->nullable();
             $table->string('address2')->nullable();
             $table->string('address3')->nullable();

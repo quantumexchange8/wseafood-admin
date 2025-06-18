@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ModifierController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\App;
@@ -88,6 +89,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('modifier-item')->group(function () {
         Route::post('/create', [ModifierController::class, 'storeItem'])->name('modifier.item.store');
         Route::get('/fetch-modifier-item', [ModifierController::class, 'fetchModifierItem'])->name('modifier.item.fetch');
+    });
+
+    /**
+     * ==============================
+     *           Member
+     * ==============================
+     */
+    Route::prefix('member')->group(function () {
+        Route::get('/', [MemberController::class, 'index'])->name('member.index');
+        Route::get('/fetch-member', [MemberController::class, 'fetchMember'])->name('member.fetch');
+        Route::post('/adjust-point', [MemberController::class, 'adjustPoint'])->name('member.adjustPoint');
+        Route::post('/delete', [MemberController::class, 'destroy'])->name('member.destroy');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
