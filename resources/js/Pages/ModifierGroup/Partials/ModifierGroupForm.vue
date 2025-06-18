@@ -381,7 +381,7 @@ watch((addedItem), () => {
                             </template>
                             <template #body="{ data }">
                                 <span class="text-sm font-bold">
-                                    {{ JSON.parse(data.modifier_name)[locale] ?? JSON.parse(data.modifier_name)['en'] }}
+                                    {{ JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'] }}
                                 </span>
                             </template>
                         </Column>

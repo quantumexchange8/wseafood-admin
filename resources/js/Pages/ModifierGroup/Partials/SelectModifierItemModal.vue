@@ -232,7 +232,7 @@ const addItem = () => {
                     >
                         <label :for="`item-${item.id}`" class="flex flex-col items-start gap-1">
                             <div class="font-bold">
-                                {{ JSON.parse(item.modifier_name)[locale] ?? JSON.parse(item.modifier_name)['en'] }}
+                                {{ JSON.parse(item.name)[locale] ?? JSON.parse(item.name)['en'] }}
                             </div>
                         </label>
                         <Checkbox 

@@ -59,7 +59,7 @@ watch(() => props.item, () => {
     >
         <template #header>
             <div class="text-lg font-bold">
-                {{ $t('public.edit_price') }} : {{ JSON.parse(item.modifier_name)[locale] ?? JSON.parse(item.modifier_name)['en'] }}
+                {{ $t('public.edit_price') }} : {{ JSON.parse(item.name)[locale] ?? JSON.parse(item.name)['en'] }}
             </div>
         </template>
         <form 

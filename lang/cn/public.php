@@ -121,4 +121,12 @@ return [
     'meal_item' => '餐品项目',
     'modifier_group_created' => '修改项分组创建成功',
     'modifier_group_created_caption' => '您已创建一个名为 的修改项分组',
+    'list_of_modifier_group' => '修改项分组列表',
+    'group_id' => '分组编号',
+    'group_name_and_item' => '分组名称与项目',
+    'type' => '类型',
+    'linked_item' => '关联项目',
+    'delete_confirm_header' => '删除确认',
+    'delete_confirm_message' => '您确定要删除',
+    'delete' => '删除',
 ];

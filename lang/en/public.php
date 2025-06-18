@@ -121,4 +121,12 @@ return [
     'meal_item' => 'Meal Item',
     'modifier_group_created' => 'Modifier Group created successfully',
     'modifier_group_created_caption' => 'You\'ve created a modifier group named ',
+    'list_of_modifier_group' => 'List of Modifier Group',
+    'group_id' => 'Group ID',
+    'group_name_and_item' => 'Group Name & Item',
+    'type' => 'Type',
+    'linked_item' => 'Linked Item',
+    'delete_confirm_header' => 'Delete Confirmation',
+    'delete_confirm_message' => 'Are you sure to delete',
+    'delete' => 'Delete',
 ];

@@ -74,9 +74,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/create', [ModifierController::class, 'storeGroup'])->name('modifier.group.store');
         Route::get('/fetch-modifier-group', [ModifierController::class, 'fetchModifierGroup'])->name('modifier.group.fetch');
         Route::get('/fetch-category-product', [ModifierController::class, 'fetchCategoryProduct'])->name('modifier.categoryProduct.fetch');
+        Route::post('/update-status', [ModifierController::class, 'updateGroupStatus'])->name('modifier.group.updateStatus');
         // Route::get('/{modifier_group}/edit', [ModifierController::class, 'edit'])->name('modifier_group.edit');
         // Route::put('/{modifier_group}', [ModifierController::class, 'update'])->name('modifier_group.update');
-        // Route::delete('/{modifier_group}', [ModifierController::class, 'destroy'])->name('modifier_group.destroy');
+        // Route::post('/{id}', [ModifierController::class, 'destroy'])->name('modifier.group.destroy');
     });
 
     /**

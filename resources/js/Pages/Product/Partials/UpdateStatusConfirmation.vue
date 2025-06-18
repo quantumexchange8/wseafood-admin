@@ -19,7 +19,12 @@ const updateItem = ref(null);
 
 const changeStatus = (item) => {
     updateItem.value = item;    
-    const itemName = JSON.parse(item.name)[locale.value] ?? JSON.parse(item.name)['en'];
+    let itemName = '';
+    if(props.item === 'modifier_group') {
+        itemName = item.group_name;
+    } else {
+        itemName = JSON.parse(item.name)[locale.value] ?? JSON.parse(item.name)['en'];
+    }
 
     if(item.status === 'active') {
         message.value = trans('public.change_status_message_hide')+ itemName;
@@ -46,6 +51,9 @@ const changeStatus = (item) => {
             }
             else if(props.item === 'category') {
                 path.value = 'category.updateStatus';
+            }
+            else if(props.item === 'modifier_group') {
+                path.value = 'modifier.group.updateStatus';
             }
 
             router.post(route(path.value, item), {}, {

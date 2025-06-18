@@ -3,9 +3,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Button } from 'primevue';
 import { IconPlus, IconUpload } from '@tabler/icons-vue';
 import { generalFormat } from '@/Composables/format';
+import ModifierGroupTable from '@/Pages/ModifierGroup/Partials/ModifierGroupTable.vue';
 
 const props = defineProps({
-    modifier:Object,
+    modifierGroup:Object,
 });
 
 const { formatDateTime } = generalFormat();
@@ -20,7 +21,7 @@ const { formatDateTime } = generalFormat();
                         {{ $t('public.modifier_group_list') }}
                     </div>
                     <div class="self-stretch text-sm">
-                        {{ $t('public.last_update_on') }}: {{ modifier?formatDateTime(product.updated_at):'' }}
+                        {{ $t('public.last_update_on') }}: {{ modifierGroup?formatDateTime(modifierGroup.updated_at):'' }}
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -35,7 +36,7 @@ const { formatDateTime } = generalFormat();
                     </Button>
                 </div>
             </div>
-
+            <ModifierGroupTable />
         </div>
     </AuthenticatedLayout>
 </template>

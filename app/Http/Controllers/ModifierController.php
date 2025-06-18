@@ -16,7 +16,11 @@ class ModifierController extends Controller
 {
     public function index()
     {
-        return Inertia::render('ModifierGroup/ModifierGroupList');
+        $modifierGroup = ModifierGroup::select('updated_at')->orderByDesc('updated_at')->first();
+
+        return Inertia::render('ModifierGroup/ModifierGroupList', [
+            'modifierGroup' => $modifierGroup,
+        ]);
     }
 
     public function create()
@@ -96,6 +100,78 @@ class ModifierController extends Controller
         ]);
     }
 
+    public function fetchModifierGroup(Request $request)
+    {
+        if ($request->has('lazyEvent')) {
+            $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
+
+            $query = ModifierGroup::query();
+
+            if ($data['filters']['global']['value']) {
+                $keyword = $data['filters']['global']['value'];
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('group_name', 'like', '%' . $keyword . '%')->orWhere('display_name', 'like', '%' . $keyword . '%');
+                });
+            }
+
+            // status
+            if ($data['filters']['status']['value']) {
+                $query->where('status', $data['filters']['status']['value']);
+            }
+
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->orderByDesc('created_at');
+            }
+
+            $fetchedGroup = $query->paginate($data['rows']);
+
+            $fetchedGroup->getCollection()->transform(function ($group) {
+                $group->product_count = $group->hasProductIds()->count();
+                $group->item_count = $group->hasModifierItemIds()->count();
+                $group->items = $group->hasModifierItemIds()->orderBy('position')->get()->map(function ($item) {
+                    return [
+                        'modifier_item_id' => $item->modifier_item_id,
+                        'modifier_item_name' => $item->modifierItem()->first()->name,
+                    ];
+                });
+                return $group;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $fetchedGroup,
+            ]);
+        }
+    }
+
+    public function updateGroupStatus(Request $request)
+    {
+        $group = ModifierGroup::find($request->id);
+
+        if($request->status === 'active') {
+            $group->status = 'inactive';
+        } else {
+            $group->status = 'active';
+        }
+        $group->save();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.status_updated'),
+            'message' => trans('public.status_updated_caption'). $request->group_name,
+            'type' => 'success'
+        ]);
+    }
+
+    // public function destroy(Request $request)
+    // {
+    //     dd($request->all());
+    //     $group = ModifierGroup::find($request->id);
+    // }
+
     public function storeItem(Request $request)
     {
         $rules = [
@@ -114,7 +190,7 @@ class ModifierController extends Controller
         $validator->validate();
 
         $item = ModifierItem::create([
-            'modifier_name' => json_encode($request->modifier_name),
+            'name' => json_encode($request->modifier_name),
             'slug' => Str::slug($request->modifier_name['en']),
         ]);
 
@@ -136,7 +212,7 @@ class ModifierController extends Controller
                 $keyword = $data['filters']['global']['value'];
 
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('modifier_name', 'like', '%' . $keyword . '%');
+                    $q->where('name', 'like', '%' . $keyword . '%');
                 });
             }
 

@@ -10,7 +10,7 @@ class ModifierItem extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'modifier_name',
+        'name',
         'slug'
     ];
 
