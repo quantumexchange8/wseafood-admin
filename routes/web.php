@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ModifierController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\HighlightController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -101,6 +102,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/fetch-member', [MemberController::class, 'fetchMember'])->name('member.fetch');
         Route::post('/adjust-point', [MemberController::class, 'adjustPoint'])->name('member.adjustPoint');
         Route::post('/delete', [MemberController::class, 'destroy'])->name('member.destroy');
+    });
+
+    /**
+     * ==============================
+     *         Highlight
+     * ==============================
+     */
+    Route::prefix('highlight')->group(function () {
+        Route::get('/', [HighlightController::class, 'index'])->name('highlight.index');
+        Route::get('/create', [HighlightController::class, 'create'])->name('highlight.create');
+        Route::post('/create', [HighlightController::class, 'store'])->name('highlight.store');
+        Route::get('/fetch-highlight', [HighlightController::class, 'fetchHighlight'])->name('highlight.fetch');
+        Route::post('/reorder', [HighlightController::class, 'reorder'])->name('highlight.reorder');
+        Route::post('/update-status', [HighlightController::class, 'updateStatus'])->name('highlight.updateStatus');
+        Route::post('/update-popup', [HighlightController::class, 'updatePopup'])->name('highlight.updatePopup');
+        Route::post('/delete', [HighlightController::class, 'destroy'])->name('highlight.destroy');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

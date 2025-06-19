@@ -64,8 +64,40 @@ const deleteItem = (itemId, itemName, path) => {
     });
 };
 
+const changePopup = (itemId, itemName, itemStatus, path) => {
+    if(itemStatus === 1) {
+        message.value = trans('public.change_popup_message_hide')+ itemName;
+    } else {
+        message.value = trans('public.change_popup_message_show')+ itemName;
+    }
+
+    confirm.require({
+        header: trans('public.change_popup_header'),
+        message: message.value,
+        rejectProps: {
+            label: trans('public.cancel'),
+            outlined: true,
+            size: 'small'
+        },
+        acceptProps: {
+            label: trans('public.save'),
+            size: 'small'
+        },
+        accept: () => {
+            router.post(route(path), {
+                'id': itemId,
+                'name': itemName,
+                'popup': itemStatus,
+            }, {
+                preserveScroll: true,
+                onSuccess: () => {}
+            });
+        },
+    });
+};
+
 defineExpose({
-    deleteItem, changeStatus,
+    deleteItem, changeStatus, changePopup
 });
 </script>
 

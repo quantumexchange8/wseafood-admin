@@ -9,6 +9,7 @@ import {
     IconHierarchy,
     IconBowlChopsticks,
     IconUsers,
+    IconSpeakerphone,
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
 
@@ -114,5 +115,25 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 <IconUsers :size="20" stroke-width="1.5" />
             </template>
         </SidebarLink>
+
+        <SidebarCollapsible
+            :title="$t('public.highlight')"
+            :active="route().current('highlight.*')"
+        >
+            <template #icon>
+                <IconSpeakerphone size="20" stroke-width="1.5" />
+            </template>
+            <SidebarCollapsibleItem
+                :title="$t('public.highlight_list')"
+                :href="route('highlight.index')"
+                :active="route().current('highlight.index')"
+            />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.create_highlight')"
+                :href="route('highlight.create')"
+                :active="route().current('highlight.create')"
+            />
+        </SidebarCollapsible>
     </nav>
 </template>

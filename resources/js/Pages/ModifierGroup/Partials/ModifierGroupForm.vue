@@ -458,7 +458,7 @@ watch((addedItem), () => {
                                 </div>
                             </template>
                         </Column>
-                        <Column rowReorder headerStyle="width: 3rem" :reorderableColumn="false" />
+                        <Column rowReorder class="w-12" :reorderableColumn="false" />
                     </template>
                 </DataTable>
                 <div 
