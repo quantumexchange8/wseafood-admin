@@ -136,11 +136,9 @@ class ProductController extends Controller
         }
         $product->save();
 
-        $locale = app()->getLocale();
-
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
-            'message' => trans('public.status_updated_caption'). json_decode($request->name)->$locale,
+            'message' => trans('public.status_updated_caption'). $request->name,
             'type' => 'success'
         ]);
     }

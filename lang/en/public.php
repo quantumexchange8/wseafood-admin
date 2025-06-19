@@ -148,4 +148,7 @@ return [
     'point_accumulated' => 'Point Accumulated',
     'apply' => 'Apply',
     'joined_date' => 'Joined Date',
+    'number_modifier_item' => 'No. of modifier item',
+    'modifier_group_deleted' => 'Modifier Group deleted successfully',
+    'modifier_group_deleted_caption' => 'The modifier group has been deleted: ',
 ];

@@ -107,6 +107,14 @@ class ModifierController extends Controller
 
             $query = ModifierGroup::query();
 
+            if ($data['filters']['itemRange']['value']) {
+                $range = $data['filters']['itemRange']['value'];
+                if (count($range) === 2) {
+                    $query->withCount(['hasModifierItemIds as item_count']);
+                    $query->havingBetween('item_count', [$range[0], $range[1]]);
+                }
+            }
+
             if ($data['filters']['global']['value']) {
                 $keyword = $data['filters']['global']['value'];
 
@@ -115,9 +123,12 @@ class ModifierController extends Controller
                 });
             }
 
-            // status
             if ($data['filters']['status']['value']) {
                 $query->where('status', $data['filters']['status']['value']);
+            }
+
+            if ($data['filters']['groupType']['value']) {
+                $query->where('group_type', $data['filters']['groupType']['value']);
             }
 
             if ($data['sortField'] && $data['sortOrder']) {
@@ -129,16 +140,16 @@ class ModifierController extends Controller
 
             $fetchedGroup = $query->paginate($data['rows']);
 
-            $fetchedGroup->getCollection()->transform(function ($group) {
-                $group->product_count = $group->hasProductIds()->count();
-                $group->item_count = $group->hasModifierItemIds()->count();
-                $group->items = $group->hasModifierItemIds()->orderBy('position')->get()->map(function ($item) {
-                    return [
-                        'modifier_item_id' => $item->modifier_item_id,
-                        'modifier_item_name' => $item->modifierItem()->first()->name,
-                    ];
-                });
-                return $group;
+            $fetchedGroup->getCollection()->map(function ($group) {
+                    $group->product_count = $group->hasProductIds()->count();
+                    $group->item_count = $group->hasModifierItemIds()->count();
+                    $group->items = $group->hasModifierItemIds()->orderBy('position')->get()->map(function ($item) {
+                        return [
+                            'modifier_item_id' => $item->modifier_item_id,
+                            'modifier_item_name' => $item->modifierItem()->first()->name,
+                        ];
+                    });
+                    return $group;
             });
 
             return response()->json([
@@ -161,16 +172,23 @@ class ModifierController extends Controller
 
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
-            'message' => trans('public.status_updated_caption'). $request->group_name,
+            'message' => trans('public.status_updated_caption'). $request->name,
             'type' => 'success'
         ]);
     }
 
-    // public function destroy(Request $request)
-    // {
-    //     dd($request->all());
-    //     $group = ModifierGroup::find($request->id);
-    // }
+    public function destroyGroup(Request $request)
+    {
+        $group = ModifierGroup::find($request->id);
+        $name = $group->group_name;
+        $group->delete();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.modifier_group_deleted'),
+            'message' => trans('public.modifier_group_deleted_caption'). $name,
+            'type' => 'success'
+        ]);
+    }
 
     public function storeItem(Request $request)
     {

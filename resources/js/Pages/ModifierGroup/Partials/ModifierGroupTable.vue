@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Select, ToggleSwitch, Avatar } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Slider, ToggleSwitch, Avatar } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -7,8 +7,7 @@ import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
-import UpdateStatusConfirmation from '@/Pages/Product/Partials/UpdateStatusConfirmation.vue';
-// import DeleteConfirmation from '@/Components/DeleteConfirmation.vue';
+import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 
 const props = defineProps({
     category: Object,
@@ -21,13 +20,14 @@ const dt = ref(null);
 const fetchedCategory = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const updateStatusConfirm = ref(null);
-const deleteConfirm = ref(null);
+const confirmationModal = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     status: { value: null, matchMode: FilterMatchMode.EQUALS },
     name: { value: null, matchMode: FilterMatchMode.EQUALS },
+    itemRange: { value: null, matchMode: FilterMatchMode.BETWEEN },
+    groupType: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
 const lazyParams = ref({});
@@ -80,6 +80,8 @@ const onFilter = (event) => {
 //filter status
 const status = ref(['active', 'inactive']);
 
+const groupTypes = ref(['required', 'optional']);
+
 //filter toggle
 const op = ref();
 const toggle = (event) => {
@@ -105,13 +107,11 @@ watch(
     }, 300)
 );
 
-watch([filters.value['status']], () => {
-    loadLazyData()
-});
-
 const clearAll = () => {
     filters.value['global'].value = null;
     filters.value['status'].value = null;
+    filters.value['itemRange'].value = null;
+    filters.value['groupType'].value = null;
 };
 
 const clearFilterGlobal = () => {
@@ -125,18 +125,22 @@ watchEffect(() => {
 });
 
 const updateStatus = (group) => {
-    if(updateStatusConfirm.value) {
-        updateStatusConfirm.value.changeStatus(group);
+    if(confirmationModal.value) {
+        confirmationModal.value.changeStatus(group.id,group.group_name,group.status, 'modifier.group.updateStatus');
     } else {
         console.error("Update Status Confirmation is not available");
     }
 };
 
-// const deleteGroup = (group) => {
-//     if(deleteConfirm.value) {
-//         deleteConfirm.value.deleteItem(group.id, group.group_name, 'modifier.group.destroy')
-//     }
-// }
+const deleteGroup = (group) => {
+    if(confirmationModal.value) {
+        confirmationModal.value.deleteItem(group.id, group.group_name, 'modifier.group.destroy')
+    }
+}
+
+const applyFilter = () => {
+    loadLazyData();
+};
 
 </script>
 <template>
@@ -381,43 +385,100 @@ const updateStatus = (group) => {
 
     <Popover ref="op">
         <div class="flex flex-col gap-6 w-60">
-            <!-- Filter status -->
-            <div class="flex flex-col gap-2 items-center self-stretch">
+            <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.filter_by_status') }}
+                    {{ $t('public.number_modifier_item') }}
                 </div>
-                <Select
-                    v-model="filters['status'].value"
-                    :options="status"
-                    :placeholder="$t('public.select_status')"
-                    class="w-full"
-                    showClear
-                >
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center">
-                            {{ $t(`public.${slotProps.value}`) }}
+                <div class="w-full flex flex-col justify-center items-center gap-3">
+                    <Slider
+                        v-model="filters['itemRange'].value"
+                        range
+                        :min="0"
+                        :max="10"
+                        :step="1"
+                        class="w-[90%]"
+                    />
+                    <div class="w-[95%] flex justify-between items-center">
+                        <div class="text-xs">
+                            0
                         </div>
-                        <span v-else>{{ slotProps.placeholder }}</span>
-                    </template>
-
-                    <template #option="slotProps">
-                        <div>
-                            {{ $t(`public.${slotProps.option}`) }}
+                        <div class="text-xs">
+                            10
                         </div>
-                    </template>
-                </Select>
+                    </div>
+                </div>
             </div>
 
-            <Button
-                type="button"
-                outlined
-                class="w-full"
-                @click="clearAll"
-            >
-                {{ $t('public.clear_all') }}
-            </Button>
+            <div class="flex flex-col gap-4 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.group_type') }}
+                </div>
+                <div class="w-full flex justify-start items-start content-start gap-2">
+                    <Button
+                        v-for="data in groupTypes"
+                        type="button"
+                        severity="secondary"
+                        rounded
+                        :class="{'bg-gray-300' : filters['groupType'].value === data},
+                                'bg-white'"
+                        size="small"
+                        @click="filters['groupType'].value = data"
+                    >
+                        <div class="text-xs font-bold">
+                            {{ $t(`public.${data}`) }}
+                        </div>
+                    </Button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.status') }}
+                </div>
+                <div class="w-full flex justify-start items-start content-start gap-2">
+                    <Button
+                        v-for="data in status"
+                        type="button"
+                        severity="secondary"
+                        rounded
+                        :class="{'bg-gray-300' : filters['status'].value === data},
+                                'bg-white'"
+                        size="small"
+                        @click="filters['status'].value = data"
+                    >
+                        <div class="flex items-center gap-2">
+                            <div :class="[
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    'w-2 h-2 rounded-full'
+                                ]"
+                            ></div>
+                            <div class="text-xs font-bold">
+                                {{ $t(`public.${data}`) }}
+                            </div>
+                        </div>
+                    </Button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <Button
+                    type="button"
+                    outlined
+                    class="w-full"
+                    @click="clearAll"
+                >
+                    {{ $t('public.clear_all') }}
+                </Button>
+                <Button
+                    type="button"
+                    class="w-full"
+                    @click="applyFilter"
+                >
+                    {{ $t('public.apply') }}
+                </Button>
+            </div>
         </div>
     </Popover>
 
-    <UpdateStatusConfirmation ref="updateStatusConfirm" item="modifier_group"/>
+    <ConfirmationDialog ref="confirmationModal" />
 </template>

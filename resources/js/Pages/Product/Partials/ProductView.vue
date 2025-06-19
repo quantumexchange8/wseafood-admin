@@ -10,7 +10,7 @@ import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
-import UpdateStatusConfirmation from '@/Pages/Product/Partials/UpdateStatusConfirmation.vue';
+import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 
 const props = defineProps({
     categories: Object,
@@ -110,10 +110,6 @@ watch(
     }, 300)
 );
 
-watch([filters.value['status']], () => {
-    loadLazyData()
-});
-
 const clearAll = () => {
     filters.value['global'].value = null;
     filters.value['status'].value = null;
@@ -122,6 +118,10 @@ const clearAll = () => {
 const clearFilterGlobal = () => {
     filters.value['global'].value = null;
 }
+
+const applyFilter = () => {
+    loadLazyData();
+};
 
 watchEffect(() => {
     if (usePage().props.toast !== null) {
@@ -145,7 +145,8 @@ function selectCategory(index) {
 
 const updateStatus = (product) => {
     if(updateStatusConfirm.value) {
-        updateStatusConfirm.value.changeStatus(product);
+        const product_name = JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'];
+        updateStatusConfirm.value.changeStatus(product.id, product_name, product.status, 'product.updateStatus');
     } else {
         console.error("Update Status Confirmation is not available");
     }
@@ -366,42 +367,54 @@ const updateStatus = (product) => {
     <Popover ref="op">
         <div class="flex flex-col gap-6 w-60">
             <!-- Filter status -->
-            <div class="flex flex-col gap-2 items-center self-stretch">
+            <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.filter_by_status') }}
+                    {{ $t('public.status') }}
                 </div>
-                <Select
-                    v-model="filters['status'].value"
-                    :options="status"
-                    :placeholder="$t('public.select_status')"
-                    class="w-full"
-                    showClear
-                >
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex items-center">
-                            {{ $t(`public.${slotProps.value}`) }}
+                <div class="w-full flex justify-start items-start content-start gap-2">
+                    <Button
+                        v-for="data in status"
+                        type="button"
+                        severity="secondary"
+                        rounded
+                        :class="{'bg-gray-300' : filters['status'].value === data},
+                                'bg-white'"
+                        size="small"
+                        @click="filters['status'].value = data"
+                    >
+                        <div class="flex items-center gap-2">
+                            <div :class="[
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    'w-2 h-2 rounded-full'
+                                ]"
+                            ></div>
+                            <div class="text-xs font-bold">
+                                {{ $t(`public.${data}`) }}
+                            </div>
                         </div>
-                        <span v-else>{{ slotProps.placeholder }}</span>
-                    </template>
-
-                    <template #option="slotProps">
-                        <div>
-                            {{ $t(`public.${slotProps.option}`) }}
-                        </div>
-                    </template>
-                </Select>
+                    </Button>
+                </div>
             </div>
 
-            <Button
-                type="button"
-                outlined
-                class="w-full"
-                @click="clearAll"
-            >
-                {{ $t('public.clear_all') }}
-            </Button>
+            <div class="flex items-center gap-3">
+                <Button
+                    type="button"
+                    outlined
+                    class="w-full"
+                    @click="clearAll"
+                >
+                    {{ $t('public.clear_all') }}
+                </Button>
+                <Button
+                    type="button"
+                    class="w-full"
+                    @click="applyFilter"
+                >
+                    {{ $t('public.apply') }}
+                </Button>
+            </div>
         </div>
     </Popover>
 
-    <UpdateStatusConfirmation ref="updateStatusConfirm" :item="'product'"/>
+    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>

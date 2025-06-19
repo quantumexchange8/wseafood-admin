@@ -148,4 +148,7 @@ return [
     'point_accumulated' => '累计积分',
     'apply' => '应用',
     'joined_date' => '加入日期',
+    'number_modifier_item' => '修改项数量',
+    'modifier_group_deleted' => '修改项分组删除成功',
+    'modifier_group_deleted_caption' => '该修改项分组已被删除: ',
 ];

@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-status', [ModifierController::class, 'updateGroupStatus'])->name('modifier.group.updateStatus');
         // Route::get('/{modifier_group}/edit', [ModifierController::class, 'edit'])->name('modifier_group.edit');
         // Route::put('/{modifier_group}', [ModifierController::class, 'update'])->name('modifier_group.update');
-        // Route::post('/{id}', [ModifierController::class, 'destroy'])->name('modifier.group.destroy');
+        Route::post('/delete', [ModifierController::class, 'destroyGroup'])->name('modifier.group.destroy');
     });
 
     /**

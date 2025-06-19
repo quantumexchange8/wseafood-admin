@@ -7,16 +7,14 @@ import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
-import {useLangObserver} from "@/Composables/localeObserver.js";
 import PointAdjustmentModal from './PointAdjustmentModal.vue';
-import DeleteConfirmation from '@/Components/DeleteConfirmation.vue';
+import DeleteConfirmation from '@/Components/ConfirmationDialog.vue';
 
 const props = defineProps({
     member: Object,
 });
 
 const { formatNameLabel, formatDateTime } = generalFormat();
-const { locale } = useLangObserver();
 
 const isLoading = ref(false);
 const dt = ref(null);
@@ -109,16 +107,6 @@ watch(
         loadLazyData();
     }, 300)
 );
-
-// watch([filters.value['status']], () => {
-//     loadLazyData()
-// });
-
-// watch([filters.value['pointRange']], () => {
-//     setTimeout(() => {
-//         loadLazyData()
-//     }, 2000);
-// });
 
 const applyFilter = () => {
     loadLazyData();
