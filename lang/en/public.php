@@ -186,4 +186,8 @@ return [
     'edit_category_caption' => 'Edit existing category',
     'category_updated' => 'Category updated successfully',
     'category_updated_caption' => 'The category has been updated: ',
+    'edit_highlight' => 'Edit Highlight',
+    'edit_highlight_caption' => 'Edit existing highlight',
+    'highlight_updated' => 'Highlight updated successfully',
+    'highlight_updated_caption' => 'The highlight has been updated: ',
 ];

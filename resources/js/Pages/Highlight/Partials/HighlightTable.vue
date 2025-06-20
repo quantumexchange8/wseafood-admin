@@ -67,6 +67,11 @@ const onPage = (event) => {
     loadLazyData(event);
 };
 const onSort = (event) => {
+    normalState.value = false;
+    if(event.sortOrder === null) {
+        normalState.value = true;
+    }
+    
     lazyParams.value = event;
     loadLazyData(event);
 };
@@ -260,9 +265,9 @@ const deleteHighlight = (highlight) => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.visibility') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
@@ -278,9 +283,9 @@ const deleteHighlight = (highlight) => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.title') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
@@ -297,9 +302,9 @@ const deleteHighlight = (highlight) => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.popup_highlight') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="w-full flex justify-center">
@@ -319,9 +324,9 @@ const deleteHighlight = (highlight) => {
                         class="w-[100px]"
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.action') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-3">
@@ -332,6 +337,7 @@ const deleteHighlight = (highlight) => {
                                     size="small"
                                     class="rounded-full"
                                     icon="IconPencil"
+                                    @click="router.visit(route('highlight.edit', data.id))"
                                 >
                                     <template #icon>
                                         <IconPencil :size="14" stroke-width="1.5"/>

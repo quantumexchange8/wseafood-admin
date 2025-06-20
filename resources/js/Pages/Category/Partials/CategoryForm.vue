@@ -66,9 +66,6 @@ const submitForm = () => {
     })
 };
 
-defineExpose({
-    submitForm
-});
 </script>
 
 <template>

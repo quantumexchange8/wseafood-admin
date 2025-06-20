@@ -163,6 +163,63 @@ class HighlightController extends Controller
         ]);
     }
 
+    public function edit(Request $request)
+    {
+        $highlight = Highlight::find($request->id);
+        $highlight->highlight_photo = $highlight->getFirstMediaUrl('highlight_photo');
+        
+        return Inertia::render('Highlight/EditHighlight', [
+            'highlight' => $highlight,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $rules = [
+            'id' => ['required'],
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required'],
+            'popup' => ['required'],
+            'status' => ['required'],
+            'highlight_photo' => ['required'],
+        ];
+
+        $attributeNames = [
+            'id' => trans('public.id'),
+            'title' => trans('public.title'),
+            'content' => trans('public.content'),
+            'popup' => trans('public.popup_highlight'),
+            'status' => trans('public.visibility'),
+            'highlight_photo' => trans('public.highlight_photo'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
+
+        $highlight = Highlight::find($request->id);
+        if ($request->hasFile('highlight_photo')) {
+            $highlight->clearMediaCollection('highlight_photo');
+            $highlight->addMedia($request->highlight_photo)->toMediaCollection('highlight_photo');
+        }
+
+        if ($request->photo_action == 'remove') {
+            $highlight->clearMediaCollection('highlight_photo');
+        }
+
+        $highlight->update([
+            'title' => $request->title,
+            'content' => $request->content,
+            'status' => $request->status,
+            'can_popup' => $request->popup,
+        ]);
+
+        return redirect()->route('highlight.index')->with('toast', [
+            'title' => trans('public.highlight_updated'),
+            'message' => trans('public.highlight_updated_caption'). $request->title,
+            'type' => 'success'
+        ]);
+    }
+
     public function destroy(Request $request)
     {
         $highlight = Highlight::find($request->id);

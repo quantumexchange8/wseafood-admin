@@ -117,6 +117,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/reorder', [HighlightController::class, 'reorder'])->name('highlight.reorder');
         Route::post('/update-status', [HighlightController::class, 'updateStatus'])->name('highlight.updateStatus');
         Route::post('/update-popup', [HighlightController::class, 'updatePopup'])->name('highlight.updatePopup');
+        Route::get('/edit/{id}', [HighlightController::class, 'edit'])->name('highlight.edit');
+        Route::post('/edit/{id}', [HighlightController::class, 'update'])->name('highlight.update');
         Route::post('/delete', [HighlightController::class, 'destroy'])->name('highlight.destroy');
     });
 

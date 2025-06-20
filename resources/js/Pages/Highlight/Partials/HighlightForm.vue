@@ -1,6 +1,6 @@
 <script setup>
 import { Card, Button, InputText, RadioButton, Avatar } from 'primevue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { IconUpload } from '@tabler/icons-vue';
 import InputError from '@/Components/InputError.vue';
@@ -11,21 +11,21 @@ const props = defineProps({
 });
 
 const form = useForm({
-    title: '',
-    content: '',
-    status: '',
-    highlight_photo: null,
+    id: props.highlight?.id ?? '',
+    title: props.highlight?.title ?? '',
+    content: props.highlight?.content ?? '',
+    status: props.highlight?.status ?? '',
+    highlight_photo: props.highlight?.highlight_photo ?? null,
     photo_action:'',
-    popup: '0',
+    popup: props.highlight?.can_popup ?? 0,
 });
 
-const selectedHighlightPhoto = ref(null) //ref(props.category.category_thumbnail);
+const selectedHighlightPhoto = ref(props.highlight?.highlight_photo ?? null);
 const handleUploadHighlightPhoto = (event) => {
     const highlightPhotoInput = event.target;
     const file = highlightPhotoInput.files[0];
 
     if (file) {
-        // Display the selected image
         const reader = new FileReader();
         reader.onload = () => {
             selectedHighlightPhoto.value = reader.result;
@@ -45,9 +45,16 @@ const removeHighlightPhoto = () => {
 };
 
 const submitForm = () => {
-    form.post(route('highlight.store'), {
+    const path = ref('highlight.store');
+    if(props.highlight) {
+        path.value = 'highlight.update';
+    }
+
+    form.post(route(path.value, props.highlight?.id), {
         onSuccess: () => {
             form.reset();
+            selectedHighlightPhoto.value = null;
+            form.highlight_photo = null;
         },
         onError: () => {
         },
@@ -70,43 +77,55 @@ const submitForm = () => {
                 </div>
             </template>
             <template #content>
-                <div class="py-5 flex flex-col items-start gap-5 self-stretch">
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <label for="name" class="text-sm">
-                                {{ $t('public.title') }}
-                            </label>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
+                <div class="p-5 grid grid-cols-4 items-center gap-5 self-stretch">
+                    <div class="w-full flex items-center gap-1">
+                        <label for="name" class="text-sm">
+                            {{ $t('public.title') }}
+                        </label>
+                        <div class="text-xs text-red-500">
+                            *
                         </div>
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
                         <InputText
                             v-model="form.title"
                             id="name"
-                            class="w-1/3"
+                            class="w-full"
                             :placeholder="$t('public.popup_title_placeholder')"
+                            :invalid="!!form.errors.title"
                         />
                         <InputError :message="form.errors.title" />
                     </div>
+                    <div></div>
 
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <div class="text-sm">
-                                {{ $t('public.visibility') }}
-                            </div>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
+                    <div class="w-1/5 flex items-center gap-1">
+                        <div class="text-sm">
+                            {{ $t('public.visibility') }}
                         </div>
+                        <div class="text-xs text-red-500">
+                            *
+                        </div>
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
                         <div class="flex items-center gap-5">
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.status" inputId="display" value="active" />
+                                <RadioButton 
+                                    v-model="form.status" 
+                                    inputId="display" 
+                                    value="active" 
+                                    :invalid="!!form.errors.status"
+                                />
                                 <label for="display" class="text-sm">
                                     {{ $t('public.display') }}
                                 </label>
                             </div>
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.status" inputId="hidden" value="inactive" />
+                                <RadioButton 
+                                    v-model="form.status" 
+                                    inputId="hidden" 
+                                    value="inactive" 
+                                    :invalid="!!form.errors.status"
+                                />
                                 <label for="hidden" class="text-sm">
                                     {{ $t('public.hidden') }}
                                 </label>
@@ -114,23 +133,34 @@ const submitForm = () => {
                         </div>
                         <InputError :message="form.errors.status" />
                     </div>
+                    <div></div>
 
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <div class="text-sm">
-                                {{ $t('public.popup_highlight') }}
-                            </div>
-                            <IconAlertTooltip :message="$t('public.popup_highlight_tooltip')" />
+                    <div class="w-full flex items-center gap-1">
+                        <div class="text-sm">
+                            {{ $t('public.popup_highlight') }}
                         </div>
+                        <IconAlertTooltip :message="$t('public.popup_highlight_tooltip')" />
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
                         <div class="flex items-center gap-5">
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.popup" inputId="yes" value="1" />
+                                <RadioButton 
+                                    v-model="form.popup" 
+                                    inputId="yes" 
+                                    :value="1" 
+                                    :invalid="!!form.errors.popup"
+                                />
                                 <label for="yes" class="text-sm">
                                     {{ $t('public.yes') }}
                                 </label>
                             </div>
                             <div class="flex items-center gap-3">
-                                <RadioButton v-model="form.popup" inputId="no" value="0" />
+                                <RadioButton 
+                                    v-model="form.popup" 
+                                    inputId="no" 
+                                    :value="0" 
+                                    :invalid="!!form.errors.popup"
+                                />
                                 <label for="no" class="text-sm">
                                     {{ $t('public.no') }}
                                 </label>
@@ -138,6 +168,7 @@ const submitForm = () => {
                         </div>
                         <InputError :message="form.errors.popup" />
                     </div>
+                    <div></div>
                 </div>
             </template>
         </Card>
@@ -233,12 +264,12 @@ const submitForm = () => {
                 outlined
                 :label="$t('public.cancel')"
                 @click="() => $inertia.visit(route('highlight.index'))"
+                :disabled="form.processing"
             />
             <Button
-                type="button"
+                type="submit"
                 severity="primary"
                 :label="$t('public.submit')"
-                @click.prevent="submitForm"
                 :disabled="form.processing"
             />
         </div>

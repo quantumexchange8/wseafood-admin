@@ -186,4 +186,8 @@ return [
     'edit_category_caption' => '编辑现有类别',
     'category_updated' => '类别更新成功',
     'category_updated_caption' => '该类别已更新：',
+    'edit_highlight' => '编辑重点内容',
+    'edit_highlight_caption' => '编辑现有重点内容',
+    'highlight_updated' => '重点内容更新成功',
+    'highlight_updated_caption' => '该重点内容已更新：',
 ];
