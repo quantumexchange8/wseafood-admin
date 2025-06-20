@@ -14,7 +14,7 @@ import { ref } from "vue";
                         {{ $t('public.create_highlight') }}
                     </h1>
                     <div class="self-stretch text-sm">
-                        {{ $t('public.create_category_caption') }}
+                        {{ $t('public.create_highlight_caption') }}
                     </div>
                 </div>
                 <HighlightForm />

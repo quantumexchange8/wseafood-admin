@@ -180,4 +180,10 @@ return [
     'highlight_deleted_caption' => '该重点内容已被删除：',
     'position_updated' => '位置更新成功',
     'position_updated_caption' => '数据的位置已更新。',
+    'category_deleted' => '类别删除成功',
+    'category_deleted_caption' => '该类别已被删除：',
+    'edit_category' => '编辑类别',
+    'edit_category_caption' => '编辑现有类别',
+    'category_updated' => '类别更新成功',
+    'category_updated_caption' => '该类别已更新：',
 ];

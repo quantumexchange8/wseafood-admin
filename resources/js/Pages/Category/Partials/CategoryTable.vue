@@ -1,7 +1,7 @@
 <script setup>
 import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Select, ToggleSwitch, Avatar, SelectButton } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
@@ -136,6 +136,15 @@ const applyFilter = () => {
     loadLazyData();
 };
 
+const deleteCategory = (category) => {
+    if(updateStatusConfirm.value) {
+        const category_name = JSON.parse(category.name)[locale] ?? JSON.parse(category.name)['en'];
+        updateStatusConfirm.value.deleteItem(category.id, category_name, 'category.destroy');
+    } else {
+        console.error("Delete Confirmation is not available");
+    }
+};
+
 </script>
 <template>
     <div class="flex flex-col md:flex-row items-center self-stretch gap-3 w-full md:w-auto">
@@ -241,9 +250,9 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.visibility') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
@@ -259,9 +268,9 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.category_name') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
@@ -273,12 +282,12 @@ const applyFilter = () => {
                                 <Avatar
                                     v-else
                                     :label="formatNameLabel(JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'])"
-                                    class="w-10 h-10"
+                                    class="w-10 h-10 text-sm"
                                     size="large"
                                 />
-                                <span>
+                                <div class="text-sm font-bold">
                                     {{ JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'] }}
-                                </span>
+                                </div>
                             </div>
                         </template>
                     </Column>
@@ -288,14 +297,14 @@ const applyFilter = () => {
                         class="w-[100px] text-nowrap"
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.number_of_product') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
-                            <span>
+                            <div class="text-sm">
                                 {{ data.product_count }}
-                            </span>
+                            </div>
                         </template>
                     </Column>
 
@@ -304,9 +313,9 @@ const applyFilter = () => {
                         class="w-[100px]"
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.action') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-3">
@@ -317,6 +326,7 @@ const applyFilter = () => {
                                     size="small"
                                     class="rounded-full"
                                     icon="IconPencil"
+                                    @click="router.visit(route('category.edit', data.id))"
                                 >
                                     <template #icon>
                                         <IconPencil :size="14" stroke-width="1.5"/>
@@ -329,6 +339,7 @@ const applyFilter = () => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
+                                    @click="deleteCategory(data)"
                                 >
                                     <template #icon>
                                         <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>

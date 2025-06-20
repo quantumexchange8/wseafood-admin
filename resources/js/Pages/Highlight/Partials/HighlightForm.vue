@@ -54,8 +54,6 @@ const submitForm = () => {
     })
 };
 
-const availableLocales = JSON.parse(usePage().props.availableLocales);
-
 </script>
 
 <template>

@@ -44,9 +44,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/create', [CategoryController::class, 'store'])->name('category.store');
         Route::get('/fetch-category', [CategoryController::class, 'fetchCategory'])->name('category.fetch');
         Route::post('/update-status', [CategoryController::class, 'updateStatus'])->name('category.updateStatus');
-        // Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
-        // Route::put('/{category}', [CategoryController::class, 'update'])->name('category.update');
-        // Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
+        Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
+        Route::post('/edit/{id}', [CategoryController::class, 'update'])->name('category.update');
+        Route::post('/delete', [CategoryController::class, 'destroy'])->name('category.destroy');
     });
 
     /**
