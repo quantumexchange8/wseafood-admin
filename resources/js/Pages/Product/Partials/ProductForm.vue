@@ -121,13 +121,12 @@ defineExpose({
                 </div>
             </template>
             <template #content>
-                <div class="py-5 flex flex-col items-start gap-5 self-stretch">
-                    <div
+                <div class="p-5 grid grid-cols-4 items-center gap-5 self-stretch">
+                    <template
                         v-for="lang in availableLocales"
                         :key="lang"
-                        class="px-5 flex items-center gap-5 self-stretch"
                     >
-                        <div class="w-1/5 flex items-center gap-1">
+                        <div class="w-full flex items-center gap-1">
                             <label :for="`item-name-${lang.value}`" class="text-sm">
                                 {{ $t('public.item_name') }} ({{ lang.label }})
                             </label>
@@ -135,24 +134,28 @@ defineExpose({
                                 *
                             </div>
                         </div>
-                        <InputText
-                            v-model="form.name[lang.value]"
-                            :id="`item-name-${lang.value}`"
-                            class="w-1/3"
-                            :placeholder="$t('public.meal_item_name_placeholder')"
-                        />
-                        <InputError :message="form.errors[`name.${lang.value}`]" />
-                    </div>
-
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <label for="category_field" class="text-sm">
-                                {{ $t('public.category') }}
-                            </label>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
+                        <div class="col-span-2 flex flex-col gap-1">
+                            <InputText
+                                v-model="form.name[lang.value]"
+                                :id="`item-name-${lang.value}`"
+                                class="w-full"
+                                :placeholder="$t('public.meal_item_name_placeholder')"
+                                :invalid="!!form.errors[`name.${lang.value}`]"
+                            />
+                            <InputError :message="form.errors[`name.${lang.value}`]" />
                         </div>
+                        <div></div>
+                    </template>
+
+                    <div class="w-full flex items-center gap-1">
+                        <label for="category_field" class="text-sm">
+                            {{ $t('public.category') }}
+                        </label>
+                        <div class="text-xs text-red-500">
+                            *
+                        </div>
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
                         <Select
                             v-model="form.category_id"
                             labelId="category_field"
@@ -160,10 +163,11 @@ defineExpose({
                             optionValue="id"
                             optionLabel="name"
                             :placeholder="$t('public.select_category')"
-                            class="w-1/3"
+                            class="w-full"
                             showClear
                             filter
                             :loading="loadingCategories"
+                            :invalid="!!form.errors.category_id"
                         >
                             <template #value="slotProps">
                                 <div v-if="slotProps.value" class="flex items-center gap-2">
@@ -184,7 +188,6 @@ defineExpose({
                                 </div>
                                 <span v-else>{{ slotProps.placeholder }}</span>
                             </template>
-
                             <template #option="slotProps">
                                 <div class="flex items-center gap-2">
                                     <Avatar
@@ -203,7 +206,6 @@ defineExpose({
                                     </span>
                                 </div>
                             </template>
-
                             <template #footer>
                                 <div class="p-4 flex items-center justify-center">
                                     <Button
@@ -223,17 +225,18 @@ defineExpose({
                         </Select>
                         <InputError :message="form.errors.category_id" />
                     </div>
+                    <div></div>
 
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <label for="price" class="text-sm">
-                                {{ $t('public.sale_price') }}
-                            </label>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
+                    <div class="w-full flex items-center gap-1">
+                        <label for="price" class="text-sm">
+                            {{ $t('public.sale_price') }}
+                        </label>
+                        <div class="text-xs text-red-500">
+                            *
                         </div>
-                        <div class="relative w-1/3">
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
+                        <div class="relative w-full">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-sm">
                             RM
                             </span>
@@ -242,23 +245,25 @@ defineExpose({
                                 placeholder="0.00"
                                 :min="0"
                                 :maxFractionDigits="2"
-                                inputClass="pl-12 w-full"
+                                inputClass="pl-12"
                                 inputId="price"
                                 fluid
+                                :invalid="form.errors.sale_price"
                             />
                         </div>
                         <InputError :message="form.errors.sale_price" />
                     </div>
+                    <div></div>
 
-                    <div class="px-5 flex items-center gap-5 self-stretch">
-                        <div class="w-1/5 flex items-center gap-1">
-                            <div class="text-sm">
-                                {{ $t('public.visibility') }}
-                            </div>
-                            <div class="text-xs text-red-500">
-                                *
-                            </div>
+                    <div class="w-1/5 flex items-center gap-1">
+                        <div class="text-sm">
+                            {{ $t('public.visibility') }}
                         </div>
+                        <div class="text-xs text-red-500">
+                            *
+                        </div>
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
                         <div class="flex items-center gap-5">
                             <div class="flex items-center gap-3">
                                 <RadioButton v-model="form.status" inputId="display" value="active" />
@@ -275,6 +280,7 @@ defineExpose({
                         </div>
                         <InputError :message="form.errors.status" />
                     </div>
+                    <div></div>
                 </div>
             </template>
         </Card>
@@ -371,6 +377,23 @@ defineExpose({
                 </div>
             </template>
         </Card>
+
+        <div class="w-full mt-1 px-5 py-4 flex justify-between items-center border-t border-solid border-primary-200 bg-white shadow-sm dark:bg-surface-900">
+            <Button
+                type="button"
+                severity="secondary"
+                outlined
+                :label="$t('public.cancel')"
+                @click="() => $inertia.visit(route('product.index'))"
+                :disabled="form.processing"
+            />
+            <Button
+                type="submit"
+                severity="primary"
+                :label="$t('public.submit')"
+                :disabled="form.processing"
+            />
+        </div>
     </form>
 
     <CreateCategoryModal 

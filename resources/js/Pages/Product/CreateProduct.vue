@@ -1,19 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ProductForm from '@/Pages/Product/Partials/ProductForm.vue';
-import { Button } from 'primevue';
-import { ref } from "vue";
-
-const product_form = ref(null);
-const disableBtn = ref(false);
-
-const submitForm = () => {
-    if(product_form.value) {
-        product_form.value.submitForm();
-    } else {
-        console.error("ProductForm component is not available.");
-    }
-};
 
 </script>
 
@@ -29,26 +16,8 @@ const submitForm = () => {
                         {{ $t('public.create_meal_item_caption') }}
                     </div>
                 </div>
-                <ProductForm ref="product_form" @formSubmitted="disableBtn = $event" />
+                <ProductForm />
             </div>
         </div>
-
-        <div class="mx-4 mt-1.5 px-5 py-4 flex justify-between items-center border-t border-solid border-primary-200 bg-white shadow-sm">
-            <Button
-                type="button"
-                severity="secondary"
-                outlined
-                :label="$t('public.cancel')"
-                @click="() => $inertia.visit(route('product.index'))"
-            />
-            <Button
-                type="button"
-                severity="primary"
-                :label="$t('public.submit')"
-                @click.prevent="submitForm"
-                :disabled="disableBtn"
-            />
-        </div>
-
     </AuthenticatedLayout>
 </template>
