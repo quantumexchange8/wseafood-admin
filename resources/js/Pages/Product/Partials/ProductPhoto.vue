@@ -43,7 +43,7 @@ const textClass = computed(() => {
 </script>
 
 <template>
-    <div class="relative w-full bg-slate-50">
+    <div class="relative w-full bg-slate-50 rounded-lg">
         <div
             :class="[
                 containerClass,

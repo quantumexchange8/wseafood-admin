@@ -247,9 +247,9 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.visibility') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
@@ -266,14 +266,14 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.group_id') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
-                            <span>
+                            <div class="text-sm">
                                 {{ data.id }}
-                            </span>
+                            </div>
                         </template>
                     </Column>
 
@@ -283,9 +283,9 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.group_name_and_item') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex flex-col items-start gap-1">
@@ -307,9 +307,9 @@ const applyFilter = () => {
                         sortable
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.type') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex flex-col justify-center items-start self-stretch">
@@ -328,14 +328,14 @@ const applyFilter = () => {
                         class="w-[100px] text-nowrap"
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.linked_item') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
-                            <span>
+                            <div class="text-sm">
                                 {{ data.product_count }}
-                            </span>
+                            </div>
                         </template>
                     </Column>
 
@@ -344,9 +344,9 @@ const applyFilter = () => {
                         class="w-[100px]"
                     >
                         <template #header>
-                            <span class="block text-nowrap">
+                            <div class="text-xs font-bold text-nowrap">
                                 {{ $t('public.action') }}
-                            </span>
+                            </div>
                         </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -16,6 +17,37 @@ export default {
             fontFamily: {
                 sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
             },
+            typography: ({ theme }) => ({
+                DEFAULT: {
+                    css: {
+                        '--tw-prose-counters': theme('colors.gray[500]'),
+                        h1: {
+                            fontSize: '24px',
+                            lineHeight: '32px',
+                            margin: '0 auto',
+                        },
+                        h2: {
+                            fontSize: '20px',
+                            lineHeight: '28px',
+                            margin: '0 auto',
+                        },
+                        p: {
+                            fontSize: '14px',
+                            lineHeight: '20px',
+                            margin: '0 auto',
+                        },
+                        'li > p': {
+                            marginTop: '0',
+                            marginBottom: '0',
+                        },
+                        li: {
+                            marginTop: '0',
+                            marginBottom: '0',
+                        },
+                        maxWidth: '100ch',
+                    },
+                },
+            }),
             boxShadow: {
                 'input': '0 1px 2px 0px rgba(9, 9, 11, 0.05)',
                 'dialog': '0 -1px 16.9px 0px rgba(0, 0, 0, 0.05)',
@@ -37,5 +69,5 @@ export default {
         },
     },
 
-    plugins: [forms, require('tailwindcss-primeui')],
+    plugins: [forms, require('tailwindcss-primeui'), typography],
 };

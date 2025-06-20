@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import { IconUpload } from '@tabler/icons-vue';
 import InputError from '@/Components/InputError.vue';
 import IconAlertTooltip from '@/Components/IconAlertTooltip.vue';
+import TipTapEditor from '@/Components/TipTapEditor.vue';
 
 const props = defineProps({
     highlight: Object,
@@ -185,7 +186,11 @@ const submitForm = () => {
                 </div>
             </template>
             <template #content>
-                <!-- tip tap editor -->
+                <TipTapEditor 
+                    v-model="form.content" 
+                    :invalid="form.errors?.content"
+                />
+                <InputError :message="form.errors.content" />
             </template>
         </Card>
 

@@ -29,7 +29,7 @@ class HighlightController extends Controller
     {
         $rules = [
             'title' => ['required', 'string', 'max:255'],
-            // 'content' => ['required'],
+            'content' => ['required'],
             'popup' => ['required'],
             'status' => ['required'],
             'highlight_photo' => ['required'],
@@ -37,7 +37,7 @@ class HighlightController extends Controller
 
         $attributeNames = [
             'title' => trans('public.title'),
-            // 'content' => trans('public.content'),
+            'content' => trans('public.content'),
             'popup' => trans('public.popup_highlight'),
             'status' => trans('public.visibility'),
             'highlight_photo' => trans('public.highlight_photo'),
