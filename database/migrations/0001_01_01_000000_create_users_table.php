@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('dial_code');
             $table->string('phone');
+            $table->string('phone_number')->unique();
             $table->string('dob');
             $table->string('gender')->nullable();
             $table->integer('point')->default(0);
