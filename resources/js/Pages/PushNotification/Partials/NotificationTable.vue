@@ -1,33 +1,32 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Slider, ToggleSwitch, Avatar } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch, Avatar, SelectButton } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconBellRinging } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
-import {useLangObserver} from "@/Composables/localeObserver.js";
 import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import { useLangObserver } from '@/Composables/localeObserver';
 
 const props = defineProps({
-    category: Object,
+    notification: Object,
+    notificationCount: Number,
 });
 
 const { locale } = useLangObserver();
 
 const isLoading = ref(false);
 const dt = ref(null);
-const fetchedCategory = ref([]);
+const fetchedNotification = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const confirmationModal = ref(null);
+const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     status: { value: null, matchMode: FilterMatchMode.EQUALS },
     name: { value: null, matchMode: FilterMatchMode.EQUALS },
-    itemRange: { value: null, matchMode: FilterMatchMode.BETWEEN },
-    groupType: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
 const lazyParams = ref({});
@@ -47,18 +46,18 @@ const loadLazyData = (event) => {
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
 
-            const url = route('modifier.group.fetch', params);
+            const url = route('notification.fetch', params);
             const response = await fetch(url);
             const results = await response.json();
 
-            fetchedCategory.value = results?.data?.data;
+            fetchedNotification.value = results?.data?.data;
 
             totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
-        fetchedCategory.value = [];
+        fetchedNotification.value = [];
         totalRecords.value = 0;
         isLoading.value = false;
     }
@@ -80,8 +79,6 @@ const onFilter = (event) => {
 //filter status
 const status = ref(['active', 'inactive']);
 
-const groupTypes = ref(['required', 'optional']);
-
 //filter toggle
 const op = ref();
 const toggle = (event) => {
@@ -97,7 +94,9 @@ onMounted(() => {
         filters: filters.value
     };
 
-    loadLazyData();
+    if(props.notificationCount !== 0) {
+        loadLazyData();
+    }
 })
 
 watch(
@@ -110,8 +109,6 @@ watch(
 const clearAll = () => {
     filters.value['global'].value = null;
     filters.value['status'].value = null;
-    filters.value['itemRange'].value = null;
-    filters.value['groupType'].value = null;
 };
 
 const clearFilterGlobal = () => {
@@ -124,23 +121,27 @@ watchEffect(() => {
     }
 });
 
-const updateStatus = (group) => {
-    if(confirmationModal.value) {
-        confirmationModal.value.changeStatus(group.id,group.group_name,group.status, 'modifier.group.updateStatus');
+const updateStatus = (notification) => {
+    if(updateStatusConfirm.value) {
+        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
+        updateStatusConfirm.value.changeStatus(notification.id, notification_title, notification.status, 'notification.updateStatus');
     } else {
         console.error("Update Status Confirmation is not available");
     }
 };
 
-const deleteGroup = (group) => {
-    if(confirmationModal.value) {
-        confirmationModal.value.deleteItem(group.id, group.group_name, 'modifier.group.destroy')
-    }
-}
-
 const applyFilter = () => {
     loadLazyData();
 };
+
+const deleteNotification = (notification) => {
+    if(updateStatusConfirm.value) {
+        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
+        updateStatusConfirm.value.deleteItem(notification.id, notification_title, 'notification.destroy');
+    } else {
+        console.error("Update Status Confirmation is not available");
+    }
+}
 
 </script>
 <template>
@@ -182,26 +183,17 @@ const applyFilter = () => {
             <div class="p-4 flex justify-between items-center gap-2 self-stretch">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold">
-                        {{ $t('public.list_of_modifier_group') }}
+                        {{ $t('public.list_of_push_notification') }}
                     </div>
                     <Tag rounded>
-                        <span>{{ totalRecords }} {{ $t('public.modifier_group') }}</span>
+                        <span>{{ totalRecords }} {{ $t('public.push_notification') }}</span>
                     </Tag>
                 </div>
-                <Button
-                    type="button"
-                    severity="secondary"
-                    outlined
-                    size="small"
-                >
-                    <IconUpload :size="16" stroke-width="1.5"/>
-                    {{ $t('public.export') }}
-                </Button>
             </div>
         </template>
         <template #content>
             <DataTable
-                :value="fetchedCategory"
+                :value="fetchedNotification"
                 lazy
                 paginator
                 removableSort
@@ -221,7 +213,7 @@ const applyFilter = () => {
                 :globalFilterFields="['name', 'status']"
             >
                 <template #empty>
-                    <div v-if="fetchedCategory.length === 0">
+                    <div v-if="fetchedNotification.length === 0 || notificationCount === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -240,7 +232,7 @@ const applyFilter = () => {
                     </div>
                 </template>
 
-                <template v-if="fetchedCategory?.length > 0">
+                <template v-if="fetchedNotification?.length > 0">
                     <Column
                         field="status"
                         class="w-[100px]"
@@ -264,80 +256,19 @@ const applyFilter = () => {
                     </Column>
 
                     <Column
-                        field="id"
-                        class="w-[100px] text-nowrap"
+                        field="title"
                         sortable
                     >
                         <template #header>
                             <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.group_id') }}
+                                {{ $t('public.title') }}
                             </div>
                         </template>
                         <template #body="{ data }">
-                            <div class="text-sm">
-                                {{ data.id }}
-                            </div>
-                        </template>
-                    </Column>
-
-                    <Column
-                        field="group_name"
-                        class="w-full"
-                        sortable
-                    >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.group_name_and_item') }}
-                            </div>
-                        </template>
-                        <template #body="{ data }">
-                            <div class="flex flex-col items-start gap-1">
+                            <div class="flex items-center gap-2">
                                 <div class="text-sm font-bold">
-                                    {{ data.group_name }} ({{ data.item_count }})
+                                    {{ JSON.parse(data.title)[locale] ?? JSON.parse(data.title)['en'] }}
                                 </div>
-                                <div class="text-sm">
-                                    <template v-for="(item, index) in data.items">
-                                        {{ JSON.parse(item.modifier_item_name)[locale] ?? JSON.parse(item.modifier_item_name)['en'] }}{{ index+1 === data.items.length ? '' : ', ' }}
-                                    </template>
-                                </div>
-                            </div>
-                        </template>
-                    </Column>
-
-                    <Column
-                        field="group_type"
-                        class="text-nowrap w-[140px]"
-                        sortable
-                    >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.type') }}
-                            </div>
-                        </template>
-                        <template #body="{ data }">
-                            <div class="flex flex-col justify-center items-start self-stretch">
-                                <div class="text-sm font-bold">
-                                    {{ $t(`public.${data.group_type}`) }}
-                                </div>
-                                <div class="text-sm">
-                                    min. {{ data.min_selection }} - max. {{ data.max_selection??'∞' }}
-                                </div>
-                            </div>
-                        </template>
-                    </Column>
-
-                    <Column
-                        field="number_product"
-                        class="w-[100px] text-nowrap"
-                    >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.linked_item') }}
-                            </div>
-                        </template>
-                        <template #body="{ data }">
-                            <div class="text-sm">
-                                {{ data.product_count }}
                             </div>
                         </template>
                     </Column>
@@ -359,7 +290,20 @@ const applyFilter = () => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
-                                    icon="IconPencil"
+                                    >
+                                    <!-- @click="router.visit(route('notification.edit', data.id))" -->
+                                    <template #icon>
+                                        <IconBellRinging :size="14" stroke-width="1.5"/>
+                                    </template>
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    severity="secondary"
+                                    outlined
+                                    size="small"
+                                    class="rounded-full"
+                                    @click="router.visit(route('notification.edit', data.id))"
                                 >
                                     <template #icon>
                                         <IconPencil :size="14" stroke-width="1.5"/>
@@ -372,7 +316,7 @@ const applyFilter = () => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
-                                    @click="deleteGroup(data)"
+                                    @click="deleteNotification(data)"
                                 >
                                     <template #icon>
                                         <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
@@ -390,53 +334,7 @@ const applyFilter = () => {
         <div class="flex flex-col gap-6 w-60">
             <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.number_modifier_item') }}
-                </div>
-                <div class="w-full flex flex-col justify-center items-center gap-3">
-                    <Slider
-                        v-model="filters['itemRange'].value"
-                        range
-                        :min="0"
-                        :max="10"
-                        :step="1"
-                        class="w-[90%]"
-                    />
-                    <div class="w-[95%] flex justify-between items-center">
-                        <div class="text-xs">
-                            0
-                        </div>
-                        <div class="text-xs">
-                            10
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-4 items-center self-stretch">
-                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.group_type') }}
-                </div>
-                <div class="w-full flex justify-start items-start content-start gap-2">
-                    <Button
-                        v-for="data in groupTypes"
-                        type="button"
-                        severity="secondary"
-                        rounded
-                        :class="{'bg-gray-300' : filters['groupType'].value === data},
-                                'bg-white'"
-                        size="small"
-                        @click="filters['groupType'].value = data"
-                    >
-                        <div class="text-xs font-bold">
-                            {{ $t(`public.${data}`) }}
-                        </div>
-                    </Button>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-4 items-center self-stretch">
-                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.status') }}
+                    {{ $t('public.visibility') }}
                 </div>
                 <div class="w-full flex justify-start items-start content-start gap-2">
                     <Button
@@ -483,5 +381,5 @@ const applyFilter = () => {
         </div>
     </Popover>
 
-    <ConfirmationDialog ref="confirmationModal" />
+    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>

@@ -6,6 +6,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ModifierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HighlightController;
+use App\Http\Controllers\PushNotificationController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -120,6 +121,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [HighlightController::class, 'edit'])->name('highlight.edit');
         Route::post('/edit/{id}', [HighlightController::class, 'update'])->name('highlight.update');
         Route::post('/delete', [HighlightController::class, 'destroy'])->name('highlight.destroy');
+    });
+
+    /**
+     * ==============================
+     *         Notification
+     * ==============================
+     */
+    Route::prefix('push-notification')->group(function () {
+        Route::get('/', [PushNotificationController::class, 'index'])->name('notification.index');
+        Route::get('/create', [PushNotificationController::class, 'create'])->name('notification.create');
+        Route::post('/create', [PushNotificationController::class, 'store'])->name('notification.store');
+        Route::get('/fetch-notification', [PushNotificationController::class, 'fetchNotification'])->name('notification.fetch');
+        Route::post('/update-status', [PushNotificationController::class, 'updateStatus'])->name('notification.updateStatus');
+        Route::get('/edit/{id}', [PushNotificationController::class, 'edit'])->name('notification.edit');
+        Route::post('/edit/{id}', [PushNotificationController::class, 'update'])->name('notification.update');
+        Route::post('/delete', [PushNotificationController::class, 'destroy'])->name('notification.destroy');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

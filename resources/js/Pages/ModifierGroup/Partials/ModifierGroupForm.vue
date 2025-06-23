@@ -366,6 +366,7 @@ watch((addedItem), () => {
                                         :model-value="data.status"
                                         true-value="active"
                                         false-value="inactive"
+                                        class="flex items-center"
                                         @change="updateItemStatus(data.id)"
                                     />
                                 </div>

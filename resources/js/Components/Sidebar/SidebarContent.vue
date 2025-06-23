@@ -10,6 +10,7 @@ import {
     IconBowlChopsticks,
     IconUsers,
     IconSpeakerphone,
+    IconBellPlus,
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
 
@@ -133,6 +134,26 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 :title="$t('public.create_highlight')"
                 :href="route('highlight.create')"
                 :active="route().current('highlight.create')"
+            />
+        </SidebarCollapsible>
+
+        <SidebarCollapsible
+            :title="$t('public.push_notification')"
+            :active="route().current('notification.*')"
+        >
+            <template #icon>
+                <IconBellPlus size="20" stroke-width="1.5" />
+            </template>
+            <SidebarCollapsibleItem
+                :title="$t('public.push_notification_list')"
+                :href="route('notification.index')"
+                :active="route().current('notification.index')"
+            />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.create_notification')"
+                :href="route('notification.create')"
+                :active="route().current('notification.create')"
             />
         </SidebarCollapsible>
     </nav>

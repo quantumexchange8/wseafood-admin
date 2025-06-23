@@ -256,7 +256,10 @@ const deleteCategory = (category) => {
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
-                                :model-value="data.status === 'active' ? true : false"
+                                :model-value="data.status"
+                                true-value="active"
+                                false-value="inactive"
+                                class="flex items-center"
                                 @click="updateStatus(data)"
                                 readonly
                             />

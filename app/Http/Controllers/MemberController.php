@@ -33,7 +33,7 @@ class MemberController extends Controller
                 $keyword = $data['filters']['global']['value'];
 
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('full_name', 'like', '%' . $keyword . '%');
+                    $q->where('full_name', 'like', '%' . $keyword . '%')->orWhere('phone', 'like', '%' . $keyword . '%');
                 });
             }
 

@@ -307,7 +307,10 @@ const updateStatus = (product) => {
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
                                 <ToggleSwitch
-                                    :model-value="product.status === 'active' ? true : false"
+                                    :model-value="product.status"
+                                    true-value="active"
+                                    false-value="inactive"
+                                    class="flex items-center"
                                     @click="updateStatus(product)"
                                     readonly
                                 />
@@ -353,7 +356,10 @@ const updateStatus = (product) => {
                                 </div>
                             </div>
                             <ToggleSwitch
-                                :model-value="product.status === 'active' ? true : false"
+                                :model-value="product.status"
+                                true-value="active"
+                                false-value="inactive"
+                                class="flex items-center"
                                 @click="updateStatus(product)"
                                 readonly
                             />

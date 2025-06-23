@@ -271,7 +271,10 @@ const deleteHighlight = (highlight) => {
                         </template>
                         <template #body="{ data }">
                             <ToggleSwitch
-                                :model-value="data.status === 'active' ? true : false"
+                                :model-value="data.status"
+                                true-value="active"
+                                false-value="inactive"
+                                class="flex items-center"
                                 @click="updateStatus(data)"
                                 readonly
                             />
@@ -312,6 +315,7 @@ const deleteHighlight = (highlight) => {
                                     :model-value="data.can_popup"
                                     :true-value="1"
                                     :false-value="0"
+                                    class="flex items-center"
                                     @click="updatePopup(data)"
                                     readonly
                                 />
