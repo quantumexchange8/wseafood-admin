@@ -49,7 +49,7 @@ class HighlightController extends Controller
         $hightlightClass = new Highlight();
         $hightlight = Highlight::create([
             'title' => $request->title,
-            'content' => 'no content',
+            'content' => $request->content,
             'status' => $request->status,
             'position' => $hightlightClass->getPosition(),
             'can_popup' => $request->popup,

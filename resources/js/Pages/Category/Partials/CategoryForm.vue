@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
 import InputError from '@/Components/InputError.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
+import TipTapEditor from '@/Components/TipTapEditor.vue';
 
 const props = defineProps({
     category: Object,
@@ -22,6 +23,7 @@ const form = useForm({
     status: props.category?.status ?? '',
     category_thumbnail: props.category?.category_thumbnail ?? null,
     photo_action:'',
+    description: props.category?.description ?? '',
 });
 
 const selectedCategoryPhoto = ref(props.category?.category_thumbnail ?? null);
@@ -212,6 +214,26 @@ const submitForm = () => {
                         <InputError :message="form.errors.category_thumbnail" />
                     </div>
                 </div>
+            </template>
+        </Card>
+
+        <Card class="w-full">
+            <template #title>
+                <div class="px-5 py-3 flex justify-between items-center self-stretch">
+                    <div class="text-lg font-bold">
+                        {{ $t('public.description') }}
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        {{ $t('public.description_caption') }}
+                    </div>
+                </div>
+            </template>
+            <template #content>
+                <TipTapEditor 
+                    v-model="form.description" 
+                    :invalid="form.errors.description"
+                />
+                <InputError :message="form.errors.description" />
             </template>
         </Card>
 

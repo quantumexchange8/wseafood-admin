@@ -8,6 +8,7 @@ import { IconPlus, IconUpload } from '@tabler/icons-vue';
 import CreateCategoryModal from '@/Pages/Product/Partials/CreateCategoryModal.vue';
 import InputError from '@/Components/InputError.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
+import TipTapEditor from '@/Components/TipTapEditor.vue';
 
 const props = defineProps({
     product: Object,
@@ -27,6 +28,7 @@ const form = useForm({
     photo_action:'',
     sale_price: '',
     category_id: '',
+    description: '',
 });
 
 const getCategories = async () => {
@@ -59,7 +61,7 @@ watchEffect(() => {
 
 const { formatNameLabel } = generalFormat();
 
-const selectedProductPhoto = ref(null) //ref(props.category.category_thumbnail);
+const selectedProductPhoto = ref(null);
 const handleUploadProductPhoto = (event) => {
     const productPhotoInput = event.target;
     const file = productPhotoInput.files[0];
@@ -375,6 +377,26 @@ defineExpose({
                     </div>
                     <InputError :message="form.errors.product_photo" />
                 </div>
+            </template>
+        </Card>
+
+        <Card class="w-full">
+            <template #title>
+                <div class="px-5 py-3 flex justify-between items-center self-stretch">
+                    <div class="text-lg font-bold">
+                        {{ $t('public.description') }}
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        {{ $t('public.description_caption') }}
+                    </div>
+                </div>
+            </template>
+            <template #content>
+                <TipTapEditor 
+                    v-model="form.description" 
+                    :invalid="form.errors.description"
+                />
+                <InputError :message="form.errors.description" />
             </template>
         </Card>
 

@@ -42,6 +42,7 @@ class CategoryController extends Controller
             'prefix' => trans('public.category_prefix'),
             'name.*' => trans('public.category_name'),
             'status' => trans('public.visibility'),
+            'description' => trans('public.description'),
         ];
 
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
@@ -169,6 +170,7 @@ class CategoryController extends Controller
             'prefix' => trans('public.category_prefix'),
             'name.*' => trans('public.category_name'),
             'status' => trans('public.visibility'),
+            'description' => trans('public.description'),
         ];
 
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);

@@ -190,4 +190,9 @@ return [
     'edit_highlight_caption' => '编辑现有重点内容',
     'highlight_updated' => '重点内容更新成功',
     'highlight_updated_caption' => '该重点内容已更新：',
+    'push_notification' => '推送通知',
+    'push_notification_list' => '推送通知列表',
+    'create_notification' => '创建通知',
+    'description' => '描述',
+    'description_caption' => '仅供内部使用',
 ];

@@ -20,12 +20,31 @@ import {
     IconH1,
     IconH2,
 } from "@tabler/icons-vue";
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 const props = defineProps({
     modelValue: String,
-    invalid: Boolean,
+    invalid: String,
 })
+
+const editorClass = computed(() =>
+    [
+        'rounded dark:bg-surface-950 border hover:border-surface-400 dark:hover:border-surface-600 focus:border-primary focus:outline-none focus:ring-0 focus:border-primary-500 dark:focus:border-primary-300 py-2.5 px-3 h-80 overflow-y-auto dark:text-white prose dark:prose-invert min-w-full text-sm',
+        props.invalid ? 'border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400' : 'border-surface-300 dark:border-surface-700'
+    ].join(' ')
+);
+
+watch(() => props.invalid, (val) => {
+    if (editor.value) {
+        editor.value.setOptions({
+            editorProps: {
+                attributes: {
+                    class: editorClass.value,
+                },
+            },
+        });
+    }
+});
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -36,7 +55,7 @@ const editor = useEditor({
     },
     editorProps: {
         attributes: {
-            class: 'rounded dark:bg-surface-950 border border-surface-300 dark:border-surface-700 hover:border-surface-400 dark:hover:border-surface-600 focus:border-primary focus:outline-none focus:ring-0 focus:border-primary-500 dark:focus:border-primary-300 py-2.5 px-3 h-80 overflow-y-auto dark:text-white prose dark:prose-invert min-w-full text-sm',
+            class: editorClass.value,
         },
     },
     extensions: [

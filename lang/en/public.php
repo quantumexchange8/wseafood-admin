@@ -190,4 +190,9 @@ return [
     'edit_highlight_caption' => 'Edit existing highlight',
     'highlight_updated' => 'Highlight updated successfully',
     'highlight_updated_caption' => 'The highlight has been updated: ',
+    'push_notification' => 'Push Notification',
+    'push_notification_list' => 'Push Notification List',
+    'create_notification' => 'Create Notification',
+    'description' => 'Description',
+    'description_caption' => 'For internal use only',
 ];

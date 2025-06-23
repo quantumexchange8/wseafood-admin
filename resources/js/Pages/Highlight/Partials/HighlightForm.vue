@@ -188,7 +188,7 @@ const submitForm = () => {
             <template #content>
                 <TipTapEditor 
                     v-model="form.content" 
-                    :invalid="form.errors?.content"
+                    :invalid="form.errors.content"
                 />
                 <InputError :message="form.errors.content" />
             </template>
