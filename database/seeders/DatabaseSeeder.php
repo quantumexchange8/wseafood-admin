@@ -33,5 +33,11 @@ class DatabaseSeeder extends Seeder
             'zip' => '12345',
             'status' => 'active',
         ]);
+
+        $this->call([
+            CountrySeeder::class,
+            StateSeeder::class,
+            CitySeeder::class,
+        ]);
     }
 }
