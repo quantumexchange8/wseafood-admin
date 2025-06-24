@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-status', [CategoryController::class, 'updateStatus'])->name('category.updateStatus');
         Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
         Route::post('/edit/{id}', [CategoryController::class, 'update'])->name('category.update');
-        Route::post('/delete', [CategoryController::class, 'destroy'])->name('category.destroy');
+        Route::delete('/delete', [CategoryController::class, 'destroy'])->name('category.destroy');
     });
 
     /**

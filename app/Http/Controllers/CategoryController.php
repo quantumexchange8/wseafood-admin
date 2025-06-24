@@ -133,9 +133,12 @@ class CategoryController extends Controller
         }
         $category->save();
 
+        $locale = app()->getLocale();
+        $name = json_decode($category->name)->$locale;
+
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
-            'message' => trans('public.status_updated_caption'). $request->name,
+            'message' => trans('public.status_updated_caption'). $name,
             'type' => 'success'
         ]);
     }

@@ -1,14 +1,15 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Select, ToggleSwitch, Avatar, SelectButton } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch, Avatar } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
-import { router, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import CategoryTableAction from '@/Pages/Category/Partials/CategoryTableAction.vue';
+import StatusSwitch from '@/Components/StatusSwitch.vue';
 
 const props = defineProps({
     category: Object,
@@ -23,7 +24,6 @@ const dt = ref(null);
 const fetchedCategory = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -123,26 +123,8 @@ watchEffect(() => {
     }
 });
 
-const updateStatus = (category) => {
-    if(updateStatusConfirm.value) {
-        const category_name = JSON.parse(category.name)[locale] ?? JSON.parse(category.name)['en'];
-        updateStatusConfirm.value.changeStatus(category.id, category_name, category.status, 'category.updateStatus');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
 const applyFilter = () => {
     loadLazyData();
-};
-
-const deleteCategory = (category) => {
-    if(updateStatusConfirm.value) {
-        const category_name = JSON.parse(category.name)[locale] ?? JSON.parse(category.name)['en'];
-        updateStatusConfirm.value.deleteItem(category.id, category_name, 'category.destroy');
-    } else {
-        console.error("Delete Confirmation is not available");
-    }
 };
 
 </script>
@@ -248,20 +230,12 @@ const deleteCategory = (category) => {
                         field="status"
                         class="w-[100px]"
                         sortable
+                        :header="$t('public.visibility')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.visibility') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <ToggleSwitch
-                                :model-value="data.status"
-                                true-value="active"
-                                false-value="inactive"
-                                class="flex items-center"
-                                @click="updateStatus(data)"
-                                readonly
+                            <StatusSwitch 
+                                :data="data" 
+                                path="category.updateStatus" 
                             />
                         </template>
                     </Column>
@@ -269,12 +243,8 @@ const deleteCategory = (category) => {
                     <Column
                         field="name"
                         sortable
+                        :header="$t('public.category_name')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.category_name') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <Avatar
@@ -298,12 +268,8 @@ const deleteCategory = (category) => {
                     <Column
                         field="number_product"
                         class="w-[100px] text-nowrap"
+                        :header="$t('public.number_of_product')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.number_of_product') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ data.product_count }}
@@ -314,41 +280,10 @@ const deleteCategory = (category) => {
                     <Column
                         field="action"
                         class="w-[100px]"
+                        :header="$t('public.action')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.action') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <div class="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    icon="IconPencil"
-                                    @click="router.visit(route('category.edit', data.id))"
-                                >
-                                    <template #icon>
-                                        <IconPencil :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="deleteCategory(data)"
-                                >
-                                    <template #icon>
-                                        <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                    </template>
-                                </Button>
-                            </div>
+                            <CategoryTableAction :category="data" />
                         </template>
                     </Column>
                 </template>
@@ -406,6 +341,4 @@ const deleteCategory = (category) => {
             </div>
         </div>
     </Popover>
-
-    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>
