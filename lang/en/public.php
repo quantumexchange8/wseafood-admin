@@ -217,6 +217,6 @@ return [
     'notification_deleted' => 'Notification deleted successfully',
     'notification_deleted_caption' => 'The notification has deleted: ',
     'push_notification_header' => 'Push Notification Confirmation',
-    'push_notification_message' => 'Are you sure to push this notification now ',
-
+    'push_notification_confirm_message' => 'Are you sure to push this notification now: ',
+    'push_notification_message' => 'Do you want to push this notification now?',
 ];

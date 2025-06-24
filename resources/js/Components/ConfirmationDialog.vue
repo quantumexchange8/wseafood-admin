@@ -96,8 +96,36 @@ const changePopup = (itemId, itemName, itemStatus, path) => {
     });
 };
 
+const pushStatus = (itemName = '', itemId = null) => { 
+    message.value = itemId ? trans('public.push_notification_confirm_message')+ itemName : trans('public.push_notification_message') ;
+    
+    confirm.require({
+        header: trans('public.push_notification_header'),
+        message: message.value,
+        rejectProps: {
+            label: trans('public.no'),
+            outlined: true,
+            size: 'small'
+        },
+        acceptProps: {
+            label: trans('public.yes'),
+            size: 'small'
+        },
+        accept: () => {
+            emit('accept:pushNow');
+        },
+        reject: () => {
+            emit('reject:pushNow');
+        },
+    });
+};
+
+const emit = defineEmits([
+    'accept:pushNow', 'reject:pushNow',
+]);
+
 defineExpose({
-    deleteItem, changeStatus, changePopup
+    deleteItem, changeStatus, changePopup, pushStatus
 });
 </script>
 

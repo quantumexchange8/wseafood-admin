@@ -137,6 +137,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [PushNotificationController::class, 'edit'])->name('notification.edit');
         Route::post('/edit/{id}', [PushNotificationController::class, 'update'])->name('notification.update');
         Route::post('/delete', [PushNotificationController::class, 'destroy'])->name('notification.destroy');
+        // Route::post('/push', [PushNotificationController::class, 'push'])->name('notification.push');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -4,14 +4,11 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
-import { generalFormat } from '@/Composables/format';
-import PushNowConfirmation from '@/Pages/PushNotification/Partials/PushNowConfirmation.vue';
+import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 
 const props = defineProps({
     notification: Object,
 });
-
-const { formatDateTime } = generalFormat();
 
 const availableLocales = JSON.parse(usePage().props.availableLocales);
 const scheduleType = ref(['immediately', 'scheduled']);
@@ -35,23 +32,36 @@ const submitForm = () => {
         path.value = 'notification.update';
     }
 
-    // form.schedule_datetime = new Date(form.schedule_datetime).toISOString().slice(0, 19).replace('T', ' ');
+    if(form.schedule_datetime) {
+        form.schedule_datetime = new Date(form.schedule_datetime).toISOString().slice(0, 19).replace('T', ' ');
+    }
 
-    // form.post(route(path.value, props.notification?.id), {
-    //     onSuccess: () => {
-    //         form.reset();
-    //     },
-    //     onError: () => {
-    //     },
-    // })
+    form.post(route(path.value, props.notification?.id), {
+        onSuccess: () => {
+            form.reset();
+        },
+        onError: () => {
+        },
+    })
 };
 
 const pushConfirmation = () => {
-    if(pushNowConfirm.value) {
-        pushNowConfirm.value.pushStatus(form.title['en']);
+    if(pushNowConfirm.value && form.schedule_type === 'scheduled') {
+        pushNowConfirm.value.pushStatus();
+    } else {
+        submitForm();
     }
 };
 
+const acceptPush = () => {
+    form.push_now = true;
+    submitForm();
+};
+
+const rejectPush = () => {
+    form.push_now = false;
+    submitForm();
+};
 
 function formatSQLDateTimeToJS(sqlDateTime) {
     if (!sqlDateTime) return '';
@@ -283,5 +293,9 @@ watch(()=> props.notification, () => {
         </div>
     </form>
 
-    <PushNowConfirmation ref="pushNowConfirm" @update:push-now="form.push_now=$event" />
+    <ConfirmationDialog 
+        ref="pushNowConfirm" 
+        @accept:pushNow="acceptPush"
+        @reject:pushNow="rejectPush"
+    />
 </template>

@@ -141,7 +141,14 @@ const deleteNotification = (notification) => {
     } else {
         console.error("Update Status Confirmation is not available");
     }
-}
+};
+
+const pushNowConfirm = (notification) => {
+    if(updateStatusConfirm.value) {
+        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
+        updateStatusConfirm.value.pushStatus(notification_title, notification.id);
+    }
+};
 
 </script>
 <template>
@@ -290,8 +297,8 @@ const deleteNotification = (notification) => {
                                     outlined
                                     size="small"
                                     class="rounded-full"
+                                    @click="pushNowConfirm(data)"
                                     >
-                                    <!-- @click="router.visit(route('notification.edit', data.id))" -->
                                     <template #icon>
                                         <IconBellRinging :size="14" stroke-width="1.5"/>
                                     </template>
