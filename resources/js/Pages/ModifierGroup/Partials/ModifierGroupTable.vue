@@ -2,22 +2,18 @@
 import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Slider, ToggleSwitch, Avatar } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
-import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
+import { ref, watch, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 
-const props = defineProps({
-    category: Object,
-});
-
 const { locale } = useLangObserver();
 
 const isLoading = ref(false);
 const dt = ref(null);
-const fetchedCategory = ref([]);
+const fetchedGroup = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
 const confirmationModal = ref(null);
@@ -51,14 +47,14 @@ const loadLazyData = (event) => {
             const response = await fetch(url);
             const results = await response.json();
 
-            fetchedCategory.value = results?.data?.data;
+            fetchedGroup.value = results?.data?.data;
 
             totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
-        fetchedCategory.value = [];
+        fetchedGroup.value = [];
         totalRecords.value = 0;
         isLoading.value = false;
     }
@@ -201,7 +197,7 @@ const applyFilter = () => {
         </template>
         <template #content>
             <DataTable
-                :value="fetchedCategory"
+                :value="fetchedGroup"
                 lazy
                 paginator
                 removableSort
@@ -221,7 +217,7 @@ const applyFilter = () => {
                 :globalFilterFields="['name', 'status']"
             >
                 <template #empty>
-                    <div v-if="fetchedCategory.length === 0">
+                    <div v-if="fetchedGroup.length === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -240,7 +236,7 @@ const applyFilter = () => {
                     </div>
                 </template>
 
-                <template v-if="fetchedCategory?.length > 0">
+                <template v-if="fetchedGroup?.length > 0">
                     <Column
                         field="status"
                         class="w-[100px]"

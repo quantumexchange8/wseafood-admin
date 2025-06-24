@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ModifierGroup;
+use App\Models\ProductToModifierGroup;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -24,7 +26,10 @@ class ProductController extends Controller
 
     public function create()
     {
-        return inertia('Product/CreateProduct');
+        $group_count = ModifierGroup::all()->count();
+        return inertia('Product/CreateProduct', [
+            'groupCount' => $group_count,
+        ]);
     }
 
     public function store(Request $request)
@@ -37,6 +42,7 @@ class ProductController extends Controller
             'reward_point' => ['nullable'],
             'set_meal' => ['nullable'],
             'description' => ['nullable'],
+            'modifier_group' => ['nullable'],
         ];
 
         foreach(config('app.available_locales') as $locale) {
@@ -70,7 +76,16 @@ class ProductController extends Controller
             $product->addMedia($request->product_photo)->toMediaCollection('product_photo');
         }
 
-        return redirect()->back()->with('toast', [
+        if($request->modifier_group) {
+            foreach($request->modifier_group as $group) {
+                ProductToModifierGroup::create([
+                    'product_id' => $product->id,
+                    'modifier_group_id' => $group['id'],
+                ]);
+            }
+        }
+
+        return redirect()->route('product.index')->with('toast', [
             'title' => trans('public.category_created'),
             'message' => trans('public.category_created_caption'). $request->name[app()->getLocale()],
             'type' => 'success'

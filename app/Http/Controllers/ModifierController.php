@@ -138,9 +138,10 @@ class ModifierController extends Controller
                 $query->orderByDesc('created_at');
             }
 
-            $fetchedGroup = $query->paginate($data['rows']);
-
-            $fetchedGroup->getCollection()->map(function ($group) {
+            $fetchedGroup = null;
+            if($data['rows']) {
+                $fetchedGroup = $query->paginate($data['rows']);
+                $fetchedGroup->getCollection()->map(function ($group) {
                     $group->product_count = $group->hasProductIds()->count();
                     $group->item_count = $group->hasModifierItemIds()->count();
                     $group->items = $group->hasModifierItemIds()->orderBy('position')->get()->map(function ($item) {
@@ -150,13 +151,29 @@ class ModifierController extends Controller
                         ];
                     });
                     return $group;
-            });
+                });
+            } else {
+                $fetchedGroup = $query->get()->map(function ($group) {
+                    $group->product_count = $group->hasProductIds()->count();
+                    $group->item_count = $group->hasModifierItemIds()->count();
+                    $group->items = $group->hasModifierItemIds()->orderBy('position')->get()->map(function ($item) {
+                        return [
+                            'modifier_item_id' => $item->modifier_item_id,
+                            'modifier_item_name' => $item->modifierItem()->first()->name,
+                        ];
+                    });
+                    return $group;
+                });
+            }
+
 
             return response()->json([
                 'success' => true,
                 'data' => $fetchedGroup,
             ]);
         }
+
+        return response()->json(['success' => false, 'data' => []]);
     }
 
     public function updateGroupStatus(Request $request)

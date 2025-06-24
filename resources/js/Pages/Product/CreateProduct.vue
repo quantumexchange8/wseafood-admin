@@ -2,6 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ProductForm from '@/Pages/Product/Partials/ProductForm.vue';
 
+const props = defineProps({
+    groupCount: Number,
+});
 </script>
 
 <template>
@@ -16,7 +19,7 @@ import ProductForm from '@/Pages/Product/Partials/ProductForm.vue';
                         {{ $t('public.create_meal_item_caption') }}
                     </div>
                 </div>
-                <ProductForm />
+                <ProductForm :groupCount="groupCount" />
             </div>
         </div>
     </AuthenticatedLayout>

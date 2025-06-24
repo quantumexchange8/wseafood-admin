@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -34,4 +35,8 @@ class Product extends Model implements HasMedia
         return $productCode;
     }
 
+    public function hasModifierGroupIds(): HasMany
+    {
+        return $this->hasMany(ProductToModifierGroup::class, 'product_id', 'id');
+    }
 }
