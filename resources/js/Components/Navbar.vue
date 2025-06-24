@@ -50,7 +50,8 @@ const handleLogOut = () => {
                 type="button"
                 severity="secondary"
                 rounded
-                variant="outlined"
+                outlined
+                class="shrink-0"
                 @click="sidebarState.isOpen = !sidebarState.isOpen"
             >
                 <template #icon>

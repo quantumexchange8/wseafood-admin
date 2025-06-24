@@ -1,9 +1,9 @@
 .p-card {
     @apply flex flex-col rounded-xl
-        bg-surface-0 dark:bg-surface-900 
+        bg-surface-0 dark:bg-surface-900
         text-surface-700 dark:text-surface-0
         shadow-item
-        border border-solid border-[#f0f0f3]
+        border border-surface-200 dark:border-surface-600
 }
 
 .p-card-header {
@@ -11,7 +11,7 @@
 }
 
 .p-card-caption {
-    @apply flex flex-col gap-2 w-full border-b border-solid
+    @apply flex flex-col gap-2 w-full border-b dark:border-surface-600
 }
 
 .p-card-body {
@@ -19,7 +19,7 @@
 }
 
 .p-card-title {
-    @apply font-bold text-base self-stretch
+    @apply font-bold text-base self-stretch text-surface-950 dark:text-white
 }
 
 .p-card-subtitle {

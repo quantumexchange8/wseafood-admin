@@ -30,8 +30,8 @@ const props = defineProps({
 
 const editorClass = computed(() =>
     [
-        'rounded dark:bg-surface-950 border hover:border-surface-400 dark:hover:border-surface-600 focus:border-primary focus:outline-none focus:ring-0 focus:border-primary-500 dark:focus:border-primary-300 py-2.5 px-3 h-80 overflow-y-auto dark:text-white prose dark:prose-invert min-w-full text-sm',
-        props.invalid ? 'border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400' : 'border-surface-300 dark:border-surface-700'
+        'rounded-bl-lg rounded-br-lg dark:bg-surface-950 border hover:border-surface-400 dark:hover:border-surface-600 focus:border-primary focus:outline-none focus:ring-0 focus:border-primary py-2.5 px-3 h-80 overflow-y-auto dark:text-white prose dark:prose-invert min-w-full text-sm',
+        props.invalid ? 'border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400' : 'border-transparent'
     ].join(' ')
 );
 
@@ -77,7 +77,7 @@ const editor = useEditor({
 <template>
     <section
         v-if="editor"
-        class="flex items-center flex-wrap gap-5 rounded dark:bg-surface-950 border border-surface-300 dark:border-surface-600 p-1 w-full"
+        class="flex items-center flex-wrap gap-5 dark:bg-surface-950 p-1 w-full border-b border-surface-200 dark:border-surface-600"
     >
         <div class="flex items-center flex-wrap gap-1">
             <button
@@ -173,7 +173,7 @@ const editor = useEditor({
         <div class="flex items-center flex-wrap gap-1">
             <button
                 type="button"
-                @click="editor.chain().focus().setTextAlign('left').run()" 
+                @click="editor.chain().focus().setTextAlign('left').run()"
                 :class="[
                 'rounded p-1 dark:text-white',
                 { 'bg-surface-200 dark:bg-surface-700': editor.isActive({ textAlign: 'left' }) }
@@ -183,7 +183,7 @@ const editor = useEditor({
             </button>
             <button
                 type="button"
-                @click="editor.chain().focus().setTextAlign('center').run()" 
+                @click="editor.chain().focus().setTextAlign('center').run()"
                 :class="[
                 'rounded p-1 dark:text-white',
                 { 'bg-surface-200 dark:bg-surface-700': editor.isActive({ textAlign: 'center' }) }
@@ -193,7 +193,7 @@ const editor = useEditor({
             </button>
             <button
                 type="button"
-                @click="editor.chain().focus().setTextAlign('right').run()" 
+                @click="editor.chain().focus().setTextAlign('right').run()"
                 :class="[
                 'rounded p-1 dark:text-white',
                 { 'bg-surface-200 dark:bg-surface-700': editor.isActive({ textAlign: 'right' }) }
@@ -203,7 +203,7 @@ const editor = useEditor({
             </button>
             <button
                 type="button"
-                @click="editor.chain().focus().setTextAlign('justify').run()" 
+                @click="editor.chain().focus().setTextAlign('justify').run()"
                 :class="[
                 'rounded p-1 dark:text-white',
                 { 'bg-surface-200 dark:bg-surface-700': editor.isActive({ textAlign: 'justify' }) }

@@ -19,10 +19,10 @@ const { formatDateTime } = generalFormat();
         <div class="flex px-4 pt-2 pb-5 flex-col items-center gap-4 flex-1">
             <div class="flex items-center justify-center gap-4 self-stretch">
                 <div class="flex flex-col items-start flex-1">
-                    <div class="self-stretch text-2xl font-bold">
+                    <div class="self-stretch text-2xl font-bold dark:text-white">
                         {{ $t('public.push_notification_list') }}
                     </div>
-                    <div class="self-stretch text-sm">
+                    <div class="self-stretch text-sm text-surface-500">
                         {{ $t('public.last_update_on') }}: {{ notification?formatDateTime(notification.updated_at):'' }}
                     </div>
                 </div>

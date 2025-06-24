@@ -1,13 +1,13 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch, Avatar, SelectButton } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
-import { router, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconBellRinging } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 import { useLangObserver } from '@/Composables/localeObserver';
+import NotificationTableAction from "@/Pages/PushNotification/Partials/NotificationTableAction.vue";
 
 const props = defineProps({
     notification: Object,
@@ -21,7 +21,6 @@ const dt = ref(null);
 const fetchedNotification = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -121,35 +120,9 @@ watchEffect(() => {
     }
 });
 
-const updateStatus = (notification) => {
-    if(updateStatusConfirm.value) {
-        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
-        updateStatusConfirm.value.changeStatus(notification.id, notification_title, notification.status, 'notification.updateStatus');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
 const applyFilter = () => {
     loadLazyData();
 };
-
-const deleteNotification = (notification) => {
-    if(updateStatusConfirm.value) {
-        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
-        updateStatusConfirm.value.deleteItem(notification.id, notification_title, 'notification.destroy');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
-const pushNowConfirm = (notification) => {
-    if(updateStatusConfirm.value) {
-        const notification_title = JSON.parse(notification.title)[locale] ?? JSON.parse(notification.title)['en'];
-        updateStatusConfirm.value.pushStatus(notification_title, notification.id);
-    }
-};
-
 </script>
 <template>
     <div class="flex flex-col md:flex-row items-center self-stretch gap-3 w-full md:w-auto">
@@ -162,6 +135,7 @@ const pushNowConfirm = (notification) => {
                 v-model="filters['global'].value"
                 type="text"
                 class="block w-full pl-10 pr-10"
+                :placeholder="$t('public.search')"
             />
             <!-- Clear filter button -->
             <div
@@ -175,12 +149,11 @@ const pushNowConfirm = (notification) => {
 
         <!-- filter button -->
         <Button
-            class="flex gap-2 items-center w-full md:w-fit font-bold !bg-white"
-            severity="secondary"
-            outlined
+            class="flex gap-2 items-center w-full md:w-fit font-bold"
+            severity="contrast"
             @click="toggle"
         >
-            <IconAdjustments :size="16" stroke-width="1.5"/>
+            <IconAdjustments :size="20" stroke-width="1.5"/>
             {{ $t('public.filter') }}
         </Button>
     </div>
@@ -193,7 +166,7 @@ const pushNowConfirm = (notification) => {
                         {{ $t('public.list_of_push_notification') }}
                     </div>
                     <Tag rounded>
-                        <span>{{ totalRecords }} {{ $t('public.push_notification') }}</span>
+                        <span>{{ notificationCount }} {{ $t('public.push_notification') }}</span>
                     </Tag>
                 </div>
             </div>
@@ -243,13 +216,8 @@ const pushNowConfirm = (notification) => {
                     <Column
                         field="status"
                         class="w-[100px]"
-                        sortable
+                        :header="$t('public.visibility')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.visibility') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <ToggleSwitch
                                 :model-value="data.status"
@@ -264,13 +232,8 @@ const pushNowConfirm = (notification) => {
 
                     <Column
                         field="title"
-                        sortable
+                        :header="$t('public.title')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.title') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <div class="text-sm font-bold">
@@ -283,53 +246,12 @@ const pushNowConfirm = (notification) => {
                     <Column
                         field="action"
                         class="w-[100px]"
+                        :header="$t('public.action')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.action') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <div class="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="pushNowConfirm(data)"
-                                    >
-                                    <template #icon>
-                                        <IconBellRinging :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="router.visit(route('notification.edit', data.id))"
-                                >
-                                    <template #icon>
-                                        <IconPencil :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="deleteNotification(data)"
-                                >
-                                    <template #icon>
-                                        <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                    </template>
-                                </Button>
-                            </div>
+                            <NotificationTableAction
+                                :notification="data"
+                            />
                         </template>
                     </Column>
                 </template>
@@ -356,7 +278,7 @@ const pushNowConfirm = (notification) => {
                     >
                         <div class="flex items-center gap-2">
                             <div :class="[
-                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600',
                                     'w-2 h-2 rounded-full'
                                 ]"
                             ></div>
@@ -387,6 +309,4 @@ const pushNowConfirm = (notification) => {
             </div>
         </div>
     </Popover>
-
-    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>

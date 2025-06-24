@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\PushNotificationJob;
 use App\Models\PushNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -56,7 +57,7 @@ class PushNotificationController extends Controller
         PushNotification::create([
             'title' => json_encode($request->title),
             'message' => json_encode($request->message),
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'schedule_type' => $request->schedule_type,
             'schedule_datetime' => $request->schedule_datetime,
             'status' => $request->status,
@@ -127,7 +128,7 @@ class PushNotificationController extends Controller
         $notification = PushNotification::find($request->id);
         $notification->title = json_decode($notification->title);
         $notification->message = json_decode($notification->message);
-        
+
         return Inertia::render('PushNotification/EditNotification', [
             'notification' => $notification,
         ]);
@@ -166,7 +167,7 @@ class PushNotificationController extends Controller
         $notification->update([
             'title' => json_encode($request->title),
             'message' => json_encode($request->message),
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'schedule_type' => $request->schedule_type,
             'schedule_datetime' => $request->schedule_datetime,
             'status' => $request->status,
@@ -191,5 +192,26 @@ class PushNotificationController extends Controller
             'message' => trans('public.notification_deleted_caption'). $name->$locale,
             'type' => 'success'
         ]);
+    }
+
+    public function push_notification($id)
+    {
+        $notification = PushNotification::find($id);
+
+        if ($notification) {
+            dispatch(new PushNotificationJob($notification));
+
+            return redirect()->back()->with('toast', [
+                'title' => trans('public.push_notification'),
+                'message' => trans('public.successfully_push_notification'),
+                'type' => 'success'
+            ]);
+        } else {
+            return redirect()->back()->with('toast', [
+                'title' => trans('public.error'),
+                'message' => trans('public.notification_not_found'),
+                'type' => 'error'
+            ]);
+        }
     }
 }

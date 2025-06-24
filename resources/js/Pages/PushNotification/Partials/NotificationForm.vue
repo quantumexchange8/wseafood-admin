@@ -1,10 +1,12 @@
 <script setup>
 import { Card, Button, InputText, RadioButton, Select, DatePicker } from 'primevue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import {router, useForm, usePage} from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
 import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import {useConfirm} from "primevue/useconfirm";
+import {trans} from "laravel-vue-i18n";
 
 const props = defineProps({
     notification: Object,
@@ -46,21 +48,42 @@ const submitForm = () => {
 };
 
 const pushConfirmation = () => {
-    if(pushNowConfirm.value && form.schedule_type === 'scheduled') {
-        pushNowConfirm.value.pushStatus();
-    } else {
-        submitForm();
-    }
+    requireConfirmation('push_notification');
 };
 
-const acceptPush = () => {
-    form.push_now = true;
-    submitForm();
-};
+const confirm = useConfirm();
 
-const rejectPush = () => {
-    form.push_now = false;
-    submitForm();
+const requireConfirmation = (action_type) => {
+    const messages = {
+        push_notification: {
+            group: 'headless-primary',
+            header: trans('public.push_notification_header'),
+            message: trans('public.push_notification_message'),
+            cancelButton: trans('public.not_now'),
+            acceptButton: trans('public.push_now'),
+            action: () => {
+                form.push_now = true;
+                submitForm();
+            },
+            rejectAction: () => {
+                form.push_now = false;
+                submitForm();
+            }
+        },
+    };
+
+    const { group, header, message, actionType, cancelButton, acceptButton, action, rejectAction } = messages[action_type];
+
+    confirm.require({
+        group,
+        header,
+        actionType,
+        message,
+        cancelButton,
+        acceptButton,
+        accept: action,
+        reject: rejectAction
+    });
 };
 
 function formatSQLDateTimeToJS(sqlDateTime) {
@@ -97,7 +120,7 @@ watch(()=> props.notification, () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.notification_detail') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.notification_detail_caption') }}
                     </div>
                 </div>
@@ -198,16 +221,16 @@ watch(()=> props.notification, () => {
                             </div>
                         </div>
                         <div class="col-span-2 flex flex-col gap-1">
-                            <DatePicker 
-                                id="datepicker" 
-                                v-model="form.schedule_datetime" 
+                            <DatePicker
+                                id="datepicker"
+                                v-model="form.schedule_datetime"
                                 :invalid="!!form.errors.schedule_datetime"
                                 :placeholder="$t('public.date')"
-                                showTime 
-                                hourFormat="24" 
+                                showTime
+                                hourFormat="24"
                                 dateFormat="dd/mm/yy"
                                 :minDate="new Date()"
-                                fluid 
+                                fluid
                             />
                             <InputError :message="form.errors.schedule_datetime" />
                         </div>
@@ -225,10 +248,10 @@ watch(()=> props.notification, () => {
                     <div class="col-span-2 flex flex-col gap-1">
                         <div class="flex items-center gap-5">
                             <div class="flex items-center gap-3">
-                                <RadioButton 
-                                    v-model="form.status" 
-                                    inputId="display" 
-                                    value="active" 
+                                <RadioButton
+                                    v-model="form.status"
+                                    inputId="display"
+                                    value="active"
                                     :invalid="!!form.errors.status"
                                 />
                                 <label for="display" class="text-sm">
@@ -236,10 +259,10 @@ watch(()=> props.notification, () => {
                                 </label>
                             </div>
                             <div class="flex items-center gap-3">
-                                <RadioButton 
-                                    v-model="form.status" 
-                                    inputId="hidden" 
-                                    value="inactive" 
+                                <RadioButton
+                                    v-model="form.status"
+                                    inputId="hidden"
+                                    value="inactive"
                                     :invalid="!!form.errors.status"
                                 />
                                 <label for="hidden" class="text-sm">
@@ -260,21 +283,21 @@ watch(()=> props.notification, () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.content') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.content_caption') }}
                     </div>
                 </div>
             </template>
             <template #content>
-                <TipTapEditor 
-                    v-model="form.content" 
+                <TipTapEditor
+                    v-model="form.content"
                     :invalid="form.errors.content"
                 />
                 <InputError :message="form.errors.content" />
             </template>
         </Card>
 
-        <div class="w-full mt-1 px-5 py-4 flex justify-between items-center border-t border-solid border-primary-200 bg-white shadow-sm dark:bg-surface-900">
+        <div class="w-full mt-1 px-5 py-4 flex justify-between items-center border-t border-solid border-primary-200 dark:border-primary-900/40 bg-white shadow-sm dark:bg-surface-900">
             <Button
                 type="button"
                 severity="secondary"
@@ -292,10 +315,4 @@ watch(()=> props.notification, () => {
             />
         </div>
     </form>
-
-    <ConfirmationDialog 
-        ref="pushNowConfirm" 
-        @accept:pushNow="acceptPush"
-        @reject:pushNow="rejectPush"
-    />
 </template>
