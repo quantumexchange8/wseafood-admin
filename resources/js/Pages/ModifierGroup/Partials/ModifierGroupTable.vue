@@ -4,10 +4,11 @@ import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import StatusSwitch from '@/Components/StatusSwitch.vue';
+import ModifierGroupTableAction from './ModifierGroupTableAction.vue';
 
 const { locale } = useLangObserver();
 
@@ -16,7 +17,6 @@ const dt = ref(null);
 const fetchedGroup = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const confirmationModal = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -119,20 +119,6 @@ watchEffect(() => {
         loadLazyData();
     }
 });
-
-const updateStatus = (group) => {
-    if(confirmationModal.value) {
-        confirmationModal.value.changeStatus(group.id,group.group_name,group.status, 'modifier.group.updateStatus');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
-const deleteGroup = (group) => {
-    if(confirmationModal.value) {
-        confirmationModal.value.deleteItem(group.id, group.group_name, 'modifier.group.destroy')
-    }
-}
 
 const applyFilter = () => {
     loadLazyData();
@@ -241,21 +227,10 @@ const applyFilter = () => {
                         field="status"
                         class="w-[100px]"
                         sortable
+                        :header="$t('public.visibility')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.visibility') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <ToggleSwitch
-                                :model-value="data.status"
-                                true-value="active"
-                                false-value="inactive"
-                                class="flex items-center"
-                                @click="updateStatus(data)"
-                                readonly
-                            />
+                            <StatusSwitch :data="data" path="modifier.group.updateStatus" />
                         </template>
                     </Column>
 
@@ -263,12 +238,8 @@ const applyFilter = () => {
                         field="id"
                         class="w-[100px] text-nowrap"
                         sortable
+                        :header="$t('public.group_id')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.group_id') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ data.id }}
@@ -280,12 +251,8 @@ const applyFilter = () => {
                         field="group_name"
                         class="w-full"
                         sortable
+                        :header="$t('public.group_name_and_item')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.group_name_and_item') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex flex-col items-start gap-1">
                                 <div class="text-sm font-bold">
@@ -304,12 +271,8 @@ const applyFilter = () => {
                         field="group_type"
                         class="text-nowrap w-[140px]"
                         sortable
+                        :header="$t('public.type')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.type') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex flex-col justify-center items-start self-stretch">
                                 <div class="text-sm font-bold">
@@ -325,12 +288,8 @@ const applyFilter = () => {
                     <Column
                         field="number_product"
                         class="w-[100px] text-nowrap"
+                        :header="$t('public.linked_item')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.linked_item') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ data.product_count }}
@@ -341,40 +300,10 @@ const applyFilter = () => {
                     <Column
                         field="action"
                         class="w-[100px]"
+                        :header="$t('public.action')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.action') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <div class="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    icon="IconPencil"
-                                >
-                                    <template #icon>
-                                        <IconPencil :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="deleteGroup(data)"
-                                >
-                                    <template #icon>
-                                        <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                    </template>
-                                </Button>
-                            </div>
+                            <ModifierGroupTableAction :modifierGroup="data" />
                         </template>
                     </Column>
                 </template>
@@ -478,6 +407,4 @@ const applyFilter = () => {
             </div>
         </div>
     </Popover>
-
-    <ConfirmationDialog ref="confirmationModal" />
 </template>

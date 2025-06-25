@@ -11,6 +11,7 @@ import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
 import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import StatusSwitch from '@/Components/StatusSwitch.vue';
 
 const props = defineProps({
     categories: Object,
@@ -27,7 +28,6 @@ const dv = ref(null);
 const fetchedProduct = ref([]);
 const totalRecords = ref(props.productCount);
 const first = ref(0);
-const updateStatusConfirm = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -142,15 +142,6 @@ function selectCategory(index) {
 
     loadLazyData()
 }
-
-const updateStatus = (product) => {
-    if(updateStatusConfirm.value) {
-        const product_name = JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'];
-        updateStatusConfirm.value.changeStatus(product.id, product_name, product.status, 'product.updateStatus');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
 
 </script>
 
@@ -306,14 +297,7 @@ const updateStatus = (product) => {
                                 <div>
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
-                                <ToggleSwitch
-                                    :model-value="product.status"
-                                    true-value="active"
-                                    false-value="inactive"
-                                    class="flex items-center"
-                                    @click="updateStatus(product)"
-                                    readonly
-                                />
+                                <StatusSwitch :data="product" path="product.updateStatus" />
                             </div>
                         </div>
                     </template>
@@ -349,20 +333,13 @@ const updateStatus = (product) => {
                         <div class="h-full flex flex-col justify-between items-start self-stretch">
                             <div class="flex flex-col items-start gap-2 self-stretch">
                                 <div class="font-bold">
-                                    {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
+                                    {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                                 </div>
                                 <div>
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
                             </div>
-                            <ToggleSwitch
-                                :model-value="product.status"
-                                true-value="active"
-                                false-value="inactive"
-                                class="flex items-center"
-                                @click="updateStatus(product)"
-                                readonly
-                            />
+                            <StatusSwitch :data="product" path="product.updateStatus" />
                         </div>
                     </template>
                 </Card>
@@ -421,6 +398,4 @@ const updateStatus = (product) => {
             </div>
         </div>
     </Popover>
-
-    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>

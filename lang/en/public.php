@@ -171,7 +171,7 @@ return [
     'popup_updated' => 'Popup Updated Successfully',
     'popup_updated_caption' => 'The popup has been updated: ',
     'change_popup_header' => 'Change Popup Confirmation',
-    'change_popup_message_hide' => 'Are you change popup',
+    'change_popup_message' => 'Are you sure to change popup',
     'on' => 'On',
     'off' => 'Off',
     'highlight_deleted' => 'Highlight deleted successfully',

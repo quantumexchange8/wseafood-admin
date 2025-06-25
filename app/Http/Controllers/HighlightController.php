@@ -140,7 +140,7 @@ class HighlightController extends Controller
 
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
-            'message' => trans('public.status_updated_caption'). $request->name,
+            'message' => trans('public.status_updated_caption'). $highlight->title,
             'type' => 'success'
         ]);
     }
@@ -158,7 +158,7 @@ class HighlightController extends Controller
 
         return redirect()->back()->with('toast', [
             'title' => trans('public.popup_updated'),
-            'message' => trans('public.popup_updated_caption'). $request->name,
+            'message' => trans('public.popup_updated_caption'). $highlight->title,
             'type' => 'success'
         ]);
     }

@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-status', [ModifierController::class, 'updateGroupStatus'])->name('modifier.group.updateStatus');
         // Route::get('/{modifier_group}/edit', [ModifierController::class, 'edit'])->name('modifier_group.edit');
         // Route::put('/{modifier_group}', [ModifierController::class, 'update'])->name('modifier_group.update');
-        Route::post('/delete', [ModifierController::class, 'destroyGroup'])->name('modifier.group.destroy');
+        Route::delete('/delete', [ModifierController::class, 'destroyGroup'])->name('modifier.group.destroy');
     });
 
     /**
@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [MemberController::class, 'index'])->name('member.index');
         Route::get('/fetch-member', [MemberController::class, 'fetchMember'])->name('member.fetch');
         Route::post('/adjust-point', [MemberController::class, 'adjustPoint'])->name('member.adjustPoint');
-        Route::post('/delete', [MemberController::class, 'destroy'])->name('member.destroy');
+        Route::delete('/delete', [MemberController::class, 'destroy'])->name('member.destroy');
     });
 
     /**
@@ -120,7 +120,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-popup', [HighlightController::class, 'updatePopup'])->name('highlight.updatePopup');
         Route::get('/edit/{id}', [HighlightController::class, 'edit'])->name('highlight.edit');
         Route::post('/edit/{id}', [HighlightController::class, 'update'])->name('highlight.update');
-        Route::post('/delete', [HighlightController::class, 'destroy'])->name('highlight.destroy');
+        Route::delete('/delete', [HighlightController::class, 'destroy'])->name('highlight.destroy');
     });
 
     /**

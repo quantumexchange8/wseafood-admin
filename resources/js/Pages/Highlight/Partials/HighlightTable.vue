@@ -1,12 +1,13 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch, Avatar, SelectButton } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
+import StatusSwitch from '@/Components/StatusSwitch.vue';
+import HighlightTableAction from '@/Pages/Highlight/Partials/HighlightTableAction.vue';
 
 const props = defineProps({
     highlight: Object,
@@ -132,22 +133,6 @@ watchEffect(() => {
     }
 });
 
-const updateStatus = (highlight) => {
-    if(updateStatusConfirm.value) {
-        updateStatusConfirm.value.changeStatus(highlight.id, highlight.title, highlight.status, 'highlight.updateStatus');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
-const updatePopup = (highlight) => {
-    if(updateStatusConfirm.value) {
-        updateStatusConfirm.value.changePopup(highlight.id, highlight.title, highlight.can_popup, 'highlight.updatePopup');
-    } else {
-        console.error("Update Status Confirmation is not available");
-    }
-};
-
 const applyFilter = () => {
     normalState.value = false;
     if(!filters.value['global'].value && !filters.value['status'].value && !filters.value['popup'].value) {
@@ -263,20 +248,12 @@ const deleteHighlight = (highlight) => {
                         field="status"
                         class="w-[100px]"
                         sortable
+                        :header="$t('public.visibility')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.visibility') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <ToggleSwitch
-                                :model-value="data.status"
-                                true-value="active"
-                                false-value="inactive"
-                                class="flex items-center"
-                                @click="updateStatus(data)"
-                                readonly
+                            <StatusSwitch 
+                                :data="data" 
+                                path="highlight.updateStatus" 
                             />
                         </template>
                     </Column>
@@ -284,12 +261,8 @@ const deleteHighlight = (highlight) => {
                     <Column
                         field="title"
                         sortable
+                        :header="$t('public.title')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.title') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <div class="text-sm font-bold">
@@ -303,21 +276,14 @@ const deleteHighlight = (highlight) => {
                         field="can_popup"
                         class="w-[100px]"
                         sortable
+                        :header="$t('public.popup_highlight')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.popup_highlight') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="w-full flex justify-center">
-                                <ToggleSwitch
-                                    :model-value="data.can_popup"
-                                    :true-value="1"
-                                    :false-value="0"
-                                    class="flex items-center"
-                                    @click="updatePopup(data)"
-                                    readonly
+                                <StatusSwitch 
+                                    :data="data" 
+                                    path="highlight.updatePopup" 
+                                    :popup="true"
                                 />
                             </div>
                         </template>
@@ -326,41 +292,10 @@ const deleteHighlight = (highlight) => {
                     <Column
                         field="action"
                         class="w-[100px]"
+                        :header="$t('public.action')"
                     >
-                        <template #header>
-                            <div class="text-xs font-bold text-nowrap">
-                                {{ $t('public.action') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
-                            <div class="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    icon="IconPencil"
-                                    @click="router.visit(route('highlight.edit', data.id))"
-                                >
-                                    <template #icon>
-                                        <IconPencil :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="deleteHighlight(data)"
-                                >
-                                    <template #icon>
-                                        <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                    </template>
-                                </Button>
-                            </div>
+                            <HighlightTableAction :highlight="data" />
                         </template>
                     </Column>
                     <Column 
@@ -453,6 +388,4 @@ const deleteHighlight = (highlight) => {
             </div>
         </div>
     </Popover>
-
-    <ConfirmationDialog ref="updateStatusConfirm" />
 </template>

@@ -39,7 +39,7 @@ const requireConfirmation = (action_type) => {
             action: () => {
                 router.post(route(props.path), {
                     id: props.data.id,
-                    status: props.data.can_popup,
+                    popup: props.data.can_popup,
                 });
             }
         },
