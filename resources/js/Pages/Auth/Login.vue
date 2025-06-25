@@ -1,12 +1,9 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { InputText, Button } from 'primevue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { InputText, Password, Button } from 'primevue';
 
 defineProps({
     canResetPassword: {
@@ -32,67 +29,60 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head :title="$t('public.login')" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <form
+            @submit.prevent="submit"
+            class="flex flex-col gap-5 self-stretch"
+        >
+            <div class="flex flex-col gap-1 items-start self-stretch">
+                <InputLabel
+                    for="email"
+                    :value="$t('public.email')"
+                />
 
                 <InputText
                     id="email"
                     type="email"
-                    v-model="form.email"
-                    class="w-full"
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
                     class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
+                    v-model="form.email"
+                    autofocus
+                    autocomplete="username"
+                    :placeholder="$t('public.enter_your_email')"
+                    :invalid="!!form.errors.email"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
-                </label>
+            <div class="flex flex-col gap-1 items-start self-stretch">
+                <InputLabel
+                    for="password"
+                    :value="$t('public.password')"
+                />
+
+                <Password
+                    id="password"
+                    class="block w-full"
+                    v-model="form.password"
+                    toggleMask
+                    :inputStyle="{'width': '100%'}"
+                    :style="{'width': '100%'}"
+                    :invalid="!!form.errors.password"
+                    :feedback="false"
+                    placeholder="••••••••"
+                />
+
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
+            <div class="flex flex-col gap-1 items-center self-stretch">
+                <Button
+                    type="submit"
+                    class="w-full"
                     :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
+                    :label="$t('public.login')"
+                />
             </div>
         </form>
     </GuestLayout>

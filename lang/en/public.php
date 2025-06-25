@@ -234,4 +234,8 @@ return [
     'groups' => 'groups',
     'add_another_group' => 'Add another group',
     'enter_content' => 'Enter content...',
+    "login" => "Login",
+    "email" => "Email",
+    "password" => "Password",
+    "enter_your_email" => "Enter your email",
 ];
