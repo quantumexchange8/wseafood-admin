@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Slider, ToggleSwitch, Avatar } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, Slider } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, watchEffect, onMounted } from 'vue';
@@ -9,6 +9,10 @@ import Empty from '@/Components/Empty.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import StatusSwitch from '@/Components/StatusSwitch.vue';
 import ModifierGroupTableAction from './ModifierGroupTableAction.vue';
+
+const props = defineProps({
+    groupCount: Number,
+});
 
 const { locale } = useLangObserver();
 
@@ -93,7 +97,9 @@ onMounted(() => {
         filters: filters.value
     };
 
-    loadLazyData();
+    if(props.groupCount !== 0) {
+        loadLazyData();
+    }
 })
 
 watch(

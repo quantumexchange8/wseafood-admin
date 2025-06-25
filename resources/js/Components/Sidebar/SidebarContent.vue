@@ -43,6 +43,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             :title="$t('public.item_management')"
         />
 
+        <!-- Category -->
         <SidebarCollapsible
             :title="$t('public.category')"
             :active="route().current('category.*')"
@@ -63,6 +64,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             />
         </SidebarCollapsible>
 
+        <!-- Modifier Group & Item -->
         <SidebarCollapsible
             :title="$t('public.modifier_group')"
             :active="route().current('modifier.*')"
@@ -81,8 +83,15 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 :href="route('modifier.group.create')"
                 :active="route().current('modifier.group.create')"
             />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.modifier_item_list')"
+                :href="route('modifier.item.index')"
+                :active="route().current('modifier.item.index')"
+            />
         </SidebarCollapsible>
 
+        <!-- Product -->
         <SidebarCollapsible
             :title="$t('public.product')"
             :active="route().current('product.*')"
@@ -107,6 +116,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             :title="$t('public.user_management')"
         />
 
+        <!-- Member -->
         <SidebarLink
             :title="$t('public.member')"
             :href="route('member.index')"
@@ -117,6 +127,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             </template>
         </SidebarLink>
 
+        <!-- Highlight -->
         <SidebarCollapsible
             :title="$t('public.highlight')"
             :active="route().current('highlight.*')"
@@ -137,6 +148,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             />
         </SidebarCollapsible>
 
+        <!-- Push Notification -->
         <SidebarCollapsible
             :title="$t('public.push_notification')"
             :active="route().current('notification.*')"

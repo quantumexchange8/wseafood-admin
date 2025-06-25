@@ -1,12 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Button } from 'primevue';
-import { IconPlus, IconUpload } from '@tabler/icons-vue';
+import { IconPlus } from '@tabler/icons-vue';
 import { generalFormat } from '@/Composables/format';
 import ModifierGroupTable from '@/Pages/ModifierGroup/Partials/ModifierGroupTable.vue';
 
 const props = defineProps({
     modifierGroup:Object,
+    groupCount: Number,
 });
 
 const { formatDateTime } = generalFormat();
@@ -36,7 +37,7 @@ const { formatDateTime } = generalFormat();
                     </Button>
                 </div>
             </div>
-            <ModifierGroupTable />
+            <ModifierGroupTable :groupCount="groupCount" />
         </div>
     </AuthenticatedLayout>
 </template>

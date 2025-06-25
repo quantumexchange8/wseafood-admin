@@ -89,8 +89,11 @@ Route::middleware('auth')->group(function () {
      * ==============================
      */
     Route::prefix('modifier-item')->group(function () {
+        Route::get('/', [ModifierController::class, 'indexItem'])->name('modifier.item.index');
         Route::post('/create', [ModifierController::class, 'storeItem'])->name('modifier.item.store');
         Route::get('/fetch-modifier-item', [ModifierController::class, 'fetchModifierItem'])->name('modifier.item.fetch');
+        Route::post('/edit', [ModifierController::class, 'updateItem'])->name('modifier.item.update');
+        Route::delete('/delete', [ModifierController::class, 'destroyItem'])->name('modifier.item.destroy');
     });
 
     /**

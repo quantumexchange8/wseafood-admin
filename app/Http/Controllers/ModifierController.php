@@ -17,9 +17,11 @@ class ModifierController extends Controller
     public function index()
     {
         $modifierGroup = ModifierGroup::select('updated_at')->orderByDesc('updated_at')->first();
+        $groupCount = ModifierGroup::all()->count();
 
         return Inertia::render('ModifierGroup/ModifierGroupList', [
             'modifierGroup' => $modifierGroup,
+            'groupCount' => $groupCount,
         ]);
     }
 
@@ -166,7 +168,6 @@ class ModifierController extends Controller
                 });
             }
 
-
             return response()->json([
                 'success' => true,
                 'data' => $fetchedGroup,
@@ -204,6 +205,14 @@ class ModifierController extends Controller
             'title' => trans('public.modifier_group_deleted'),
             'message' => trans('public.modifier_group_deleted_caption'). $name,
             'type' => 'success'
+        ]);
+    }
+
+    public function indexItem()
+    {
+        $modifierItem = ModifierItem::select('updated_at')->orderByDesc('updated_at')->first();
+        return Inertia::render('ModifierItem/ModifierItemList', [
+            'modifierItem' => $modifierItem,
         ]);
     }
 
@@ -258,8 +267,16 @@ class ModifierController extends Controller
                 $query->orderByDesc('created_at');
             }
 
-            $fetchedItem = $query->get();
-
+            $fetchedItem = null;
+            if($data['rows']) {
+                $fetchedItem = $query->paginate($data['rows']);
+                $fetchedItem->getCollection()->transform(function ($item) {
+                    $item->group_count = $item->hasModifierGroupIds()->count();
+                    return $item;
+                });
+            } else {
+                $fetchedItem = $query->get();
+            }
             return response()->json([
                 'success' => true,
                 'data' => $fetchedItem,
@@ -267,6 +284,52 @@ class ModifierController extends Controller
         }
 
         return response()->json(['success' => false, 'data' => []]);
+    }
+
+    public function updateItem(Request $request)
+    {
+        $rules = [
+            'id' => ['required'],
+            'modifier_name' => ['required', 'array'],
+        ];
+
+        foreach(config('app.available_locales') as $locale) {
+            $rules["modifier_name.$locale"] = ['required'];
+        }
+
+        $attributeNames = [
+            'modifier_name.*' => trans('public.modifier_name'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
+
+        $item = ModifierItem::find($request->id);
+        if(Str::slug($request->modifier_name['en']) !== $item->slug) {
+            $item->slug = Str::slug($request->modifier_name['en']);
+        }
+        $item->name = json_encode($request->modifier_name);
+        $item->save();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.modifier_item_updated'),
+            'message' => trans('public.modifier_item_updated_caption'). $request->modifier_name[app()->getLocale()],
+            'type' => 'success'
+        ]);
+    }
+
+    public function destroyItem(Request $request)
+    {
+        $group = ModifierItem::find($request->id);
+        $name = json_decode($group->name);
+        $locale = app()->getLocale();
+        $group->delete();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.modifier_group_deleted'),
+            'message' => trans('public.modifier_group_deleted_caption'). $name->$locale,
+            'type' => 'success'
+        ]);
     }
 
     public function fetchCategoryProduct()

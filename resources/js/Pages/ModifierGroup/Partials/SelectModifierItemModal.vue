@@ -87,7 +87,8 @@ const onFilter = (event) => {
 onMounted(() => {
     lazyParams.value = {
         sortField: null,
-        filters: filters.value
+        filters: filters.value,
+        rows: null,
     };
 
     loadLazyData();

@@ -239,4 +239,11 @@ return [
     "password" => "密码",
     "enter_your_email" => "请输入您的电子邮箱",
     'point_adjustment_placeholder' => '例如：增加',
+    'modifier_item_list' => '修改项列表',
+    'list_of_modifier_item' => '修改项清单',
+    'number_modifier_group' => '修改项分组数量',
+    'modifier_item_name' => '修改项名称',
+    'create_modifier_item' => '创建修改项',
+    'modifier_item_updated' => '修改项更新成功',
+    'modifier_item_updated_caption' => '修改项已成功更新',
 ];

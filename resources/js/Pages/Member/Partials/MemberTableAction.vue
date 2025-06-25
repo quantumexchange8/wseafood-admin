@@ -37,7 +37,7 @@ const toggle = (event) => {
         type="button"
         rounded
         severity="secondary"
-        outlined
+        variant="text"
         size="small"
         class="!p-2"
         @click="toggle"

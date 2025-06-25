@@ -1,25 +1,41 @@
 <script setup>
 import { Dialog, Button, InputText } from 'primevue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import InputError from '@/Components/InputError.vue';
 
 const props = defineProps({
     visible: Boolean,
+    modifierItem: Object,
 });
 
 const emit = defineEmits(['update:visible', 'update:itemCreated']);
 
 const show = ref(false);
 const availableLocales = JSON.parse(usePage().props.availableLocales);
-
+const modifierName = computed(() => {
+    if (!props.modifierItem || !props.modifierItem.name) return {};
+    try {
+        return typeof props.modifierItem.name === 'string'
+            ? JSON.parse(props.modifierItem.name)
+            : props.modifierItem.name;
+    } catch {
+        return {};
+    }
+});
 
 const form = useForm({
-    modifier_name: {},
+    id: props.modifierItem?.id ?? '',
+    modifier_name: modifierName.value ?? {},
 });
 
 const submitForm = () => {
-    form.post(route('modifier.item.store'), {
+    const path = ref('modifier.item.store');
+    if(props.modifierItem) {
+        path.value = 'modifier.item.update';
+    }
+
+    form.post(route(path.value), {
         onSuccess: () => {
             form.reset();
             show.value = false;
@@ -81,7 +97,7 @@ watch(show, (val) => {
             />
             <Button
                 type="submit"
-                :label="$t('public.create')"
+                :label="modifierItem ? $t('public.save') : $t('public.create')"
                 @click="submitForm"
                 :disabled="form.processing"
             />

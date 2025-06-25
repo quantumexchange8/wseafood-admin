@@ -239,4 +239,11 @@ return [
     "password" => "Password",
     "enter_your_email" => "Enter your email",
     'point_adjustment_placeholder' => 'e.g. Addition',
+    'modifier_item_list' => 'Modifier Item List',
+    'list_of_modifier_item' => 'List of Modifier Item',
+    'number_modifier_group' => 'No. of modifier group',
+    'modifier_item_name' => 'Modifier Item Name',
+    'create_modifier_item' => 'Create Modifier Item',
+    'modifier_item_updated' => 'Modifier Item Updated',
+    'modifier_item_updated_caption' => 'Modifier Item has updated successfully ',
 ];
