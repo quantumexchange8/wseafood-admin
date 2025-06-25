@@ -10,7 +10,6 @@ import {generalFormat} from "@/Composables/format.js";
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 import StatusSwitch from '@/Components/StatusSwitch.vue';
 
 const props = defineProps({

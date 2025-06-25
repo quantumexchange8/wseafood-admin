@@ -354,12 +354,8 @@ watch((addedItem), () => {
                         <Column
                             field="status"
                             class="w-[100px]"
+                            :header="$t('public.status')"
                         >
-                            <template #header>
-                                <div class="w-full flex justify-center text-xs font-bold">
-                                    {{ $t('public.status') }}
-                                </div>
-                            </template>
                             <template #body="{ data }">
                                 <div class="flex justify-center items-center">
                                     <ToggleSwitch
@@ -374,12 +370,8 @@ watch((addedItem), () => {
                         </Column>
                         <Column
                             field="modifier_name"
+                            :header="$t('public.modifier_name')"
                         >
-                            <template #header>
-                                <div class="text-xs font-bold">
-                                    {{ $t('public.modifier_name') }}
-                                </div>
-                            </template>
                             <template #body="{ data }">
                                 <span class="text-sm font-bold">
                                     {{ JSON.parse(data.name)[locale] ?? JSON.parse(data.name)['en'] }}
@@ -389,12 +381,8 @@ watch((addedItem), () => {
                         <Column
                             field="price"
                             class="w-[110px]"
+                            :header="$t('public.price')"
                         >
-                            <template #header>
-                                <div class="w-full flex justify-center text-xs font-bold">
-                                    {{ $t('public.price') }}
-                                </div>
-                            </template>
                             <template #body="{ data }">
                                 <span class="text-sm text-nowrap">
                                     + {{ formatAmount(data.price, 2, 'RM') }}
@@ -404,12 +392,8 @@ watch((addedItem), () => {
                         <Column
                             field="default"
                             class="w-[100px]"
+                            :header="$t('public.default')"
                         >
-                            <template #header>
-                                <div class="w-full flex justify-center text-xs font-bold">
-                                    {{ $t('public.default') }}
-                                </div>
-                            </template>
                             <template #body="{ data }">
                                 <div class="flex justify-center items-center">
                                     <RadioButton
@@ -422,12 +406,8 @@ watch((addedItem), () => {
                         <Column
                             field="action"
                             class="w-[100px]"
+                            :header="$t('public.action')"
                         >
-                            <template #header>
-                                <div class="w-full flex justify-end text-xs font-bold">
-                                    {{ $t('public.action') }}
-                                </div>
-                            </template>
                             <template #body="{ data }">
                                 <div class="flex items-center gap-3">
                                     <Button

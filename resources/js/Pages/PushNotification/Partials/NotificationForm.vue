@@ -1,10 +1,9 @@
 <script setup>
 import { Card, Button, InputText, RadioButton, Select, DatePicker } from 'primevue';
-import {router, useForm, usePage} from '@inertiajs/vue3';
+import { useForm, usePage} from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
-import ConfirmationDialog from '@/Components/ConfirmationDialog.vue';
 import {useConfirm} from "primevue/useconfirm";
 import {trans} from "laravel-vue-i18n";
 
@@ -15,7 +14,6 @@ const props = defineProps({
 const availableLocales = JSON.parse(usePage().props.availableLocales);
 const scheduleType = ref(['immediately', 'scheduled']);
 const showDatepicker = ref(false);
-const pushNowConfirm = ref(null);
 
 const form = useForm({
     id: props.notification?.id ?? '',

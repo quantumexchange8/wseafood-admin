@@ -4,11 +4,10 @@ import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconPencil, IconTrash, IconUpload } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX, IconUpload } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
-import PointAdjustmentModal from './PointAdjustmentModal.vue';
-import DeleteConfirmation from '@/Components/ConfirmationDialog.vue';
+import MemberTableAction from '@/Pages/Member/Partials/MemberTableAction.vue';
 
 const props = defineProps({
     member: Object,
@@ -18,12 +17,9 @@ const { formatNameLabel, formatDateTime } = generalFormat();
 
 const isLoading = ref(false);
 const dt = ref(null);
-const fetchedCategory = ref([]);
+const fetchedMember = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const pointModalVisible = ref(false);
-const adjustMember = ref(null);
-const deleteConfirmModal = ref(null);
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -54,14 +50,14 @@ const loadLazyData = (event) => {
             const response = await fetch(url);
             const results = await response.json();
 
-            fetchedCategory.value = results?.data?.data;
+            fetchedMember.value = results?.data?.data;
 
             totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
-        fetchedCategory.value = [];
+        fetchedMember.value = [];
         totalRecords.value = 0;
         isLoading.value = false;
     }
@@ -139,19 +135,6 @@ const getSeverity = (status) => {
     }
 };
 
-const adjustPoint = (member) => {
-    adjustMember.value = member;
-    pointModalVisible.value = true;
-};
-
-const deleteMember = (member) => {
-    if(deleteConfirmModal.value) {
-        deleteConfirmModal.value.deleteItem(member.id, member.full_name, 'member.destroy');
-    } else {
-        console.log('DeleteConfirmationModal unavailable');
-    }
-};
-
 </script>
 <template>
     <div class="flex flex-col md:flex-row items-center self-stretch gap-3 w-full md:w-auto">
@@ -211,7 +194,7 @@ const deleteMember = (member) => {
         </template>
         <template #content>
             <DataTable
-                :value="fetchedCategory"
+                :value="fetchedMember"
                 lazy
                 paginator
                 removableSort
@@ -231,7 +214,7 @@ const deleteMember = (member) => {
                 :globalFilterFields="['name', 'status']"
             >
                 <template #empty>
-                    <div v-if="fetchedCategory.length === 0">
+                    <div v-if="fetchedMember.length === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -250,17 +233,13 @@ const deleteMember = (member) => {
                     </div>
                 </template>
 
-                <template v-if="fetchedCategory?.length > 0">
+                <template v-if="fetchedMember?.length > 0">
                     <Column
                         field="id"
                         class="w-[100px]"
                         sortable
+                        :header="$t('public.id')"
                     >
-                        <template #header>
-                            <span class="block text-nowrap">
-                                {{ $t('public.id') }}
-                            </span>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ data.id }}
@@ -271,12 +250,8 @@ const deleteMember = (member) => {
                     <Column
                         field="full_name"
                         sortable
+                        :header="$t('public.member')"
                     >
-                        <template #header>
-                            <span class="block text-nowrap">
-                                {{ $t('public.member') }}
-                            </span>
-                        </template>
                         <template #body="{ data }">
                             <div class="flex items-center gap-3 self-stretch">
                                 <Avatar
@@ -306,12 +281,8 @@ const deleteMember = (member) => {
                         field="point"
                         class="w-[100px] text-nowrap"
                         sortable
+                        :header="$t('public.point')"
                     >
-                        <template #header>
-                            <div>
-                                {{ $t('public.point') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ data.point }} PTS
@@ -323,12 +294,8 @@ const deleteMember = (member) => {
                         field="created_at"
                         class="w-[100px] text-nowrap"
                         sortable
+                        :header="$t('public.joined_on')"
                     >
-                        <template #header>
-                            <div class="text-nowrap">
-                                {{ $t('public.joined_on') }}
-                            </div>
-                        </template>
                         <template #body="{ data }">
                             <div class="text-sm">
                                 {{ formatDateTime(data.created_at, false) }}
@@ -340,12 +307,8 @@ const deleteMember = (member) => {
                         field="status"
                         class="w-[100px] text-nowrap"
                         sortable
+                        :header="$t('public.status')"
                     >
-                        <template #header>
-                            <span class="block text-nowrap">
-                                {{ $t('public.status') }}
-                            </span>
-                        </template>
                         <template #body="{ data }">
                             <Tag 
                                 :value="$t(`public.${data.status}`)" 
@@ -358,40 +321,10 @@ const deleteMember = (member) => {
                     <Column
                         field="action"
                         class="w-[100px]"
+                        :header="$t('public.action')"
                     >
-                        <template #header>
-                            <span class="block text-nowrap">
-                                {{ $t('public.action') }}
-                            </span>
-                        </template>
                         <template #body="{ data }">
-                            <div class="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="adjustPoint(data)"
-                                >
-                                    <template #icon>
-                                        <IconPencil :size="14" stroke-width="1.5"/>
-                                    </template>
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    class="rounded-full"
-                                    @click="deleteMember(data)"
-                                >
-                                    <template #icon>
-                                        <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                    </template>
-                                </Button>
-                            </div>
+                            <MemberTableAction :member="data" />
                         </template>
                     </Column>
                 </template>
@@ -490,12 +423,4 @@ const deleteMember = (member) => {
             </div>
         </div>
     </Popover>
-
-    <PointAdjustmentModal 
-        :visible="pointModalVisible"
-        :member="adjustMember"
-        @update:visible="pointModalVisible = $event"
-    />
-
-    <DeleteConfirmation ref="deleteConfirmModal" />
 </template>

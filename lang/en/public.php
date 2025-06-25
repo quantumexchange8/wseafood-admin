@@ -238,4 +238,5 @@ return [
     "email" => "Email",
     "password" => "Password",
     "enter_your_email" => "Enter your email",
+    'point_adjustment_placeholder' => 'e.g. Addition',
 ];

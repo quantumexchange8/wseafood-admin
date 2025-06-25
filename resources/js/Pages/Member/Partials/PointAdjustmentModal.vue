@@ -111,7 +111,7 @@ watch(show, (val) => {
                 </div>
                 <InputText
                     v-model="form.remark"
-                    placeholder="e.g. Addition"
+                    :placeholder="$t('public.point_adjustment_placeholder')"
                     inputId="remark"
                     class="w-full"
                 />
