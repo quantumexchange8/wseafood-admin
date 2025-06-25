@@ -78,7 +78,7 @@ const submitForm = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.category_detail') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.category_detail_caption') }}
                     </div>
                 </div>
@@ -223,7 +223,7 @@ const submitForm = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.description') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.description_caption') }}
                     </div>
                 </div>

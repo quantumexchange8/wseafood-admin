@@ -72,7 +72,7 @@ const submitForm = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.highlight_detail') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.highlight_detail_caption') }}
                     </div>
                 </div>
@@ -180,7 +180,7 @@ const submitForm = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.content') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.content_caption') }}
                     </div>
                 </div>
@@ -200,7 +200,7 @@ const submitForm = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.image') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.image_caption') }}
                     </div>
                 </div>

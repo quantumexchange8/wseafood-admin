@@ -174,7 +174,7 @@ const getSeverity = (type) => {
                     <div class="text-lg font-bold">
                         {{ $t('public.meal_detail') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.meal_detail_caption') }}
                     </div>
                 </div>
@@ -372,7 +372,7 @@ const getSeverity = (type) => {
                     </Button>
                     <div 
                         v-else
-                        class="text-xs text-gray-400"
+                        class="font-normal italic text-xs text-gray-400"
                     >
                         {{ $t('public.modifier_group_caption') }}
                     </div>
@@ -457,7 +457,7 @@ const getSeverity = (type) => {
                     <div class="text-lg font-bold">
                         {{ $t('public.image') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.image_caption') }}
                     </div>
                 </div>
@@ -525,7 +525,7 @@ const getSeverity = (type) => {
                     <div class="text-lg font-bold">
                         {{ $t('public.description') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.description_caption') }}
                     </div>
                 </div>

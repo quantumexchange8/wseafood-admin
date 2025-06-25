@@ -210,9 +210,8 @@ function selectCategory(index) {
                     </IconField>
                     <!-- filter button -->
                     <Button
-                        class="flex gap-2 items-center w-full md:w-fit font-bold !bg-white"
-                        severity="secondary"
-                        outlined
+                        class="flex gap-2 items-center w-full md:w-fit font-bold"
+                        severity="contrast"
                         @click="toggle"
                     >
                         <IconAdjustments :size="16" stroke-width="1.5"/>

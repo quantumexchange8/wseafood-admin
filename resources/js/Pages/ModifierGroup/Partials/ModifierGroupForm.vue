@@ -165,7 +165,7 @@ watch((addedItem), () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.group_detail') }}
                     </div>
-                    <div class="text-xs text-gray-400">
+                    <div class="font-normal italic text-xs text-gray-400">
                         {{ $t('public.group_detail_caption') }}
                     </div>
                 </div>
