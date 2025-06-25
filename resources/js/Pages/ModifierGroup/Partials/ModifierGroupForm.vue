@@ -15,6 +15,8 @@ import MealItemPhoto from '@/Pages/ModifierGroup/Partials/MealItemPhoto.vue';
 const props = defineProps({
     itemCount: Number,
     categoryCount: Number,
+    modifierGroup: Object,
+    selectedItem: Object,
 });
 
 const { formatAmount } = generalFormat();
@@ -34,10 +36,10 @@ const selectedMealKeys = ref();
 const selectMealItemModalRef = ref();
 
 const form = useForm({
-    group_name: '',
-    display_name: {},
-    group_type: 'optional',
-    min: 0,
+    group_name: props.modifierGroup?.group_name ?? '',
+    display_name: props.modifierGroup?.display_name ?? {},
+    group_type: props.modifierGroup?.group_type ?? 'optional',
+    min: props.modifierGroup?.min_selection ?? 0,
     max: 1,
     modifier_items: {},
     meals: {},
@@ -47,8 +49,6 @@ const form = useForm({
 const submitForm = () => {
     form.modifier_items = addedItemUpdate.value;
     form.meals = selectedMeal.value;
-
-console.log(form);
 
     form.post(route('modifier.group.store'), {
         onSuccess: () => {
@@ -112,6 +112,22 @@ watch((noMax), () => {
         form.max = 1;
     }
 });
+
+watch(() => props.modifierGroup, () => {
+    if(props.modifierGroup?.max_selection === null) {
+        noMax.value = true;
+    }
+}, {immediate: true, deep: true});
+
+watch(() => props.selectedItem, (val) => {
+    if (val && Array.isArray(val)) {
+        addedItem.value = val;
+        addedItemUpdate.value = val;
+
+        const defaultItem = val.find(item => item.default === 1);
+        form.default_item = defaultItem ? defaultItem.id : null;
+    }
+}, { immediate: true, deep: true });
 
 watch(() => form.group_type, () => {
     if(form.group_type === 'optional') {

@@ -45,18 +45,19 @@ const requireConfirmation = (action_type) => {
 
 <template>
     <div class="flex items-center gap-3">
-        <!-- <Button
+        <Button
             type="button"
             severity="secondary"
             outlined
             size="small"
             class="rounded-full"
             icon="IconPencil"
+            @click="router.visit(route('modifier.group.edit', modifierGroup.id))"
         >
             <template #icon>
                 <IconPencil :size="14" stroke-width="1.5"/>
             </template>
-        </Button> -->
+        </Button>
 
         <Button
             type="button"

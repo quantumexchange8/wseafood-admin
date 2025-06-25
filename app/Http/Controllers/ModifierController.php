@@ -7,7 +7,9 @@ use App\Models\ModifierGroup;
 use App\Models\ModifierItem;
 use App\Models\ModifierItemToGroup;
 use App\Models\ProductToModifierGroup;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -192,6 +194,28 @@ class ModifierController extends Controller
             'title' => trans('public.status_updated'),
             'message' => trans('public.status_updated_caption'). $request->name,
             'type' => 'success'
+        ]);
+    }
+
+    public function editGroup(Request $request)
+    {
+        $group = ModifierGroup::find($request->id);
+        $group->display_name = json_decode($group->display_name);
+
+        $item = $group->hasModifierItemIds()->orderBy('position')->get()->transform(function ($id) {
+            $data = $id->modifierItem()->first();
+            $data->status = $id->status;
+            $data->price = $id->price;
+            $data->default = $id->default;
+            // pass a original item for the checkbox to checked
+            return $data;
+        });
+        
+        // dd($item);
+        
+        return Inertia::render('ModifierGroup/EditModifierGroup', [
+            'modifierGroup' => $group,
+            'selectedItem' => $item,
         ]);
     }
 

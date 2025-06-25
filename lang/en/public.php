@@ -246,4 +246,6 @@ return [
     'create_modifier_item' => 'Create Modifier Item',
     'modifier_item_updated' => 'Modifier Item Updated',
     'modifier_item_updated_caption' => 'Modifier Item has updated successfully ',
+    'edit_modifier_group' => 'Edit Modifier Group',
+    'edit_modifier_group_caption' => 'Edit exsisting modifier group',
 ];

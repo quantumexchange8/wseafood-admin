@@ -121,9 +121,9 @@ watch(show, (val) => {
     }
 });
 
-watch(() => props.updateChecked, () => {
-    checkedItem.value = props.updateChecked;
-});
+watch(() => props.updateChecked, (val) => {
+    checkedItem.value = Array.isArray(val) ? [...val] : [];
+}, { immediate: true, deep: true });
 
 const addItem = () => {
     emit('update:addItem', checkedItem.value);

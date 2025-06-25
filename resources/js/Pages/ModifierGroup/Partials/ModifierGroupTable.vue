@@ -159,7 +159,7 @@ const applyFilter = () => {
             severity="contrast"
             @click="toggle"
         >
-            <IconAdjustments :size="16" stroke-width="1.5"/>
+            <IconAdjustments :size="20" stroke-width="1.5"/>
             {{ $t('public.filter') }}
         </Button>
     </div>
