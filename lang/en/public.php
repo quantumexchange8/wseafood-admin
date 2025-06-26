@@ -270,5 +270,10 @@ return [
     "registered_member" =>  "Registered Members",
     "save_changes" =>  "Save Changes",
     "modifier_group_updated" => "Modifier group updated",
-    "modifier_group_updated_caption" => "Modifier group has updated successfully "
+    "modifier_group_updated_caption" => "Modifier group has updated successfully ",
+    'reset_password' => 'Reset Password',
+    'new_password' => 'New Password',
+    'confirm_password' => 'Confirm Password',
+    'password_reset' => 'Password Reset',
+    'password_reset_caption' => 'Password has reset successfully ',
 ];

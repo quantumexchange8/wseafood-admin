@@ -4,11 +4,11 @@ import { IconDotsVertical } from '@tabler/icons-vue';
 import { ref } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import PointAdjustmentForm from "@/Pages/Member/Partials/PointAdjustmentForm.vue";
+import ResetPasswordForm from './ResetPasswordForm.vue';
 
 const props = defineProps({
     member: Object,
 });
-
 
 const visible = ref(false);
 const dialogType = ref('');
@@ -22,6 +22,13 @@ const items = ref([
             dialogType.value = 'point_adjustment'
         },
     },
+    {
+        label: trans('public.reset_password'),
+        command: () => {
+            visible.value = true;
+            dialogType.value = 'reset_password'
+        },
+    },
 ]);
 
 const toggle = (event) => {
@@ -30,9 +37,18 @@ const toggle = (event) => {
 
 // Ref to the child form component
 const formRef = ref(null)
+const resetFormRef = ref(null);
 
 const handleSaveChanges = () => {
-    formRef.value?.submitForm()
+    switch (dialogType.value) {
+        case 'point_adjustment':
+            formRef.value?.submitForm();
+            break;
+
+        case 'reset_password':
+            resetFormRef.value?.submitForm();
+            break;
+    }
 }
 </script>
 
@@ -63,13 +79,20 @@ const handleSaveChanges = () => {
     >
         <template #header>
             <div class="text-lg font-bold">
-                {{ $t('public.point_adjustment') }}
+                {{ $t(`public.${dialogType}`) }}
             </div>
         </template>
 
         <template v-if="dialogType === 'point_adjustment'">
             <PointAdjustmentForm
                 ref="formRef"
+                :member="member"
+            />
+        </template>
+
+        <template v-if="dialogType === 'reset_password'">
+            <ResetPasswordForm
+                ref="resetFormRef"
                 :member="member"
             />
         </template>

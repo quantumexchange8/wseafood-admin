@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/fetch-member', [MemberController::class, 'fetchMember'])->name('member.fetch');
         Route::post('/adjust-point', [MemberController::class, 'adjustPoint'])->name('member.adjustPoint');
         Route::delete('/delete', [MemberController::class, 'destroy'])->name('member.destroy');
+        Route::post('/reset-password', [MemberController::class, 'resetPassword'])->name('member.resetPassword');
     });
 
     /**

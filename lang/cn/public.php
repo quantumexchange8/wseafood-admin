@@ -268,6 +268,12 @@ return [
     "December" => "十二月",
     "member_analysis" => "会员分析",
     "registered_member" => "注册会员",
+    "save_changes" =>  "保存更改",
     "modifier_group_updated" => "修改项分组更新成功",
-    "modifier_group_updated_caption" => "修改项分组已成功更新"
+    "modifier_group_updated_caption" => "修改项分组已成功更新",
+    'reset_password' => '重置密码',
+    'new_password' => '新密码',
+    'confirm_password' => '确认密码',
+    'password_reset' => '密码已重置',
+    'password_reset_caption' => '密码已成功重置',
 ];

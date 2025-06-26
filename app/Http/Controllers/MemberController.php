@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Hash;
 
 class MemberController extends Controller
 {
@@ -124,6 +126,29 @@ class MemberController extends Controller
         return redirect()->back()->with('toast', [
             'title' => trans('public.member_deleted'),
             'message' => trans('public.member_deleted_caption'). $name,
+            'type' => 'success'
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'password_confirmation' => ['required','same:password'],
+        ])->setAttributeNames([
+            'password' => trans('public.password'),
+            'password_confirmation' => trans('public.confirm_password')
+        ]);
+        $validator->validate();
+
+        $member = User::find($request->memberId);
+        $member->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.password_reset'),
+            'message' => trans('public.password_reset_caption'). $member->full_name,
             'type' => 'success'
         ]);
     }
