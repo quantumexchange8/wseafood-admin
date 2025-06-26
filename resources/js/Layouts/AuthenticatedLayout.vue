@@ -33,7 +33,7 @@ defineProps({
             <Navbar />
 
             <!-- Page Content -->
-            <main class="flex flex-1 justify-center items-start px-3 pt-3 pb-12 md:px-5 md:pt-5">
+            <main class="flex flex-1 justify-center items-start px-3 pt-2 pb-12 md:px-4">
                 <div class="w-full max-w-[1440px]">
                     <Toast />
                     <ToastList />

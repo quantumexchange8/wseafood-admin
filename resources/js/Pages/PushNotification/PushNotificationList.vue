@@ -16,7 +16,7 @@ const { formatDateTime } = generalFormat();
 
 <template>
     <AuthenticatedLayout :title="$t('public.push_notification')" >
-        <div class="flex px-4 pt-2 pb-5 flex-col items-center gap-4 flex-1">
+        <div class="flex flex-col items-center gap-4 self-stretch">
             <div class="flex items-center justify-center gap-4 self-stretch">
                 <div class="flex flex-col items-start flex-1">
                     <div class="self-stretch text-2xl font-bold dark:text-white">

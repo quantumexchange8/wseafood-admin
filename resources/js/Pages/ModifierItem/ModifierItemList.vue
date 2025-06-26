@@ -20,7 +20,7 @@ const createModalVisible = ref(false);
 
 <template>
     <AuthenticatedLayout :title="$t('public.modifier_item')" >
-        <div class="flex px-4 pt-2 pb-5 flex-col items-center gap-4 flex-1">
+        <div class="flex flex-col items-center gap-4 self-stretch">
             <div class="flex items-center justify-center gap-4 self-stretch">
                 <div class="flex flex-col items-start flex-1">
                     <div class="self-stretch text-2xl font-bold">
@@ -44,8 +44,8 @@ const createModalVisible = ref(false);
         </div>
 
         <CreateModifierItemModal
-            :visible="createModalVisible" 
-            @update:visible="createModalVisible = $event" 
+            :visible="createModalVisible"
+            @update:visible="createModalVisible = $event"
         />
     </AuthenticatedLayout>
 </template>

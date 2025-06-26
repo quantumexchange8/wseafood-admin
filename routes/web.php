@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('locale/{locale}', function ($locale) {
     App::setLocale($locale);
@@ -30,9 +30,8 @@ Route::middleware('auth')->group(function () {
      *           Dashboard
      * ==============================
      */
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('get_member_analysis_by_year', [DashboardController::class, 'get_member_analysis_by_year'])->name('dashboard.get_member_analysis_by_year');
 
     /**
      * ==============================

@@ -43,7 +43,7 @@ const handleLogOut = () => {
 <template>
     <nav
         aria-label="secondary"
-        class="sticky top-0 z-20 py-2 px-3 md:px-5 bg-surface-50 dark:bg-surface-950 flex items-center gap-3 transition-colors duration-200 w-full"
+        class="sticky top-0 z-20 py-2 md:py-4 px-4 bg-surface-50 dark:bg-surface-950 flex items-center gap-3 transition-colors duration-200 w-full"
     >
         <div class="w-full flex justify-between">
             <Button

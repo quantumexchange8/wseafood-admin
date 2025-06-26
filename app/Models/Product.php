@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,7 +23,7 @@ class Product extends Model implements HasMedia
         'set_meal',
     ];
 
-    public function generateProductCode($category_id)
+    public function generateProductCode($category_id): string
     {
         $count = ($this->where('category_id', $category_id)->count())+1;
         $formattedCount = str_pad($count, 3, '0', STR_PAD_LEFT);
@@ -30,13 +31,16 @@ class Product extends Model implements HasMedia
         $category = Category::find($category_id);
         $prefix = $category->prefix;
 
-        $productCode = $prefix.$formattedCount;
-
-        return $productCode;
+        return $prefix.$formattedCount;
     }
 
     public function hasModifierGroupIds(): HasMany
     {
         return $this->hasMany(ProductToModifierGroup::class, 'product_id', 'id');
+    }
+
+    public function viewAnalytics(): MorphMany
+    {
+        return $this->morphMany(ViewAnalytic::class, 'subject');
     }
 }
