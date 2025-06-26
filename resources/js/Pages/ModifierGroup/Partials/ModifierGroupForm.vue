@@ -17,6 +17,8 @@ const props = defineProps({
     categoryCount: Number,
     modifierGroup: Object,
     selectedItem: Object,
+    selectedProduct: Array,
+    selectedProductKeys: Object,
 });
 
 const { formatAmount } = generalFormat();
@@ -36,6 +38,7 @@ const selectedMealKeys = ref();
 const selectMealItemModalRef = ref();
 
 const form = useForm({
+    id: props.modifierGroup?.id ?? '',
     group_name: props.modifierGroup?.group_name ?? '',
     display_name: props.modifierGroup?.display_name ?? {},
     group_type: props.modifierGroup?.group_type ?? 'optional',
@@ -50,7 +53,12 @@ const submitForm = () => {
     form.modifier_items = addedItemUpdate.value;
     form.meals = selectedMeal.value;
 
-    form.post(route('modifier.group.store'), {
+    const path = ref('modifier.group.store');
+    if(props.modifierGroup) {
+        path.value = 'modifier.group.update';
+    }
+
+    form.post(route(path.value, props.modifierGroup?.id), {
         onSuccess: () => {
             form.reset();
         },
@@ -121,13 +129,24 @@ watch(() => props.modifierGroup, () => {
 
 watch(() => props.selectedItem, (val) => {
     if (val && Array.isArray(val)) {
-        addedItem.value = val;
+        addedItem.value = [];
+        val.forEach(data => {
+            addedItem.value.push(data.original_item);
+        });
         addedItemUpdate.value = val;
 
         const defaultItem = val.find(item => item.default === 1);
         form.default_item = defaultItem ? defaultItem.id : null;
     }
-}, { immediate: true, deep: true });
+}, { immediate: true});
+
+watch(() => props.selectedProduct, () => {
+    selectedMeal.value = props.selectedProduct;
+}, {immediate: true, deep: true});
+
+watch(() => props.selectedProductKeys, () => {
+    selectedMealKeys.value = props.selectedProductKeys;
+}, {immediate: true, deep: true});
 
 watch(() => form.group_type, () => {
     if(form.group_type === 'optional') {

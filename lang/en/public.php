@@ -268,4 +268,6 @@ return [
     "December" => "December",
     "member_analysis" => "Member Analysis",
     "registered_member" =>  "Registered Members",
+    "modifier_group_updated" => "Modifier group updated",
+    "modifier_group_updated_caption" => "Modifier group has updated successfully "
 ];

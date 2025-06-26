@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/fetch-category-product', [ModifierController::class, 'fetchCategoryProduct'])->name('modifier.categoryProduct.fetch');
         Route::post('/update-status', [ModifierController::class, 'updateGroupStatus'])->name('modifier.group.updateStatus');
         Route::get('/edit/{id}', [ModifierController::class, 'editGroup'])->name('modifier.group.edit');
-        Route::put('/edit/{id}', [ModifierController::class, 'updateGroup'])->name('modifier.group.update');
+        Route::post('/edit/{id}', [ModifierController::class, 'updateGroup'])->name('modifier.group.update');
         Route::delete('/delete', [ModifierController::class, 'destroyGroup'])->name('modifier.group.destroy');
     });
 

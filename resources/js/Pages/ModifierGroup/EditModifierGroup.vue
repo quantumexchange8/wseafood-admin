@@ -3,10 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ModifierGroupForm from '@/Pages/ModifierGroup/Partials/ModifierGroupForm.vue';
 
 const props = defineProps({
+    itemCount: Number,
+    categoryCount: Number,
     modifierGroup: Object,
     selectedItem: Object,
+    selectedProduct: Object,
+    selectedProductKeys: Object,
 });
-
 </script>
 
 <template>
@@ -24,6 +27,8 @@ const props = defineProps({
                 <ModifierGroupForm 
                     :modifierGroup="modifierGroup" 
                     :selectedItem="selectedItem"
+                    :selectedProduct="selectedProduct"
+                    :selectedProductKeys="selectedProductKeys"
                 />
             </div>
         </div>

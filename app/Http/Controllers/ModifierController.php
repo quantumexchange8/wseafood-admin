@@ -7,9 +7,7 @@ use App\Models\ModifierGroup;
 use App\Models\ModifierItem;
 use App\Models\ModifierItemToGroup;
 use App\Models\ProductToModifierGroup;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -45,9 +43,9 @@ class ModifierController extends Controller
             'display_name' => ['required', 'array'],
             'group_type' => ['required', 'string'],
             'min' => ['required', 'numeric', 'min:0'],
-            'max' => ['sometimes', 'numeric', 'min:0'],
+            'max' => ['nullable', 'numeric', 'min:0'],
             'modifier_items' => ['required', 'array'],
-            'meals' => ['sometimes', 'required', 'array'],
+            'meals' => ['nullable', 'array'],
             'default_item' => ['nullable'],
         ];
 
@@ -199,23 +197,151 @@ class ModifierController extends Controller
 
     public function editGroup(Request $request)
     {
+        $item_count = ModifierItem::count();
+        $category_count = Category::count();
+
         $group = ModifierGroup::find($request->id);
         $group->display_name = json_decode($group->display_name);
 
         $item = $group->hasModifierItemIds()->orderBy('position')->get()->transform(function ($id) {
             $data = $id->modifierItem()->first();
+            $data->original_item = $data->getOriginal();
             $data->status = $id->status;
             $data->price = $id->price;
             $data->default = $id->default;
-            // pass a original item for the checkbox to checked
             return $data;
         });
-        
-        // dd($item);
-        
+
+        $productIds = $group->hasProductIds()->pluck('product_id')->toArray();
+
+        $categories = Category::all();
+        $selectedCategoryTree = $categories->map(function($category) use ($productIds) {
+            $products = $category->products()->whereIn('id', $productIds)->get()->map(function($product) {
+                return [
+                    'key' => $product->product_code,
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'product_photo' => $product->getFirstMediaUrl('product_photo'),
+                    'type' => 'meal',
+                ];
+            });
+
+            if ($products->count() > 0) {
+                return [
+                    'key' => $category->id,
+                    'name' => $category->name,
+                    'children' => $products,
+                ];
+            }
+            return null;
+        })->filter()->values();
+
+        $selectedProductKeys = [];
+        foreach ($selectedCategoryTree as $category) {
+            foreach ($category['children'] as $product) {
+                $selectedProductKeys[$product['key']] = ['checked' => true, 'partialChecked' => false];
+            }
+
+            $product_count = Category::find($category['key'])->products()->count();
+            if(count($category['children']) === $product_count) {
+                $selectedProductKeys[$category['key']] = ['checked' => true, 'partialChecked' => false];
+            } else {
+                $selectedProductKeys[$category['key']] = ['checked' => false, 'partialChecked' => true];
+            }
+        }
+
+        $selectedProducts = collect($selectedCategoryTree)->flatMap(function($category) {
+            return $category['children'];
+        })->values();
+
         return Inertia::render('ModifierGroup/EditModifierGroup', [
+            'itemCount' => $item_count,
+            'categoryCount' => $category_count,
             'modifierGroup' => $group,
             'selectedItem' => $item,
+            'selectedProduct' => $selectedProducts,
+            'selectedProductKeys' => $selectedProductKeys,
+        ]);
+    }
+
+    public function updateGroup(Request $request)
+    {
+        $rules = [
+            'id' => ['required'],
+            'group_name' => ['required', 'string'],
+            'display_name' => ['required', 'array'],
+            'group_type' => ['required', 'string'],
+            'min' => ['required', 'numeric', 'min:0'],
+            'max' => ['nullable', 'numeric', 'min:0'],
+            'modifier_items' => ['required', 'array'],
+            'meals' => ['nullable', 'array'],
+            'default_item' => ['nullable'],
+        ];
+
+        foreach(config('app.available_locales') as $locale) {
+            $rules["display_name.$locale"] = ['required'];
+        }
+
+        $attributeNames = [
+            'id' => trans('public.id'),
+            'group_name' => trans('public.group_name'),
+            'display_name.*' => trans('public.display_name'),
+            'group_type' => trans('public.group_type'),
+            'min' => trans('public.min'),
+            'max' => trans('public.max'),
+            'modifier_items' => trans('public.modifier_item'),
+            'meals' => trans('public.meal_item'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
+
+        $modifierGroup = ModifierGroup::find($request->id);
+        $modifierGroup->update([
+            'group_name' => $request->group_name,
+            'display_name' => json_encode($request->display_name),
+            'group_type' => $request->group_type,
+            'min_selection' => $request->min,
+            'max_selection' => $request->max,
+        ]);
+
+        foreach($request->modifier_items as $key => $item) {
+            ModifierItemToGroup::updateOrCreate([
+                'modifier_group_id' => $request->id,
+                'modifier_item_id' => $item['id'],
+                ], [ 
+                'position' => $key+1,
+                'status' => $item['status'],
+                'price' => $item['price'],
+                'default' => $request->default_item === $item['id'] ? true : false,
+            ]);
+        };
+
+        $currentProductIds = ProductToModifierGroup::where('modifier_group_id', $request->id)->pluck('product_id')->toArray();
+
+        $newProductIds = collect($request->meals)->pluck('id')->toArray();
+
+        $toAdd = array_diff($newProductIds, $currentProductIds);
+        $toRemove = array_diff($currentProductIds, $newProductIds);
+
+        if(!empty($toAdd)) {
+            foreach ($toAdd as $productId) {
+                ProductToModifierGroup::create([
+                    'product_id' => $productId,
+                    'modifier_group_id' => $modifierGroup->id,
+                ]);
+            }
+        }
+
+        if(!empty($toRemove)) {
+            ProductToModifierGroup::where('modifier_group_id', $modifierGroup->id)->whereIn('product_id', $toRemove)->delete();
+        }
+
+        return redirect()->route('modifier.group.index')->with('toast',[
+            'title' => trans('public.modifier_group_updated'),
+            'message' => trans('public.modifier_group_updated_caption'). $request->group_name,
+            'type' => 'success'
         ]);
     }
 

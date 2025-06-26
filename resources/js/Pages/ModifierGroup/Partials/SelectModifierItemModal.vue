@@ -183,7 +183,7 @@ const addItem = () => {
             </template>
 
             <template #header>
-                <div class="px-5 py-2 flex justify-between items-center self-stretch border-b border-solid">
+                <div class="px-3 py-2 flex justify-between items-center self-stretch border-b border-solid">
                     <!-- Search bar -->
                     <IconField class="w-full md:w-auto">
                         <InputIcon>

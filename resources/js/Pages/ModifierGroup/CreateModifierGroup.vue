@@ -4,6 +4,7 @@ import ModifierGroupForm from '@/Pages/ModifierGroup/Partials/ModifierGroupForm.
 
 const props = defineProps({
     itemCount: Number,
+    categoryCount: Number,
 });
 </script>
 
@@ -19,7 +20,10 @@ const props = defineProps({
                         {{ $t('public.create_modifier_group_caption') }}
                     </div>
                 </div>
-                <ModifierGroupForm :itemCount='itemCount' />
+                <ModifierGroupForm 
+                    :itemCount='itemCount' 
+                    :categoryCount="categoryCount"
+                />
             </div>
         </div>
 
