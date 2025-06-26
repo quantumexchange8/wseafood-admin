@@ -5,6 +5,7 @@ import { generalFormat } from '@/Composables/format';
 
 const props = defineProps({
     member: Object,
+    memberCount: Number,
 });
 
 const { formatDateTime } = generalFormat();
@@ -24,7 +25,9 @@ const { formatDateTime } = generalFormat();
                     </div>
                 </div>
             </div>
-            <MemberTable />
+            <MemberTable
+                :memberCount="memberCount"
+            />
         </div>
     </AuthenticatedLayout>
 </template>

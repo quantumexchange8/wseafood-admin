@@ -8,12 +8,13 @@ import { IconSearch, IconAdjustments, IconXboxX, IconUpload } from '@tabler/icon
 import Empty from '@/Components/Empty.vue';
 import {generalFormat} from "@/Composables/format.js";
 import MemberTableAction from '@/Pages/Member/Partials/MemberTableAction.vue';
+import dayjs from "dayjs";
 
 const props = defineProps({
-    member: Object,
+    memberCount: Number,
 });
 
-const { formatNameLabel, formatDateTime } = generalFormat();
+const { formatNameLabel, formatAmount } = generalFormat();
 
 const isLoading = ref(false);
 const dt = ref(null);
@@ -147,6 +148,7 @@ const getSeverity = (status) => {
                 v-model="filters['global'].value"
                 type="text"
                 class="block w-full pl-10 pr-10"
+                :placeholder="$t('public.search')"
             />
             <!-- Clear filter button -->
             <div
@@ -177,7 +179,7 @@ const getSeverity = (status) => {
                         {{ $t('public.list_of_member') }}
                     </div>
                     <Tag rounded>
-                        <span>{{ totalRecords }} {{ $t('public.member') }}</span>
+                        <span>{{ memberCount }} {{ $t('public.member') }}</span>
                     </Tag>
                 </div>
                 <Button
@@ -234,14 +236,14 @@ const getSeverity = (status) => {
 
                 <template v-if="fetchedMember?.length > 0">
                     <Column
-                        field="id"
+                        field="id_number"
                         class="w-[100px]"
                         sortable
                         :header="$t('public.id')"
                     >
                         <template #body="{ data }">
                             <div class="text-sm">
-                                {{ data.id }}
+                                {{ data.id_number }}
                             </div>
                         </template>
                     </Column>
@@ -262,14 +264,13 @@ const getSeverity = (status) => {
                                     v-else
                                     :label="formatNameLabel(data.full_name)"
                                     class="w-10 h-10"
-                                    size="large"
                                 />
-                                <div class="flex flex-col gap-1 items-start">
+                                <div class="flex flex-col items-start">
                                     <div class="text-sm font-bold">
                                         {{ data.full_name }}
                                     </div>
-                                    <div class="text-sm">
-                                        {{ data.phone }}
+                                    <div class="text-sm text-surface-500">
+                                        {{ data.phone_number }}
                                     </div>
                                 </div>
                             </div>
@@ -283,8 +284,8 @@ const getSeverity = (status) => {
                         :header="$t('public.point')"
                     >
                         <template #body="{ data }">
-                            <div class="text-sm">
-                                {{ data.point }} PTS
+                            <div class="text-sm font-medium">
+                                {{ formatAmount(data.point, 0, '') }} PTS
                             </div>
                         </template>
                     </Column>
@@ -297,7 +298,7 @@ const getSeverity = (status) => {
                     >
                         <template #body="{ data }">
                             <div class="text-sm">
-                                {{ formatDateTime(data.created_at, false) }}
+                                {{ dayjs(data.created_at).format('DD/MM/YYYY') }}
                             </div>
                         </template>
                     </Column>
@@ -309,8 +310,8 @@ const getSeverity = (status) => {
                         :header="$t('public.status')"
                     >
                         <template #body="{ data }">
-                            <Tag 
-                                :value="$t(`public.${data.status}`)" 
+                            <Tag
+                                :value="$t(`public.${data.status}`)"
                                 :severity="getSeverity(data.status)"
                                 rounded
                             />
@@ -391,7 +392,7 @@ const getSeverity = (status) => {
                     >
                         <div class="flex items-center gap-2">
                             <div :class="[
-                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600',
                                     'w-2 h-2 rounded-full'
                                 ]"
                             ></div>

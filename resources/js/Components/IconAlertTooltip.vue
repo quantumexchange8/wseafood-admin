@@ -7,7 +7,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div 
+    <div
         v-tooltip.top="message"
         class="hover:text-primary-500"
     >

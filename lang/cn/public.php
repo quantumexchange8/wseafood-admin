@@ -136,7 +136,7 @@ return [
     'id' => '编号',
     'current_point' => '当前积分',
     'adjust_point' => '调整积分',
-    'point_adjustment_message' => '输入正数以增加积分，负数以扣除积分。',
+    'point_adjustment_message' => '输入正数以增加积分，负数（-）以扣除积分。',
     'point_adjustment' => '积分调整',
     'insufficient_point' => '积分不足，无法扣除！',
     'remark' => '备注',

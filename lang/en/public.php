@@ -136,7 +136,7 @@ return [
     'id' => 'ID',
     'current_point' => 'Current Point',
     'adjust_point' => 'Adjust Point',
-    'point_adjustment_message' => 'Enter positive number to add point, negative value to deduct point.',
+    'point_adjustment_message' => 'Enter positive number to add point, negative value (-) to deduct point.',
     'point_adjustment' => 'Point Adjustment',
     'insufficient_point' => 'Insufficient point for deduction!',
     'remark' => 'Remark',
@@ -268,6 +268,7 @@ return [
     "December" => "December",
     "member_analysis" => "Member Analysis",
     "registered_member" =>  "Registered Members",
+    "save_changes" =>  "Save Changes",
     "modifier_group_updated" => "Modifier group updated",
     "modifier_group_updated_caption" => "Modifier group has updated successfully "
 ];

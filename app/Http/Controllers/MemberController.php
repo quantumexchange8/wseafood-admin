@@ -18,7 +18,7 @@ class MemberController extends Controller
 
         return Inertia::render('Member/MemberList', [
             'member' => $member,
-            'mmeberCount' => $memberCount,
+            'memberCount' => $memberCount,
         ]);
     }
 
@@ -78,7 +78,7 @@ class MemberController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'adjustPoint' => ['required', 'numeric'],
-            'remark' => ['nullable', 'sometimes', 'string']
+            'remark' => ['required']
         ])->setAttributeNames([
             'adjustPoint' => trans('public.adjust_point'),
             'remark' => trans('public.remark'),

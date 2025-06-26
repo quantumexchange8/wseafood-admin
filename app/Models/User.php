@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
 
     /**
@@ -20,25 +21,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'full_name',
-        'email',
-        'email_verified_at',
-        'verify',
-        'password',
-        'dial_code',
-        'phone',
-        'dob',
-        'gender',
-        'point',
-        'address1',
-        'address2',
-        'address3',
-        'city',
-        'state',
-        'zip',
-        'status',
-    ];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be hidden for serialization.

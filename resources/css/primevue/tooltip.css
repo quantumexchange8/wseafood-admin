@@ -13,7 +13,7 @@
 }
 
 .p-tooltip-text {
-    @apply whitespace-pre-line bg-surface-700 text-surface-0 py-1 px-3 text-center text-xxs
+    @apply whitespace-pre-line bg-surface-700 text-surface-0 py-1 px-3 text-center text-xs
         rounded-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]
 }
 

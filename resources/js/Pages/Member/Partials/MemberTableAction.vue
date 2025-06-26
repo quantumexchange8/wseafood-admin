@@ -1,35 +1,39 @@
 <script setup>
-import { Button, TieredMenu } from 'primevue';
+import { Button, Dialog, TieredMenu } from 'primevue';
 import { IconDotsVertical } from '@tabler/icons-vue';
 import { ref } from 'vue';
-import PointAdjustmentModal from './PointAdjustmentModal.vue';
 import { trans } from 'laravel-vue-i18n';
+import PointAdjustmentForm from "@/Pages/Member/Partials/PointAdjustmentForm.vue";
 
 const props = defineProps({
     member: Object,
 });
 
-const pointModalVisible = ref(false);
-const adjustMember = ref(null);
+
+const visible = ref(false);
+const dialogType = ref('');
+
 const menu = ref();
 const items = ref([
     {
         label: trans('public.point_adjustment'),
         command: () => {
-            adjustPoint(props.member);
+            visible.value = true;
+            dialogType.value = 'point_adjustment'
         },
     },
 ]);
-
-const adjustPoint = (member) => {
-    adjustMember.value = member;
-    pointModalVisible.value = true;
-}
 
 const toggle = (event) => {
     menu.value.toggle(event);
 };
 
+// Ref to the child form component
+const formRef = ref(null)
+
+const handleSaveChanges = () => {
+    formRef.value?.submitForm()
+}
 </script>
 
 <template>
@@ -52,9 +56,35 @@ const toggle = (event) => {
         </template>
     </TieredMenu>
 
-    <PointAdjustmentModal 
-        :visible="pointModalVisible"
-        :member="adjustMember"
-        @update:visible="pointModalVisible = $event"
-    />
+    <Dialog
+        v-model:visible="visible"
+        modal
+        class="dialog-xs md:dialog-sm"
+    >
+        <template #header>
+            <div class="text-lg font-bold">
+                {{ $t('public.point_adjustment') }}
+            </div>
+        </template>
+
+        <template v-if="dialogType === 'point_adjustment'">
+            <PointAdjustmentForm
+                ref="formRef"
+                :member="member"
+            />
+        </template>
+
+        <template #footer>
+            <Button
+                :label="$t('public.cancel')"
+                severity="secondary"
+                outlined
+                @click="visible = false"
+            />
+            <Button
+                :label="$t('public.save_changes')"
+                @click="handleSaveChanges"
+            />
+        </template>
+    </Dialog>
 </template>
