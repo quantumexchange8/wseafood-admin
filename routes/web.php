@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PointController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MemberController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ModifierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\PushNotificationController;
+use App\Http\Controllers\SelectOptionController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -25,6 +27,8 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/getMembers', [SelectOptionController::class, 'getMembers'])->name('getMembers');
+
     /**
      * ==============================
      *           Dashboard
@@ -32,6 +36,16 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('get_member_analysis_by_year', [DashboardController::class, 'get_member_analysis_by_year'])->name('dashboard.get_member_analysis_by_year');
+
+    /**
+     * ==============================
+     *            Point
+     * ==============================
+     */
+    Route::prefix('point')->group(function () {
+        Route::get('/history', [PointController::class, 'index'])->name('point.index');
+        Route::post('/manage_point', [PointController::class, 'manage_point'])->name('point.manage_point');
+    });
 
     /**
      * ==============================

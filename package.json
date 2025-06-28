@@ -37,6 +37,7 @@
         "chart.js": "^4.5.0",
         "dayjs": "^1.11.13",
         "laravel-vue-i18n": "^2.8.0",
+        "lodash": "^4.17.21",
         "primevue": "^4.3.5",
         "tailwindcss-primeui": "^0.6.1"
     }

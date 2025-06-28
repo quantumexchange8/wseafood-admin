@@ -94,7 +94,7 @@ class MemberController extends Controller
             throw ValidationException::withMessages(['adjustPoint' => trans('public.insufficient_point')]);
         }
 
-        $type = $request->adjustPoint > 0 ? 'deposit' : 'withdrawal';
+        $type = $request->adjustPoint > 0 ? 'point_in' : 'point_out';
 
         PointLog::create([
             'user_id' => $member->id,

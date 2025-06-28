@@ -275,5 +275,14 @@ return [
     'new_password' => 'New Password',
     'confirm_password' => 'Confirm Password',
     'password_reset' => 'Password Reset',
-    'password_reset_caption' => 'Password has reset successfully ',
+    'password_reset_caption' => 'Password has reset successfully',
+    "point_history" => "Point History",
+    "manage_point" =>  "Manage Point",
+    "select_member" => "Select Member",
+    "search_member" => "Search Member",
+    "method" => "Method",
+    "receive" => "Receive",
+    "spend" => "Spend",
+    "amount" => "Amount",
+    "order_amount" => "Member's order amount"
 ];

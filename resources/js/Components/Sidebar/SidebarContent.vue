@@ -11,6 +11,7 @@ import {
     IconUsers,
     IconSpeakerphone,
     IconBellPlus,
+    IconRosetteDiscount
 } from '@tabler/icons-vue';
 import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue";
 
@@ -36,6 +37,17 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
         >
             <template #icon>
                 <IconLayoutDashboard :size="20" stroke-width="1.5" />
+            </template>
+        </SidebarLink>
+
+        <!-- Dashboard -->
+        <SidebarLink
+            :title="$t('public.point_history')"
+            :href="route('point.index')"
+            :active="route().current('point.index')"
+        >
+            <template #icon>
+                <IconRosetteDiscount :size="20" stroke-width="1.5" />
             </template>
         </SidebarLink>
 

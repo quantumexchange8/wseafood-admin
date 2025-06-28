@@ -35,7 +35,7 @@ defineExpose({
         @submit.prevent="submitForm"
         class="flex flex-col gap-5 self-stretch"
     >
-        <div class="px-5 pt-5 flex items-center gap-5 justify-between self-stretch bg-gradient-to-b from-orange-50 to-white">
+        <div class="px-5 pt-5 flex items-center gap-5 justify-between self-stretch bg-gradient-to-b from-primary-50 to-white dark:from-primary-950/40 dark;to-surface-900">
             <div class="flex flex-col items-start">
                 <div class="text-lg font-bold">
                     {{ member.full_name }}

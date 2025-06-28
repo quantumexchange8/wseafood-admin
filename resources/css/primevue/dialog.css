@@ -13,7 +13,7 @@
 }
 
 .p-dialog-header {
-    @apply flex items-center justify-between shrink-0 py-4 px-5 border-b border-solid border-[#e4e4e7]
+    @apply flex items-center justify-between shrink-0 py-4 px-5 border-b border-solid border-surface-200 dark:border-surface-700
 }
 
 .p-dialog-title {
@@ -21,7 +21,7 @@
 }
 
 .p-dialog-footer {
-    @apply shrink-0 flex justify-end gap-4 px-5 py-4 self-stretch border-t border-solid border-[#e4e4e7]
+    @apply shrink-0 flex justify-end gap-4 px-5 py-4 self-stretch border-t border-solid border-surface-200 dark:border-surface-700
 }
 
 .p-dialog-header-actions {
