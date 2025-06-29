@@ -38,14 +38,14 @@ class PointController extends Controller
         $new_point = $user->point + $request->point;
 
         PointLog::create([
-            'user_id' => $user->id,
-            'type' => 'manage',
-            'adjust_type' => $request->input('method'),
-            'amount' => $request->amount,
-            'earning_point' => $request->point,
-            'old_point' => $user->point,
-            'new_point' => $new_point,
-            'remark' => $request->point == 'point_in' ? 'Receive' : 'Spend',
+            'user_id'      => $user->id,
+            'type'         => 'manage',
+            'adjust_type'  => $request->input('method'),
+            'amount'       => $request->amount,
+            'earning_point'=> $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point),
+            'old_point'    => $user->point,
+            'new_point'    => $new_point,
+            'remark'       => $request->input('method') == 'point_in' ? 'Receive' : 'Spend',
         ]);
 
         $user->point = $new_point;
@@ -56,5 +56,55 @@ class PointController extends Controller
             'message' => trans('public.point_updated_caption'). $user->full_name,
             'type' => 'success'
         ]);
+    }
+
+    public function getPointHistoryData(Request $request)
+    {
+        if ($request->has('lazyEvent')) {
+            $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
+
+            $query = PointLog::query()
+                ->with([
+                    'user',
+                    'user.media'
+                ]);
+
+            if ($data['filters']['global']['value']) {
+                $keyword = $data['filters']['global']['value'];
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->whereHas('user', function ($q) use ($keyword) {
+                        $q->where('full_name', 'like', "%$keyword%")
+                            ->orWhere('email', 'like', "%$keyword%")
+                            ->orWhere('phone_number', 'like', "%$keyword%");
+                    });
+                });
+            }
+
+            if ($data['filters']['type']['value']) {
+                $query->where('adjust_type', $data['filters']['type']['value']);
+            }
+
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->latest();
+            }
+
+            $point_histories = $query->paginate($data['rows']);
+
+            $point_histories->getCollection()->transform(function ($point) {
+                $point->user->profile_photo = $point->user->getFirstMediaUrl('profile_photo');
+                return $point;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $point_histories,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'data' => []]);
     }
 }

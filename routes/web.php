@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
      */
     Route::prefix('point')->group(function () {
         Route::get('/history', [PointController::class, 'index'])->name('point.index');
+        Route::get('/getPointHistoryData', [PointController::class, 'getPointHistoryData'])->name('point.getPointHistoryData');
         Route::post('/manage_point', [PointController::class, 'manage_point'])->name('point.manage_point');
     });
 

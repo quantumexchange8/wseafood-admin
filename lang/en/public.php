@@ -284,5 +284,6 @@ return [
     "receive" => "Receive",
     "spend" => "Spend",
     "amount" => "Amount",
-    "order_amount" => "Member's order amount"
+    "order_amount" => "Member's order amount",
+    "list_of_point_history" => "List of Point History",
 ];

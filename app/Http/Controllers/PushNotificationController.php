@@ -103,6 +103,8 @@ class PushNotificationController extends Controller
                 'data' => $fetchedNotifications,
             ]);
         }
+
+        return response()->json(['success' => false, 'data' => []]);
     }
 
     public function updateStatus(Request $request)

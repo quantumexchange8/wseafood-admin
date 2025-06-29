@@ -148,6 +148,8 @@ const {formatAmount} = generalFormat();
                         severity="secondary"
                         outlined
                         size="small"
+                        as="a"
+                        :href="route('point.index')"
                     >
                         {{ $t('public.view_detail') }}
                         <IconArrowRight size="16" stroke-width="1.5" />

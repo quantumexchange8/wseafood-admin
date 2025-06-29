@@ -2,6 +2,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
 import ManagePoint from "@/Pages/Point/ManagePoint.vue";
+import PointHistoryTable from "@/Pages/Point/PointHistoryTable.vue";
 
 defineProps({
     pointLogsCount: Number,
@@ -24,6 +25,10 @@ defineProps({
 
                 <ManagePoint />
             </div>
+
+            <PointHistoryTable
+                :pointLogsCount="pointLogsCount"
+            />
         </div>
     </AuthenticatedLayout>
 </template>
