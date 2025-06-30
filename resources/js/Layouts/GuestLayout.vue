@@ -69,10 +69,17 @@ const changeLanguage = async (langVal) => {
     <div
         class="flex min-h-screen flex-col gap-8 items-center bg-surface-100 pt-6 sm:justify-center dark:bg-surface-950 transition-all duration-200"
     >
-        <div>
+        <div class="flex flex-col items-center self-stretch">
             <Link href="/">
-                <ApplicationLogo class="h-20 w-20 fill-current text-surface-500" />
+                <ApplicationLogo
+                    width="80"
+                />
             </Link>
+
+            <div class="flex flex-col items-center self-stretch w-full transition-colors duration-200">
+                <span class="text-lg md:text-xl font-bold text-surface-950 dark:text-white">{{ $t('public.wondering_seafood') }}</span>
+                <span class="font-semibold text-surface-500">{{ $t('public.admin_portal') }}</span>
+            </div>
         </div>
 
         <div class="flex flex-col justify-center items-center pb-12 md:px-8 xs:gap-y-[60px] w-full">

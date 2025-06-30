@@ -3,6 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        @if (App::environment('production') || App::environment('staging'))
+            <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+        @endif
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
@@ -12,6 +15,9 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/logo/logo_mark.png')}}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/logo/logo_mark.png') }}" />
 
         <!-- Scripts -->
         @routes

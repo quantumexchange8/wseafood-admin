@@ -286,4 +286,7 @@ return [
     "amount" => "Amount",
     "order_amount" => "Member's order amount",
     "list_of_point_history" => "List of Point History",
+    "wondering_seafood" => "Wondering Seafood",
+    "admin_portal" => "Admin Portal",
+    "phone_number" => "Phone Number",
 ];

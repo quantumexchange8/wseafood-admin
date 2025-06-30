@@ -111,10 +111,10 @@ const closeDialog = () => {
             <div class="px-5 pt-5 flex items-center gap-5 justify-between self-stretch bg-gradient-to-b from-primary-50 to-white dark:from-primary-950/40 dark;to-surface-900">
                 <div class="flex flex-col items-start">
                     <div class="text-lg font-bold">
-                        {{ 'member.full_name' }}
+                        {{ selectedMember?.full_name ?? $t('public.member') }}
                     </div>
                     <div class="text-sm text-surface-500">
-                        {{ 'member.id_number' }}
+                        {{ selectedMember?.phone_number ?? $t('public.phone_number') }}
                     </div>
                 </div>
                 <div class="text-lg font-bold">
