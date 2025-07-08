@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('testtest'),
             'dial_code' => '+1',
             'phone' => '1234567890',
+            'phone_number' => '+601234567890',
             'dob' => '1990-01-01',
             'gender' => 'male',
             'point' => 100,
