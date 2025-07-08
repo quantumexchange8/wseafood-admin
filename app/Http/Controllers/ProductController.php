@@ -142,18 +142,30 @@ class ProductController extends Controller
 
     public function updateStatus(Request $request)
     {
-        $product = Product::find($request->id);
+        $product = Product::with('category')->find($request->id);
 
-        if($request->status === 'active') {
-            $product->status = 'inactive';
-        } else {
-            $product->status = 'active';
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
         }
+
+        $newStatus = $request->status == 'active' ? 'inactive' : 'active';
+
+        // If category is inactive and we're trying to set product to active — block it
+        if ($product->category->status == 'inactive' && $newStatus == 'active') {
+            return redirect()->back()->with('toast', [
+                'title' => trans('public.cannot_change_status'),
+                'message' => trans('public.category_status') . ' ' . trans("public." . $product->category->status),
+                'type' => 'warning'
+            ]);
+        }
+
+        // Otherwise, update product status
+        $product->status = $newStatus;
         $product->save();
 
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
-            'message' => trans('public.status_updated_caption'). $request->name,
+            'message' => trans('public.status_updated_caption'). trans("public." . $product->status),
             'type' => 'success'
         ]);
     }

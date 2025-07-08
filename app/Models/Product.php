@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
@@ -32,6 +33,11 @@ class Product extends Model implements HasMedia
         $prefix = $category->prefix;
 
         return $prefix.$formattedCount;
+    }
+
+    public function category(): belongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
     public function hasModifierGroupIds(): HasMany

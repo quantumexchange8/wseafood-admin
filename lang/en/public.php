@@ -289,4 +289,6 @@ return [
     "wondering_seafood" => "Wondering Seafood",
     "admin_portal" => "Admin Portal",
     "phone_number" => "Phone Number",
+    "cannot_change_status" => "Cannot change status",
+    "category_status" => "Category Status: ",
 ];

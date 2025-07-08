@@ -105,9 +105,8 @@ class CategoryController extends Controller
                 'success' => true,
                 'data' => $fetchedCategory,
             ]);
-        }
-        else {
-            $categories = Category::all()->map(function ($category) {
+        } else {
+            $categories = Category::where('status', 'active')->get()->map(function ($category) {
                 $category->category_thumbnail = $category->getFirstMediaUrl('category_thumbnail');
                 return [
                     'id' => $category->id,
@@ -118,8 +117,6 @@ class CategoryController extends Controller
 
             return response()->json(['success' => true, 'data' => $categories]);
         }
-
-        return response()->json(['success' => false, 'data' => []]);
     }
 
     public function updateStatus(Request $request)
@@ -136,6 +133,10 @@ class CategoryController extends Controller
         $locale = app()->getLocale();
         $name = json_decode($category->name)->$locale;
 
+        $category->products()->update([
+            'status' => $category->status,
+        ]);
+
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
             'message' => trans('public.status_updated_caption'). $name,
@@ -148,7 +149,7 @@ class CategoryController extends Controller
         $category = Category::find($request->id);
         $category->name = json_decode($category->name);
         $category->category_thumbnail = $category->getFirstMediaUrl('category_thumbnail');
-        
+
         return Inertia::render('Category/EditCategory', [
             'category' => $category,
         ]);
