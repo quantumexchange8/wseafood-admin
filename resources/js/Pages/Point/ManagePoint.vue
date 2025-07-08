@@ -1,10 +1,9 @@
 <script setup>
-import {Avatar, Button, Dialog, InputNumber, Select} from "primevue";
+import {Button, Dialog, InputNumber, InputText, Select} from "primevue";
 import {IconPlus} from "@tabler/icons-vue";
 import {ref, watch} from "vue";
 import {useForm} from "@inertiajs/vue3";
 import {generalFormat} from "@/Composables/format.js";
-import IconAlertTooltip from "@/Components/IconAlertTooltip.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import debounce from "lodash/debounce.js";
 import SelectChipGroup from "@/Components/SelectChipGroup.vue";
@@ -20,8 +19,8 @@ const openDialog = () => {
 const form = useForm({
     user_id: '',
     method: '',
-    amount: '',
-    point: ''
+    point: '',
+    remark: '',
 });
 
 const members = ref([])
@@ -179,30 +178,6 @@ const closeDialog = () => {
 
                 <div class="flex flex-col items-start gap-3 self-stretch">
                     <InputLabel
-                        for="amount"
-                        :value="$t('public.amount')"
-                    />
-                    <div class="flex flex-col items-start gap-1 self-stretch">
-                        <div class="relative w-full">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-sm">RM</span>
-                            <InputNumber
-                                v-model="form.amount"
-                                placeholder="0.00"
-                                :min="0"
-                                :maxFractionDigits="2"
-                                inputClass="pl-12 w-full"
-                                inputId="amount"
-                                fluid
-                                :invalid="!!form.errors.amount"
-                            />
-                        </div>
-                        <div class="text-xs text-surface-500">{{ $t('public.order_amount') }}</div>
-                        <InputError :message="form.errors.amount" />
-                    </div>
-                </div>
-
-                <div class="flex flex-col items-start gap-3 self-stretch">
-                    <InputLabel
                         for="point"
                         :value="$t('public.point')"
                     />
@@ -220,6 +195,23 @@ const closeDialog = () => {
                         </div>
                         <InputError :message="form.errors.point" />
                     </div>
+                </div>
+
+                <div class="flex flex-col items-start gap-3 self-stretch">
+                    <div class="flex items-center gap-2">
+                        <InputLabel
+                            for="remark"
+                            :value="$t('public.remark')"
+                        />
+                    </div>
+                    <InputText
+                        v-model="form.remark"
+                        :placeholder="$t('public.point_adjustment_placeholder')"
+                        inputId="remark"
+                        class="w-full"
+                        :invalid="!!form.errors.remark"
+                    />
+                    <InputError :message="form.errors.remark" />
                 </div>
             </div>
         </form>

@@ -25,13 +25,13 @@ class PointController extends Controller
         Validator::make($request->all(), [
             'user_id' => ['required'],
             'method' => ['required'],
-            'amount' => ['required', 'numeric', 'min:1'],
             'point' => ['required', 'numeric', 'min:1'],
+            'remark' => ['required']
         ])->setAttributeNames([
             'user_id' => trans('public.member'),
             'method' => trans('public.method'),
-            'amount' => trans('public.amount'),
             'point' => trans('public.point'),
+            'remark' => trans('public.remark'),
         ])->validate();
 
         $user = User::find($request->user_id);
@@ -41,11 +41,11 @@ class PointController extends Controller
             'user_id'      => $user->id,
             'type'         => 'manage',
             'adjust_type'  => $request->input('method'),
-            'amount'       => $request->amount,
+            'amount'       => $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point),
             'earning_point'=> $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point),
             'old_point'    => $user->point,
             'new_point'    => $new_point,
-            'remark'       => $request->input('method') == 'point_in' ? 'Receive' : 'Spend',
+            'remark'       => $request->remark,
         ]);
 
         $user->point = $new_point;

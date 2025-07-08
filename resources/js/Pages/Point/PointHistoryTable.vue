@@ -181,9 +181,6 @@ const applyFilter = () => {
                     <div class="text-lg font-bold">
                         {{ $t('public.list_of_point_history') }}
                     </div>
-                    <Tag rounded>
-                        <span>{{ pointLogsCount }} {{ $t('public.point_history') }}</span>
-                    </Tag>
                 </div>
             </div>
         </template>
@@ -244,7 +241,6 @@ const applyFilter = () => {
 
                     <Column
                         field="full_name"
-                        sortable
                         :header="$t('public.member')"
                     >
                         <template #body="{ data }">
@@ -287,19 +283,6 @@ const applyFilter = () => {
                     </Column>
 
                     <Column
-                        field="amount"
-                        class="text-nowrap"
-                        sortable
-                        :header="$t('public.amount')"
-                    >
-                        <template #body="{ data }">
-                            <div class="text-sm font-medium">
-                                {{ formatAmount(data.amount, 0, 'RM') }}
-                            </div>
-                        </template>
-                    </Column>
-
-                    <Column
                         field="earning_point"
                         class="text-nowrap"
                         sortable
@@ -309,6 +292,16 @@ const applyFilter = () => {
                             <div class="text-sm font-medium">
                                 {{ formatAmount(data.earning_point, 0, '') }} PTS
                             </div>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="remark"
+                        class="text-nowrap"
+                        :header="$t('public.remark')"
+                    >
+                        <template #body="{ data }">
+                            {{ data.remark ?? '-' }}
                         </template>
                     </Column>
                 </template>

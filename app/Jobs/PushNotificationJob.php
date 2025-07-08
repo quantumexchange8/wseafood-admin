@@ -27,7 +27,7 @@ class PushNotificationJob implements ShouldQueue
         OneSignal::sendNotificationToAll(
             json_decode($this->notification->message, true)['en'],
             $url = null,
-            $data = $this->notification->content,
+            $data = null,
             $buttons = null,
             $schedule = null
         );

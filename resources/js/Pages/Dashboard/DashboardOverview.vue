@@ -27,7 +27,7 @@ const {formatAmount} = generalFormat();
                             {{ formatAmount(totalUsers, 0, '') }}
                         </div>
                         <div
-                            v-if="usersTrend !== 0"
+                            v-if="usersTrend !== null"
                             :class="[
                                     'flex gap-1 items-center',
                                     {
@@ -74,7 +74,7 @@ const {formatAmount} = generalFormat();
                             {{ formatAmount(totalProducts, 0, '') }}
                         </div>
                         <div
-                            v-if="productsTrend !== 0"
+                            v-if="productsTrend !== null"
                             :class="[
                                     'flex gap-1 items-center',
                                     {
@@ -121,7 +121,7 @@ const {formatAmount} = generalFormat();
                             {{ formatAmount(pointsGiven, 0, '') }}
                         </div>
                         <div
-                            v-if="pointsGivenTrend !== 0"
+                            v-if="pointsGivenTrend !== null"
                             :class="[
                                     'flex gap-1 items-center',
                                     {
