@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
+    use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -44,5 +47,41 @@ class User extends Authenticatable implements HasMedia
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        $user = $this->fresh();
+
+        return LogOptions::defaults()
+            ->useLogName('user')
+            ->logOnly([
+                'full_name',
+                'email',
+                'email_verified_at',
+                'verify',
+                'password',
+                'id_number',
+                'dial_code',
+                'phone',
+                'phone_number',
+                'dob',
+                'gender',
+                'point',
+                'address1',
+                'address2',
+                'address3',
+                'city',
+                'state',
+                'zip',
+                'role',
+                'status',
+            ])
+            ->setDescriptionForEvent(function (string $eventName) use ($user) {
+                $actorName = Auth::user() ? Auth::user()->full_name : 'System';
+                return "{$actorName} has {$eventName} user with ID: {$user->id}";
+            })
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

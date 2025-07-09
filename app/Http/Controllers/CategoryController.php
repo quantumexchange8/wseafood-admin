@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Category;
@@ -184,10 +185,32 @@ class CategoryController extends Controller
         if ($request->hasFile('category_thumbnail')) {
             $category->clearMediaCollection('category_thumbnail');
             $category->addMedia($request->category_thumbnail)->toMediaCollection('category_thumbnail');
+
+            activity('category')
+                ->causedBy(Auth::user())
+                ->performedOn($category)
+                ->withProperties([
+                    'action' => 'updated category image',
+                    'category_id' => $category->id,
+                    'category_name' => $category->name,
+                ])
+                ->event('updated')
+                ->log(Auth::user()->full_name . ' updated category image for category ID: ' . $category->id);
         }
 
         if ($request->photo_action == 'remove') {
             $category->clearMediaCollection('category_thumbnail');
+
+            activity('category')
+                ->causedBy(Auth::user())
+                ->performedOn($category)
+                ->withProperties([
+                    'action' => 'updated category image',
+                    'category_id' => $category->id,
+                    'category_name' => $category->name,
+                ])
+                ->event('deleted')
+                ->log(Auth::user()->full_name . ' remove category image for category ID: ' . $category->id);
         }
 
         $category->update([

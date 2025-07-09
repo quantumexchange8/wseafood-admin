@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
@@ -225,10 +227,31 @@ class ProductController extends Controller
         if ($request->hasFile('product_photo')) {
             $product->clearMediaCollection('product_photo');
             $product->addMedia($request->product_photo)->toMediaCollection('product_photo');
+
+            activity('product')
+            ->causedBy(Auth::user())
+                ->performedOn($product)
+                ->withProperties([
+                    'action' => 'updated product image',
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                ])
+                ->event('updated')
+                ->log(Auth::user()->full_name . ' updated product image for product ID: ' . $product->id);
         }
 
         if ($request->photo_action == 'remove') {
             $product->clearMediaCollection('product_photo');
+            activity('product')
+                ->causedBy(Auth::user())
+                ->performedOn($product)
+                ->withProperties([
+                    'action' => 'deleted product image',
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                ])
+                ->event('deleted')
+                ->log(Auth::user()->full_name . ' remove product image for product ID: ' . $product->id);
         }
 
         return redirect()->route('product.index')->with('toast', [
