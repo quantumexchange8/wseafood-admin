@@ -291,7 +291,7 @@ const navigateToEdit = (productId) => {
                     <template #content>
                         <div class="px-4 pb-4 flex flex-col gap-3">
                             <div
-                                class="font-bold text-surface-950 group-hover:text-primary transition"
+                                class="font-bold text-surface-950 group-hover:text-primary transition dark:text-white"
                             >
                                 {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                             </div>
@@ -336,7 +336,7 @@ const navigateToEdit = (productId) => {
                         <div class="h-full flex flex-col justify-between items-start self-stretch">
                             <div class="flex flex-col items-start gap-2 self-stretch">
                                 <div
-                                    class="font-bold text-surface-950 group-hover:text-primary transition"
+                                    class="font-bold text-surface-950 group-hover:text-primary transition dark:text-white"
                                 >
                                     {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                                 </div>
