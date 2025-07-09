@@ -86,8 +86,8 @@ class ProductController extends Controller
         }
 
         return redirect()->route('product.index')->with('toast', [
-            'title' => trans('public.category_created'),
-            'message' => trans('public.category_created_caption'). $request->name[app()->getLocale()],
+            'title' => trans('public.meal_item_created'),
+            'message' => trans('public.meal_item_created_caption'). $request->name[app()->getLocale()],
             'type' => 'success'
         ]);
     }
@@ -166,6 +166,74 @@ class ProductController extends Controller
         return redirect()->back()->with('toast', [
             'title' => trans('public.status_updated'),
             'message' => trans('public.status_updated_caption'). trans("public." . $product->status),
+            'type' => 'success'
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $product = Product::with('modifier_groups')->find($id);
+        $product->name = json_decode($product->name);
+        $product->product_photo = $product->getFirstMediaUrl('product_photo');
+        $group_count = ModifierGroup::all()->count();
+
+        return inertia('Product/EditProduct', [
+            'groupCount' => $group_count,
+            'product' => $product,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $rules = [
+            'name' => ['required', 'array'],
+            'category_id' => ['required'],
+            'sale_price' => ['required', 'numeric', 'min:0'],
+            'status' => ['required', 'string'],
+            'reward_point' => ['nullable'],
+            'set_meal' => ['nullable'],
+            'description' => ['nullable'],
+            'modifier_group' => ['nullable'],
+        ];
+
+        foreach(config('app.available_locales') as $locale) {
+            $rules["name.$locale"] = ['required'];
+        }
+
+        $attributeNames = [
+            'name.*' => trans('public.item_name'),
+            'category_id' => trans('public.category'),
+            'sale_price' => trans('public.sale_price'),
+            'status' => trans('public.visibility'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
+        $validator->validate();
+
+        $product = Product::find($request->id);
+
+        $product->update([
+            'name' => json_encode($request->name),
+            'category_id' => $request->category_id,
+            'price' => $request->sale_price,
+            'status' => $request->status,
+            'reward_point' => $request->reward_point,
+            'set_meal' => $request->set_meal,
+            'description' => $request->description,
+        ]);
+
+        if ($request->hasFile('product_photo')) {
+            $product->clearMediaCollection('product_photo');
+            $product->addMedia($request->product_photo)->toMediaCollection('product_photo');
+        }
+
+        if ($request->photo_action == 'remove') {
+            $product->clearMediaCollection('product_photo');
+        }
+
+        return redirect()->route('product.index')->with('toast', [
+            'title' => trans('public.meal_item_updated'),
+            'message' => trans('public.meal_item_updated_caption'). $request->name[app()->getLocale()],
             'type' => 'success'
         ]);
     }

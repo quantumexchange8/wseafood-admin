@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
@@ -22,6 +23,7 @@ class Product extends Model implements HasMedia
         'status',
         'reward_point',
         'set_meal',
+        'description',
     ];
 
     public function generateProductCode($category_id): string
@@ -48,5 +50,15 @@ class Product extends Model implements HasMedia
     public function viewAnalytics(): MorphMany
     {
         return $this->morphMany(ViewAnalytic::class, 'subject');
+    }
+
+    public function modifier_groups(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ModifierGroup::class,
+            'product_to_modifier_groups',
+            'product_id',
+            'modifier_group_id'
+        );
     }
 }

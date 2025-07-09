@@ -1,7 +1,7 @@
 <script setup>
 import { Card, DataView, IconField, InputIcon, InputText, Button, ToggleSwitch, SelectButton, Popover, Select } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
-import { usePage } from '@inertiajs/vue3';
+import {router, usePage} from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import { IconSearch, IconAdjustments, IconXboxX, IconLayoutListFilled, IconLayoutGridFilled } from '@tabler/icons-vue';
@@ -142,6 +142,9 @@ function selectCategory(index) {
     loadLazyData()
 }
 
+const navigateToEdit = (productId) => {
+    router.visit(route('product.edit', productId));
+}
 </script>
 
 <template>
@@ -178,7 +181,7 @@ function selectCategory(index) {
                     :layout="layout"
                     :productCount="productCount"
                 />
-                <div 
+                <div
                     v-else
                 >
                     <Empty :title="$t('public.no_data_found')" />
@@ -266,33 +269,34 @@ function selectCategory(index) {
                 :layout="layout"
                 :productCount="fetchedProduct.length"
             />
-            
-            <div 
+
+            <div
                 v-else
                 class="py-5 grid grid-cols-3 xl:grid-cols-4 items-stretch content-start gap-4 shrink-0 self-stretch"
             >
                 <Card
                     v-for="(product, index) in slotProps.items"
                     :key="index"
-                    class="min-w-[240px] flex flex-col items-start self-stretch"
+                    class="group min-w-[240px] flex flex-col items-start self-stretch select-none cursor-pointer transition"
+                    @click="() => navigateToEdit(product.id)"
                 >
                     <template #header>
                         <div class="w-full p-4 flex justify-center items-center">
-                            <ProductPhoto 
+                            <ProductPhoto
                                 :product="product"
                                 :layout="layout"
                             />
                         </div>
                     </template>
-                    <template #title>
-                        <div class="px-4 pb-1.5 font-bold">
-                            {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
-                        </div>
-                    </template>
                     <template #content>
-                        <div class="px-4 pt-1.5 pb-4">
+                        <div class="px-4 pb-4 flex flex-col gap-3">
+                            <div
+                                class="font-bold text-surface-950 group-hover:text-primary transition"
+                            >
+                                {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
+                            </div>
                             <div class="flex justify-between items-end self-stretch">
-                                <div>
+                                <div class="font-medium">
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
                                 <StatusSwitch :data="product" path="product.updateStatus" />
@@ -310,18 +314,19 @@ function selectCategory(index) {
                 :productCount="fetchedProduct.length"
             />
 
-            <div 
+            <div
                 v-else
                 class="py-5 grid grid-cols-2 xl:grid-cols-3 items-stretch content-start gap-4 shrink-0 self-stretch"
             >
                 <Card
                     v-for="(product, index) in slotProps.items"
                     :key="index"
-                    class="min-w-[280px] p-4 flex flex-row items-start gap-4"
+                    class="group min-w-[280px] p-4 flex flex-row items-start gap-4 select-none cursor-pointer transition"
+                    @click="() => navigateToEdit(product.id)"
                 >
                     <template #header>
                         <div class="w-full flex justify-center items-center">
-                            <ProductPhoto 
+                            <ProductPhoto
                                 :product="product"
                                 :layout="layout"
                             />
@@ -330,10 +335,12 @@ function selectCategory(index) {
                     <template #content>
                         <div class="h-full flex flex-col justify-between items-start self-stretch">
                             <div class="flex flex-col items-start gap-2 self-stretch">
-                                <div class="font-bold">
+                                <div
+                                    class="font-bold text-surface-950 group-hover:text-primary transition"
+                                >
                                     {{ product.product_code }} - {{ JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'] }}
                                 </div>
-                                <div>
+                                <div class="font-medium">
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
                             </div>
@@ -365,7 +372,7 @@ function selectCategory(index) {
                     >
                         <div class="flex items-center gap-2">
                             <div :class="[
-                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600',
                                     'w-2 h-2 rounded-full'
                                 ]"
                             ></div>

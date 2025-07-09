@@ -29,7 +29,7 @@ class MemberController extends Controller
         if ($request->has('lazyEvent')) {
             $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
 
-            $query = User::query();
+            $query = User::where('role', 'user');
 
             if ($data['filters']['global']['value']) {
                 $keyword = $data['filters']['global']['value'];

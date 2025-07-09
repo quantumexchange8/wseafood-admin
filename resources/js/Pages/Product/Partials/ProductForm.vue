@@ -21,19 +21,20 @@ const { locale } = useLangObserver();
 const categories = ref([]);
 const loadingCategories = ref(false);
 const createCategoryModal = ref(false);
-const newCategoryFlag = ref(false);
+const selectLatestCategoryOnLoad = ref(false);
 const selectModifierGroupModal = ref(false);
 const addedGroup = ref();
 const addedGroupUpdate = ref();
 
 const form = useForm({
-    name: {},
-    status: '',
-    product_photo: null,
+    id: props.product?.id ?? '',
+    name: props.product?.name ?? {},
+    status: props.product?.status ?? '',
+    product_photo: props.product?.product_photo ?? null,
     photo_action:'',
-    sale_price: '',
+    sale_price: props.product?.price ?? '',
     category_id: '',
-    description: '',
+    description: props.product?.description ?? '',
     modifier_group: null,
 });
 
@@ -43,9 +44,12 @@ const getCategories = async () => {
         const response = await axios.get(route('category.fetch'));
         categories.value = response.data.data;
 
-        if(newCategoryFlag.value) {
+        // Set category_id depending on edit or create
+        if (selectLatestCategoryOnLoad.value) {
             form.category_id = categories.value.length > 0 ? categories.value[categories.value.length - 1].id : '';
-            newCategoryFlag.value = false;
+            selectLatestCategoryOnLoad.value = false;
+        } else if (props.product?.category_id) {
+            form.category_id = props.product.category_id;
         }
 
     } catch (error) {
@@ -66,8 +70,8 @@ watchEffect(() => {
 });
 
 const { formatNameLabel } = generalFormat();
+const selectedProductPhoto = ref(props.product?.product_photo ?? null);
 
-const selectedProductPhoto = ref(null);
 const handleUploadProductPhoto = (event) => {
     const productPhotoInput = event.target;
     const file = productPhotoInput.files[0];
@@ -93,9 +97,14 @@ const removeProductPhoto = () => {
 };
 
 const submitForm = () => {
+    const path = ref('product.store');
+    if(props.product) {
+        path.value = 'product.update';
+    }
+
     form.modifier_group = addedGroupUpdate.value;
 
-    form.post(route('product.store'), {
+    form.post(route(path.value, props.product?.id), {
         onSuccess: () => {
             form.reset();
         },
@@ -123,7 +132,7 @@ const removeGroup = (id) => {
 watch((addedGroup), () => {
     if(addedGroup.value.length > 0 && !addedGroupUpdate.value) {
         addedGroupUpdate.value = addedGroup.value;
-        
+
         addedGroupUpdate.value.forEach(item => {
             item.status = 'active';
             item.price = 0;
@@ -344,112 +353,112 @@ const getSeverity = (type) => {
             </template>
         </Card>
 
-        <Card class="w-full">
-            <template #title>
-                <div class="px-5 py-3 flex justify-between items-center self-stretch">
-                    <div class="flex items-center gap-4">
-                        <div class="text-lg font-bold">
-                            {{ $t('public.modifier_group') }}
-                        </div>
-                        <Tag 
-                            v-if="addedGroupUpdate" 
-                            rounded
-                        >
-                            {{ addedGroupUpdate.length }} {{ $t('public.groups') }}
-                        </Tag>
-                    </div>
-                    <Button
-                        v-if="addedGroupUpdate"
-                        type="button"
-                        size="small"
-                        variant="text"
-                        :label="$t('public.add_another_group')"
-                        @click="selectModifierGroupModal = true"
-                    >
-                        <template #icon>
-                            <IconPlus :size="20"/>
-                        </template>
-                    </Button>
-                    <div 
-                        v-else
-                        class="font-normal italic text-xs text-gray-400"
-                    >
-                        {{ $t('public.modifier_group_caption') }}
-                    </div>
-                </div>
-            </template>
-            <template #content>
-                <div class="px-5 py-5">
-                    <div 
-                        v-if="addedGroupUpdate"
-                        class="grid grid-cols-3 items-stretch content-start gap-5 self-stretch flex-wrap"
-                    >
-                        <Card 
-                            v-for="data in addedGroupUpdate"
-                            class="w-full h-full flex flex-col"
-                        >
-                            <template #content>
-                                <div class="p-4 flex flex-col items-start gap-4 self-stretch">
-                                    <Tag 
-                                        rounded
-                                        :severity="getSeverity(data.group_type)"
-                                    >
-                                        {{ $t(`public.${data.group_type}`) }}
-                                    </Tag>
-                                    <div class="flex flex-col items-start gap-1 self-stretch">
-                                        <div class="font-bold">
-                                            {{ data.group_name }} ({{ data.item_count }})
-                                        </div>
-                                        <div class="text-sm">
-                                            <template v-for="(item, index) in data.items">
-                                                {{ JSON.parse(item.modifier_item_name)[locale] ?? JSON.parse(item.modifier_item_name)['en'] }}{{ index+1 === data.items.length ? '' : ', ' }}
-                                            </template>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            <template #footer>
-                                <div class="h-full flex items-end">
-                                    <div class="w-full p-4 flex justify-between items-center">
-                                        <ToggleSwitch
-                                            :model-value="data.status"
-                                            true-value="active"
-                                            false-value="inactive"
-                                            class="flex items-center"
-                                            @change="updateGroupStatus(data.id)"
-                                        />
-                                        <div class="flex items-center gap-3">
-                                            <Button
-                                                type="button"
-                                                severity="secondary"
-                                                outlined
-                                                size="small"
-                                                class="rounded-full"
-                                                @click="removeGroup(data.id)"
-                                            >
-                                                <template #icon>
-                                                    <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>
-                                                </template>
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                        </Card>
-                    </div>
-                    <Button
-                        v-else
-                        type="button"
-                        :label="$t('public.add_group')"
-                        @click="selectModifierGroupModal = true"
-                    >
-                        <template #icon>
-                            <IconPlus :size="20"/>
-                        </template>
-                    </Button>
-                </div>
-            </template>
-        </Card>
+<!--        <Card class="w-full">-->
+<!--            <template #title>-->
+<!--                <div class="px-5 py-3 flex justify-between items-center self-stretch">-->
+<!--                    <div class="flex items-center gap-4">-->
+<!--                        <div class="text-lg font-bold">-->
+<!--                            {{ $t('public.modifier_group') }}-->
+<!--                        </div>-->
+<!--                        <Tag-->
+<!--                            v-if="addedGroupUpdate"-->
+<!--                            rounded-->
+<!--                        >-->
+<!--                            {{ addedGroupUpdate.length }} {{ $t('public.groups') }}-->
+<!--                        </Tag>-->
+<!--                    </div>-->
+<!--                    <Button-->
+<!--                        v-if="addedGroupUpdate"-->
+<!--                        type="button"-->
+<!--                        size="small"-->
+<!--                        variant="text"-->
+<!--                        :label="$t('public.add_another_group')"-->
+<!--                        @click="selectModifierGroupModal = true"-->
+<!--                    >-->
+<!--                        <template #icon>-->
+<!--                            <IconPlus :size="20"/>-->
+<!--                        </template>-->
+<!--                    </Button>-->
+<!--                    <div-->
+<!--                        v-else-->
+<!--                        class="font-normal italic text-xs text-gray-400"-->
+<!--                    >-->
+<!--                        {{ $t('public.modifier_group_caption') }}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </template>-->
+<!--            <template #content>-->
+<!--                <div class="px-5 py-5">-->
+<!--                    <div-->
+<!--                        v-if="addedGroupUpdate"-->
+<!--                        class="grid grid-cols-3 items-stretch content-start gap-5 self-stretch flex-wrap"-->
+<!--                    >-->
+<!--                        <Card-->
+<!--                            v-for="data in addedGroupUpdate"-->
+<!--                            class="w-full h-full flex flex-col"-->
+<!--                        >-->
+<!--                            <template #content>-->
+<!--                                <div class="p-4 flex flex-col items-start gap-4 self-stretch">-->
+<!--                                    <Tag-->
+<!--                                        rounded-->
+<!--                                        :severity="getSeverity(data.group_type)"-->
+<!--                                    >-->
+<!--                                        {{ $t(`public.${data.group_type}`) }}-->
+<!--                                    </Tag>-->
+<!--                                    <div class="flex flex-col items-start gap-1 self-stretch">-->
+<!--                                        <div class="font-bold">-->
+<!--                                            {{ data.group_name }} ({{ data.item_count }})-->
+<!--                                        </div>-->
+<!--                                        <div class="text-sm">-->
+<!--                                            <template v-for="(item, index) in data.items">-->
+<!--                                                {{ JSON.parse(item.modifier_item_name)[locale] ?? JSON.parse(item.modifier_item_name)['en'] }}{{ index+1 === data.items.length ? '' : ', ' }}-->
+<!--                                            </template>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </template>-->
+<!--                            <template #footer>-->
+<!--                                <div class="h-full flex items-end">-->
+<!--                                    <div class="w-full p-4 flex justify-between items-center">-->
+<!--                                        <ToggleSwitch-->
+<!--                                            :model-value="data.status"-->
+<!--                                            true-value="active"-->
+<!--                                            false-value="inactive"-->
+<!--                                            class="flex items-center"-->
+<!--                                            @change="updateGroupStatus(data.id)"-->
+<!--                                        />-->
+<!--                                        <div class="flex items-center gap-3">-->
+<!--                                            <Button-->
+<!--                                                type="button"-->
+<!--                                                severity="secondary"-->
+<!--                                                outlined-->
+<!--                                                size="small"-->
+<!--                                                class="rounded-full"-->
+<!--                                                @click="removeGroup(data.id)"-->
+<!--                                            >-->
+<!--                                                <template #icon>-->
+<!--                                                    <IconTrash :size="16" stroke-width="1.5" class="text-red-500"/>-->
+<!--                                                </template>-->
+<!--                                            </Button>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </template>-->
+<!--                        </Card>-->
+<!--                    </div>-->
+<!--                    <Button-->
+<!--                        v-else-->
+<!--                        type="button"-->
+<!--                        :label="$t('public.add_group')"-->
+<!--                        @click="selectModifierGroupModal = true"-->
+<!--                    >-->
+<!--                        <template #icon>-->
+<!--                            <IconPlus :size="20"/>-->
+<!--                        </template>-->
+<!--                    </Button>-->
+<!--                </div>-->
+<!--            </template>-->
+<!--        </Card>-->
 
         <Card class="w-full">
             <template #title>
@@ -531,8 +540,8 @@ const getSeverity = (type) => {
                 </div>
             </template>
             <template #content>
-                <TipTapEditor 
-                    v-model="form.description" 
+                <TipTapEditor
+                    v-model="form.description"
                     :invalid="form.errors.description"
                 />
                 <InputError :message="form.errors.description" />
@@ -557,17 +566,17 @@ const getSeverity = (type) => {
         </div>
     </form>
 
-    <CreateCategoryModal 
-        :visible="createCategoryModal" 
-        @update:visible="createCategoryModal = $event" 
-        @update:category="newCategoryFlag = $event"
+    <CreateCategoryModal
+        :visible="createCategoryModal"
+        @update:visible="createCategoryModal = $event"
+        @update:category="selectLatestCategoryOnLoad = $event"
     />
 
-    <SelectModifierGroupModal
-        :visible="selectModifierGroupModal"
-        :groupCount="groupCount"
-        :updateChecked="addedGroup"
-        @update:visible="selectModifierGroupModal = $event"
-        @update:addGroup="addedGroup = $event"
-    />
+<!--    <SelectModifierGroupModal-->
+<!--        :visible="selectModifierGroupModal"-->
+<!--        :groupCount="groupCount"-->
+<!--        :updateChecked="addedGroup"-->
+<!--        @update:visible="selectModifierGroupModal = $event"-->
+<!--        @update:addGroup="addedGroup = $event"-->
+<!--    />-->
 </template>

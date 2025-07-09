@@ -1,7 +1,5 @@
 <script setup>
 import { Avatar } from 'primevue';
-import {generalFormat} from "@/Composables/format.js";
-import {useLangObserver} from "@/Composables/localeObserver.js";
 import { IconEyeCancel } from '@tabler/icons-vue';
 import { computed } from 'vue';
 
@@ -10,11 +8,8 @@ const props = defineProps({
     layout: String,
 })
 
-const { formatNameLabel } = generalFormat();
-const { locale } = useLangObserver();
-
 const avatarClass = computed(() => {
-    if (props.layout === 'grid') return 'w-40 h-40';
+    if (props.layout === 'grid') return 'w-40 h-40 object-contain';
     if (props.layout === 'modal') return 'w-10 h-10';
     return 'w-24 h-24'; // default to 'list'
 });
@@ -43,7 +38,7 @@ const textClass = computed(() => {
 </script>
 
 <template>
-    <div class="relative w-full bg-slate-50 rounded-lg">
+    <div class="relative w-full bg-surface-100 dark:bg-surface-800 rounded-lg">
         <div
             :class="[
                 containerClass,
@@ -57,7 +52,7 @@ const textClass = computed(() => {
             />
             <Avatar
             v-else
-            :label="formatNameLabel(JSON.parse(product.name)[locale] ?? JSON.parse(product.name)['en'])"
+            :label="product.product_code"
             :class="avatarClass"
             size="large"
             />
@@ -65,7 +60,7 @@ const textClass = computed(() => {
         <div
             v-if="product.status === 'inactive'"
             class="absolute inset-0 bg-gradient-to-br from-white to-primary-600/10 flex items-center justify-center z-10 rounded-lg">
-            <div 
+            <div
                 :class="[
                     maskGapClass,
                     'px-2.5 flex flex-col justify-center items-center'
@@ -77,7 +72,7 @@ const textClass = computed(() => {
                         'text-primary-500'
                     ]"
                 />
-                <span 
+                <span
                     :class="[
                         textClass,
                         'font-bold text-primary-400 text-center'

@@ -40,7 +40,7 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
             </template>
         </SidebarLink>
 
-        <!-- Dashboard -->
+        <!-- Point History -->
         <SidebarLink
             :title="$t('public.point_history')"
             :href="route('point.index')"
@@ -77,31 +77,31 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
         </SidebarCollapsible>
 
         <!-- Modifier Group & Item -->
-        <SidebarCollapsible
-            :title="$t('public.modifier_group')"
-            :active="route().current('modifier.*')"
-        >
-            <template #icon>
-                <IconHierarchy size="20" stroke-width="1.5" />
-            </template>
-            <SidebarCollapsibleItem
-                :title="$t('public.modifier_group_list')"
-                :href="route('modifier.group.index')"
-                :active="route().current('modifier.group.index')"
-            />
+<!--        <SidebarCollapsible-->
+<!--            :title="$t('public.modifier_group')"-->
+<!--            :active="route().current('modifier.*')"-->
+<!--        >-->
+<!--            <template #icon>-->
+<!--                <IconHierarchy size="20" stroke-width="1.5" />-->
+<!--            </template>-->
+<!--            <SidebarCollapsibleItem-->
+<!--                :title="$t('public.modifier_group_list')"-->
+<!--                :href="route('modifier.group.index')"-->
+<!--                :active="route().current('modifier.group.index')"-->
+<!--            />-->
 
-            <SidebarCollapsibleItem
-                :title="$t('public.create_modifier_group')"
-                :href="route('modifier.group.create')"
-                :active="route().current('modifier.group.create')"
-            />
+<!--            <SidebarCollapsibleItem-->
+<!--                :title="$t('public.create_modifier_group')"-->
+<!--                :href="route('modifier.group.create')"-->
+<!--                :active="route().current('modifier.group.create')"-->
+<!--            />-->
 
-            <SidebarCollapsibleItem
-                :title="$t('public.modifier_item_list')"
-                :href="route('modifier.item.index')"
-                :active="route().current('modifier.item.index')"
-            />
-        </SidebarCollapsible>
+<!--            <SidebarCollapsibleItem-->
+<!--                :title="$t('public.modifier_item_list')"-->
+<!--                :href="route('modifier.item.index')"-->
+<!--                :active="route().current('modifier.item.index')"-->
+<!--            />-->
+<!--        </SidebarCollapsible>-->
 
         <!-- Product -->
         <SidebarCollapsible

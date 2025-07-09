@@ -289,4 +289,8 @@ return [
     "wondering_seafood" => "Wondering Seafood",
     "admin_portal" => "管理后台",
     "phone_number" => "电话号码",
+    "edit_meal_item" => "编辑餐品",
+    "edit_meal_item_caption" => "编辑适合您菜单的餐品！",
+    'meal_item_updated' => '餐品更新成功',
+    'meal_item_updated_caption' => '该餐品已更新：',
 ];

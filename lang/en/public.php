@@ -291,4 +291,8 @@ return [
     "phone_number" => "Phone Number",
     "cannot_change_status" => "Cannot change status",
     "category_status" => "Category Status: ",
+    "edit_meal_item" => "Edit Meal Item",
+    "edit_meal_item_caption" => "Edit perfect meal item for your menu!",
+    'meal_item_updated' => 'Meal item updated successfully',
+    'meal_item_updated_caption' => 'The meal item has been updated: ',
 ];

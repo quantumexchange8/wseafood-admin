@@ -1,6 +1,7 @@
 <script setup>
 import { ProgressSpinner, Card, Skeleton } from 'primevue';
 import { computed } from 'vue';
+import StatusSwitch from "@/Components/StatusSwitch.vue";
 
 const props = defineProps({
     layout: String,
@@ -28,16 +29,15 @@ const count = computed(() => {
                         <Skeleton width="30rem" height="15rem" border-radius="8px"></Skeleton>
                     </div>
                 </template>
-                <template #title>
-                    <div class="px-4 pb-1.5">
-                        <Skeleton width="10rem" height="1.5rem"></Skeleton>
-                    </div>
-                </template>
                 <template #content>
-                    <div class="px-4 pt-1.5 pb-4">
-                        <div class="flex justify-between items-center self-stretch">
+                    <div class="px-4 pb-4 flex flex-col gap-3">
+                        <div
+                            class="font-bold text-surface-950 group-hover:text-primary transition"
+                        >
                             <Skeleton width="4rem"></Skeleton>
-                            <Skeleton width="3rem" height="1.5rem"></Skeleton>
+                        </div>
+                        <div class="flex justify-between items-end self-stretch">
+                            <Skeleton width="3rem" height="1.5rem" class="my-1"></Skeleton>
                         </div>
                     </div>
                 </template>
@@ -68,16 +68,16 @@ const count = computed(() => {
                 </template>
             </Card>
         </div>
-        <div class="absolute inset-0 top-5 bg-slate-500 bg-opacity-10 flex items-center justify-center z-10">
-            <div class="flex flex-col justify-center items-center gap-5 self-stretch">
-                <ProgressSpinner
-                    strokeWidth="4"
-                    class="w-16 h-16"
-                />
-                <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
-                    {{ $t('public.loading_data') }}
-                </span>
-            </div>
-        </div>
+<!--        <div class="absolute inset-0 top-5 bg-slate-500 bg-opacity-10 flex items-center justify-center z-10">-->
+<!--            <div class="flex flex-col justify-center items-center gap-5 self-stretch">-->
+<!--                <ProgressSpinner-->
+<!--                    strokeWidth="4"-->
+<!--                    class="w-16 h-16"-->
+<!--                />-->
+<!--                <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">-->
+<!--                    {{ $t('public.loading_data') }}-->
+<!--                </span>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </template>

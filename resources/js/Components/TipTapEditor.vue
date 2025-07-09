@@ -67,7 +67,7 @@ const editor = useEditor({
         }),
         Placeholder.configure({
             emptyEditorClass: 'cursor-text before:content-[attr(data-placeholder)] before:absolute before:top-[10px] before:left-3 before:text-mauve-11 before:opacity-50 before-pointer-events-none text-sm',
-            placeholder: trans('public.enter_content'),
+            placeholder: "Enter content..",
         }),
     ],
 })

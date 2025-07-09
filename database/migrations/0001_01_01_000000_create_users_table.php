@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
+            $table->string('role', 50)->nullable();
             $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();

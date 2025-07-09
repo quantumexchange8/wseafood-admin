@@ -20,9 +20,10 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
             'verify' => now(),
             'password' => Hash::make('testtest'),
-            'dial_code' => '+1',
-            'phone' => '1234567890',
-            'phone_number' => '+601234567890',
+            'id_number' => 'MBR00001',
+            'dial_code' => '+60',
+            'phone' => '123456789',
+            'phone_number' => '+60123456789',
             'dob' => '1990-01-01',
             'gender' => 'male',
             'point' => 100,
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'city' => 'Testville',
             'state' => 'TS',
             'zip' => '12345',
+            'role' => 'admin',
             'status' => 'active',
         ]);
 
