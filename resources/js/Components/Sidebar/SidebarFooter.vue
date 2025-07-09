@@ -19,9 +19,9 @@ const user = usePage().props.auth.user;
                 'flex select-none self-stretch cursor-pointer transition-colors duration-200',
                 sidebarState.isOpen || sidebarState.isHovered ? 'gap-3 py-2 px-3 items-center' : 'justify-center p-0',
                 {
-                    'text-surface-950 dark:text-white hover:text-primary hover:bg-primary-50 dark:hover:bg-surface-800 dark:hover:text-primary-500 rounded-lg': !route().current('profile'),
-                    'text-primary hover:bg-primary-100 rounded-lg': route().current('profile'),
-                    'bg-primary-50 dark:bg-surface-900 border border-primary': route().current('profile') && (sidebarState.isOpen || sidebarState.isHovered),
+                    'text-surface-950 bg-white dark:bg-surface-950 dark:text-white hover:text-primary hover:bg-primary-50 dark:hover:bg-surface-800 dark:hover:text-primary-500 rounded-lg': !route().current('profile.edit'),
+                    'text-primary hover:bg-primary-100 rounded-lg': route().current('profile.edit'),
+                    'bg-primary-50 dark:bg-surface-900 border border-primary': route().current('profile.edit') && (sidebarState.isOpen || sidebarState.isHovered),
                 },
             ]"
         >
