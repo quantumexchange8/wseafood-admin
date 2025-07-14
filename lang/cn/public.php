@@ -294,4 +294,5 @@ return [
     'meal_item_updated' => '餐品更新成功',
     'meal_item_updated_caption' => '该餐品已更新：',
     'new_point' => '新积分',
+    "sent" => "已发送",
 ];

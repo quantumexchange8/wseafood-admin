@@ -1,5 +1,5 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch } from 'primevue';
+import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -8,6 +8,7 @@ import { IconSearch, IconAdjustments, IconXboxX } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import { useLangObserver } from '@/Composables/localeObserver';
 import NotificationTableAction from "@/Pages/PushNotification/Partials/NotificationTableAction.vue";
+import dayjs from "dayjs";
 
 const props = defineProps({
     notification: Object,
@@ -222,6 +223,28 @@ const applyFilter = () => {
                                 <div class="text-sm font-bold">
                                     {{ JSON.parse(data.title)[locale] ?? JSON.parse(data.title)['en'] }}
                                 </div>
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="schedule_datetime"
+                        :header="$t('public.schedule_time')"
+                    >
+                        <template #body="{ data }">
+                            <div v-if="data.schedule_datetime" class="text-sm flex items-center gap-2">
+                                {{ dayjs(data.schedule_datetime).format('DD/MM/YYYY h:mm A') }}
+
+                                <Tag
+                                    v-if="dayjs(data.schedule_datetime).isBefore(dayjs())"
+                                    :value="$t('public.sent')"
+                                    severity="success"
+                                    rounded
+                                    class="text-xs"
+                                />
+                            </div>
+                            <div v-else>
+                                -
                             </div>
                         </template>
                     </Column>

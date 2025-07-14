@@ -296,4 +296,5 @@ return [
     'meal_item_updated' => 'Meal item updated successfully',
     'meal_item_updated_caption' => 'The meal item has been updated: ',
     'new_point' => 'New Point',
+    "sent" => "Sent",
 ];
