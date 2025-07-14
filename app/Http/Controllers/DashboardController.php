@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
-        $user_query = User::query();
+        $user_query = User::where('role', 'user');
 
         $last_month_users = (clone $user_query)
             ->whereDate('created_at', '<=', $endOfLastMonth)
@@ -67,6 +67,7 @@ class DashboardController extends Controller
 
         // Query total users joined per month in the given year
         $query = User::query()
+            ->where('role', 'user')
             ->whereYear('created_at', $year)
             ->select(
                 DB::raw('MONTH(created_at) as month'),

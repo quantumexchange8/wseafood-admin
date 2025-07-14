@@ -16,7 +16,7 @@ class MemberController extends Controller
     public function index()
     {
         $member = User::select('updated_at')->orderByDesc('updated_at')->first();
-        $memberCount = User::all()->count();
+        $memberCount = User::where('role', 'user')->count();
 
         return Inertia::render('Member/MemberList', [
             'member' => $member,
