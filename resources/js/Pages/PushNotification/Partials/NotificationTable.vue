@@ -214,23 +214,6 @@ const applyFilter = () => {
 
                 <template v-if="fetchedNotification?.length > 0">
                     <Column
-                        field="status"
-                        class="w-[100px]"
-                        :header="$t('public.visibility')"
-                    >
-                        <template #body="{ data }">
-                            <ToggleSwitch
-                                :model-value="data.status"
-                                true-value="active"
-                                false-value="inactive"
-                                class="flex items-center"
-                                @click="updateStatus(data)"
-                                readonly
-                            />
-                        </template>
-                    </Column>
-
-                    <Column
                         field="title"
                         :header="$t('public.title')"
                     >

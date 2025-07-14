@@ -6,6 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import TipTapEditor from '@/Components/TipTapEditor.vue';
 import {useConfirm} from "primevue/useconfirm";
 import {trans} from "laravel-vue-i18n";
+import dayjs from "dayjs";
 
 const props = defineProps({
     notification: Object,
@@ -32,8 +33,13 @@ const submitForm = () => {
         path.value = 'notification.update';
     }
 
-    if(form.schedule_datetime) {
-        form.schedule_datetime = new Date(form.schedule_datetime).toISOString().slice(0, 19).replace('T', ' ');
+    if (form.schedule_datetime) {
+        const formatted = dayjs(form.schedule_datetime);
+        if (formatted.isValid()) {
+            form.schedule_datetime = formatted.format('YYYY-MM-DD HH:mm:ss');
+        } else {
+            form.schedule_datetime = null; // or handle accordingly
+        }
     }
 
     form.post(route(path.value, props.notification?.id), {
@@ -46,7 +52,12 @@ const submitForm = () => {
 };
 
 const pushConfirmation = () => {
-    requireConfirmation('push_notification');
+    if (form.schedule_type === 'immediately') {
+        requireConfirmation('push_notification');
+    } else {
+        form.push_now = false;
+        submitForm();
+    }
 };
 
 const confirm = useConfirm();
@@ -85,10 +96,9 @@ const requireConfirmation = (action_type) => {
 };
 
 function formatSQLDateTimeToJS(sqlDateTime) {
-    if (!sqlDateTime) return '';
-    const date = new Date(sqlDateTime.replace(' ', 'T'));
-    const pad = n => n.toString().padStart(2, '0');
-    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    if (!sqlDateTime) return null;
+    const parsed = dayjs(sqlDateTime, 'YYYY-MM-DD HH:mm:ss');
+    return parsed.isValid() ? parsed.toDate() : null;
 }
 
 watch(() => form.schedule_type, () => {
@@ -226,7 +236,7 @@ watch(()=> props.notification, () => {
                                 :placeholder="$t('public.date')"
                                 showTime
                                 hourFormat="24"
-                                dateFormat="dd/mm/yy"
+                                dateFormat="yy-mm-dd"
                                 :minDate="new Date()"
                                 fluid
                             />
@@ -234,43 +244,6 @@ watch(()=> props.notification, () => {
                         </div>
                         <div></div>
                     </template>
-
-                    <div class="w-full flex items-center gap-1">
-                        <div class="text-sm">
-                            {{ $t('public.visibility') }}
-                        </div>
-                        <div class="text-xs text-red-500">
-                            *
-                        </div>
-                    </div>
-                    <div class="col-span-2 flex flex-col gap-1">
-                        <div class="flex items-center gap-5">
-                            <div class="flex items-center gap-3">
-                                <RadioButton
-                                    v-model="form.status"
-                                    inputId="display"
-                                    value="active"
-                                    :invalid="!!form.errors.status"
-                                />
-                                <label for="display" class="text-sm">
-                                    {{ $t('public.display') }}
-                                </label>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <RadioButton
-                                    v-model="form.status"
-                                    inputId="hidden"
-                                    value="inactive"
-                                    :invalid="!!form.errors.status"
-                                />
-                                <label for="hidden" class="text-sm">
-                                    {{ $t('public.hidden') }}
-                                </label>
-                            </div>
-                        </div>
-                        <InputError :message="form.errors.status" />
-                    </div>
-                    <div></div>
                 </div>
             </template>
         </Card>

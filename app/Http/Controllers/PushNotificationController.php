@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\PushNotificationJob;
 use App\Models\PushNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -34,7 +35,6 @@ class PushNotificationController extends Controller
             'content' => ['required'],
             'schedule_type' => ['required'],
             'schedule_datetime' => ["required_if:schedule_type,scheduled"],
-            'status' => ['required', 'string'],
         ];
 
         foreach(config('app.available_locales') as $locale) {
@@ -48,20 +48,25 @@ class PushNotificationController extends Controller
             'content' => trans('public.content'),
             'schedule_type' => trans('public.schedule_type'),
             'schedule_datetime' => trans('public.schedule_time'),
-            'status' => trans('public.status'),
         ];
 
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
         $validator->validate();
 
-        PushNotification::create([
+        $push_notification = PushNotification::create([
             'title' => json_encode($request->title),
             'message' => json_encode($request->message),
             'content' => $request->input('content'),
             'schedule_type' => $request->schedule_type,
-            'schedule_datetime' => $request->schedule_datetime,
-            'status' => $request->status,
+            'schedule_datetime' => $request->schedule_datetime
+                ? Carbon::parse($request->schedule_datetime)->seconds(0)->format('Y-m-d H:i:s')
+                : null,
+            'status' => 'active',
         ]);
+
+        if ($request->push_now) {
+            dispatch(new PushNotificationJob($push_notification));
+        }
 
         return redirect()->route('notification.index')->with('toast', [
             'title' => trans('public.notification_created'),
@@ -93,7 +98,7 @@ class PushNotificationController extends Controller
                 $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
                 $query->orderBy($data['sortField'], $order);
             } else {
-                $query->orderBy('created_at');
+                $query->orderByDesc('created_at');
             }
 
             $fetchedNotifications = $query->paginate($data['rows']);
@@ -144,7 +149,6 @@ class PushNotificationController extends Controller
             'content' => ['required'],
             'schedule_type' => ['required'],
             'schedule_datetime' => ["required_if:schedule_type,scheduled"],
-            'status' => ['required', 'string'],
         ];
 
         foreach(config('app.available_locales') as $locale) {
@@ -158,7 +162,6 @@ class PushNotificationController extends Controller
             'content' => trans('public.content'),
             'schedule_type' => trans('public.schedule_type'),
             'schedule_datetime' => trans('public.schedule_time'),
-            'status' => trans('public.status'),
         ];
 
         $validator = Validator::make($request->all(), $rules)->setAttributeNames($attributeNames);
@@ -172,8 +175,12 @@ class PushNotificationController extends Controller
             'content' => $request->input('content'),
             'schedule_type' => $request->schedule_type,
             'schedule_datetime' => $request->schedule_datetime,
-            'status' => $request->status,
+            'status' => 'active',
         ]);
+
+        if ($request->push_now) {
+            dispatch(new PushNotificationJob($notification));
+        }
 
         return redirect()->route('notification.index')->with('toast', [
             'title' => trans('public.notification_updated'),
