@@ -35,17 +35,18 @@ class PointController extends Controller
         ])->validate();
 
         $user = User::find($request->user_id);
-        $new_point = $user->point + $request->point;
+        $adjust_point = $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point);
+        $new_point = $user->point + $adjust_point;
 
         PointLog::create([
-            'user_id'      => $user->id,
-            'type'         => 'manage',
-            'adjust_type'  => $request->input('method'),
-            'amount'       => $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point),
-            'earning_point'=> $request->input('method') == 'point_out' ? -abs($request->point) : abs($request->point),
-            'old_point'    => $user->point,
-            'new_point'    => $new_point,
-            'remark'       => $request->remark,
+            'user_id'       => $user->id,
+            'type'          => 'manage',
+            'adjust_type'   => $request->input('method'),
+            'amount'        => $adjust_point,
+            'earning_point' => $adjust_point,
+            'old_point'     => $user->point,
+            'new_point'     => $new_point,
+            'remark'        => $request->remark,
         ]);
 
         $user->point = $new_point;

@@ -117,7 +117,7 @@ const closeDialog = () => {
                     </div>
                 </div>
                 <div class="text-lg font-bold">
-                    {{ formatAmount(form.point, 0, '') }} PTS
+                    {{ formatAmount(selectedMember?.point ?? 0, 0, '') }} PTS
                 </div>
             </div>
 
@@ -192,6 +192,14 @@ const closeDialog = () => {
                                 :invalid="!!form.errors.point"
                             />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-sm">PTS</span>
+                        </div>
+                        <div class="font-semibold text-xs">
+                            {{ $t('public.new_point') }}:
+                            {{
+                                form.method === 'point_out'
+                                    ? Number(selectedMember?.point ?? 0) - Number(form.point)
+                                    : Number(selectedMember?.point ?? 0) + Number(form.point)
+                            }}PTS
                         </div>
                         <InputError :message="form.errors.point" />
                     </div>

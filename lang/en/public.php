@@ -295,4 +295,5 @@ return [
     "edit_meal_item_caption" => "Edit perfect meal item for your menu!",
     'meal_item_updated' => 'Meal item updated successfully',
     'meal_item_updated_caption' => 'The meal item has been updated: ',
+    'new_point' => 'New Point',
 ];
