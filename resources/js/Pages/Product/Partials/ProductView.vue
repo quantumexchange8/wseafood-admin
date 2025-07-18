@@ -46,8 +46,6 @@ const loadLazyData = (event) => {
         setTimeout(async () => {
             const params = {
                 page: JSON.stringify(event?.page + 1),
-                sortField: event?.sortField,
-                sortOrder: event?.sortOrder,
                 include: [],
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
@@ -95,7 +93,6 @@ onMounted(() => {
     lazyParams.value = {
         first: dv.value.first,
         rows: dv.value.rows,
-        sortField: null,
         filters: filters.value
     };
 

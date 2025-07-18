@@ -119,14 +119,14 @@ class ProductController extends Controller
                 $query->where('category_id', $data['filters']['category']['value']);
             }
 
-            if ($data['sortField'] && $data['sortOrder']) {
-                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
-                $query->orderBy($data['sortField'], $order);
-            } else {
-                $query->orderByDesc('created_at');
-            }
+//            if ($data['sortField'] && $data['sortOrder']) {
+//                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+//                $query->orderBy($data['sortField'], $order);
+//            } else {
+//                $query->orderByDesc('created_at');
+//            }
 
-            $fetchedProduct = $query->paginate($data['rows']);
+            $fetchedProduct = $query->orderByDesc('created_at')->paginate($data['rows']);
 
             $fetchedProduct->getCollection()->transform(function($product) {
                 $product->product_photo = $product->getFirstMediaUrl('product_photo');
