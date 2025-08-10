@@ -49,7 +49,7 @@ class HighlightController extends Controller
         $hightlightClass = new Highlight();
         $hightlight = Highlight::create([
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'status' => $request->status,
             'position' => $hightlightClass->getPosition(),
             'can_popup' => $request->popup,
@@ -167,7 +167,7 @@ class HighlightController extends Controller
     {
         $highlight = Highlight::find($request->id);
         $highlight->highlight_photo = $highlight->getFirstMediaUrl('highlight_photo');
-        
+
         return Inertia::render('Highlight/EditHighlight', [
             'highlight' => $highlight,
         ]);
@@ -208,7 +208,7 @@ class HighlightController extends Controller
 
         $highlight->update([
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'status' => $request->status,
             'can_popup' => $request->popup,
         ]);

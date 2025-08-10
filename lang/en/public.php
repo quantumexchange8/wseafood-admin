@@ -297,4 +297,6 @@ return [
     'meal_item_updated_caption' => 'The meal item has been updated: ',
     'new_point' => 'New Point',
     "sent" => "Sent",
+    'product_deleted' => 'Product deleted successfully',
+    'product_deleted_caption' => 'The product has been deleted: ',
 ];

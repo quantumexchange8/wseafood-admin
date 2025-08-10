@@ -295,4 +295,6 @@ return [
     'meal_item_updated_caption' => '该餐品已更新：',
     'new_point' => '新积分',
     "sent" => "已发送",
+    'product_deleted' => '商品删除成功',
+    'product_deleted_caption' => '该商品已被删除：',
 ];

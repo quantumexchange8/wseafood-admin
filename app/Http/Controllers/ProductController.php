@@ -260,4 +260,18 @@ class ProductController extends Controller
             'type' => 'success'
         ]);
     }
+
+    public function destroy(Request $request)
+    {
+        $product = Product::findOrFail($request->id);
+        $name = json_decode($product->name);
+        $locale = app()->getLocale();
+        $product->delete();
+
+        return redirect()->back()->with('toast', [
+            'title' => trans('public.product_deleted'),
+            'message' => trans('public.product_deleted_caption'). $name->$locale,
+            'type' => 'success'
+        ]);
+    }
 }

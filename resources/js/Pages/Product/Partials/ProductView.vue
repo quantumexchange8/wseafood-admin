@@ -11,6 +11,7 @@ import {useLangObserver} from "@/Composables/localeObserver.js";
 import LoadingMask from '@/Pages/Product/Partials/LoadingMask.vue';
 import ProductPhoto from '@/Pages/Product/Partials/ProductPhoto.vue';
 import StatusSwitch from '@/Components/StatusSwitch.vue';
+import DeleteProductConfirm from "@/Pages/Product/Partials/DeleteProductConfirm.vue";
 
 const props = defineProps({
     categories: Object,
@@ -296,7 +297,15 @@ const navigateToEdit = (productId) => {
                                 <div class="font-medium">
                                     {{ formatAmount(product.price, 2, 'RM') }}
                                 </div>
-                                <StatusSwitch :data="product" path="product.updateStatus" />
+                                <div class="flex items-center gap-3">
+                                    <DeleteProductConfirm
+                                        :product="product"
+                                    />
+                                    <StatusSwitch
+                                        :data="product"
+                                        path="product.updateStatus"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </template>
