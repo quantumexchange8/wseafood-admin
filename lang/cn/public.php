@@ -297,4 +297,6 @@ return [
     "sent" => "已发送",
     'product_deleted' => '商品删除成功',
     'product_deleted_caption' => '该商品已被删除：',
+    "unable_to_delete" => "无法删除",
+    "member_have_points" => "会员尚有积分：",
 ];

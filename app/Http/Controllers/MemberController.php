@@ -123,6 +123,15 @@ class MemberController extends Controller
     {
         $member = User::find($request->id);
         $name = $member->full_name;
+
+        if ($member->point > 0) {
+            return redirect()->back()->with('toast', [
+                'title' => trans('public.unable_to_delete'),
+                'message' => trans('public.member_have_points') . $member->point,
+                'type' => 'warning'
+            ]);
+        }
+
         $member->delete();
 
         return redirect()->back()->with('toast', [

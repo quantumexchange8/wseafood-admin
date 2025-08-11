@@ -299,4 +299,6 @@ return [
     "sent" => "Sent",
     'product_deleted' => 'Product deleted successfully',
     'product_deleted_caption' => 'The product has been deleted: ',
+    "unable_to_delete" => "Unable to delete",
+    "member_have_points" => "Member have points: ",
 ];
