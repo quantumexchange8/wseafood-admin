@@ -1,5 +1,19 @@
 <script setup>
-import { Card, DataTable, Column, IconField, InputIcon, InputText, Button, Tag, ProgressSpinner, Popover, ToggleSwitch, Avatar } from 'primevue';
+import {
+    Card,
+    DataTable,
+    Column,
+    IconField,
+    InputIcon,
+    InputText,
+    Button,
+    Tag,
+    ProgressSpinner,
+    Popover,
+    ToggleSwitch,
+    Avatar,
+    Image
+} from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
@@ -232,9 +246,9 @@ const applyFilter = () => {
                         :header="$t('public.visibility')"
                     >
                         <template #body="{ data }">
-                            <StatusSwitch 
-                                :data="data" 
-                                path="category.updateStatus" 
+                            <StatusSwitch
+                                :data="data"
+                                path="category.updateStatus"
                             />
                         </template>
                     </Column>
@@ -246,10 +260,11 @@ const applyFilter = () => {
                     >
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
-                                <Avatar
+                                <Image
                                     v-if="data.category_thumbnail"
-                                    :image="data.category_thumbnail"
-                                    class="w-10 h-10"
+                                    :src="data.category_thumbnail"
+                                    class="rounded-md bg-surface-200 dark:bg-surface-700"
+                                    image-class="w-10 h-10 rounded-md object-contain"
                                 />
                                 <Avatar
                                     v-else
@@ -309,7 +324,7 @@ const applyFilter = () => {
                     >
                         <div class="flex items-center gap-2">
                             <div :class="[
-                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600', 
+                                    data === 'active' ? 'bg-green-500' : 'bg-gray-600',
                                     'w-2 h-2 rounded-full'
                                 ]"
                             ></div>

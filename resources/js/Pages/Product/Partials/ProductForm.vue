@@ -1,15 +1,14 @@
 <script setup>
-import { Card, Button, InputText, RadioButton, Avatar, Select, InputNumber, Tag, ToggleSwitch } from 'primevue';
+import { Card, Button, InputText, RadioButton, Avatar, Select, InputNumber, Image } from 'primevue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { onMounted, ref, watchEffect, watch } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
 import axios from 'axios';
-import { IconPlus, IconUpload, IconTrash } from '@tabler/icons-vue';
+import { IconPlus, IconUpload } from '@tabler/icons-vue';
 import CreateCategoryModal from '@/Pages/Product/Partials/CreateCategoryModal.vue';
 import InputError from '@/Components/InputError.vue';
 import {useLangObserver} from "@/Composables/localeObserver.js";
 import TipTapEditor from '@/Components/TipTapEditor.vue';
-import SelectModifierGroupModal from '@/Pages/Product/Partials/SelectModifierGroupModal.vue';
 
 const props = defineProps({
     product: Object,
@@ -492,10 +491,12 @@ const getSeverity = (type) => {
                         </template>
                     </Button>
                     <div v-if="selectedProductPhoto" class="flex items-end gap-5 self-stretch">
-                        <Avatar
+                        <Image
                             v-if="selectedProductPhoto"
-                            :image="selectedProductPhoto"
-                            class="w-20 h-20"
+                            :src="selectedProductPhoto"
+                            preview
+                            class="rounded-md bg-surface-200 dark:bg-surface-700"
+                            image-class="w-20 h-20 rounded-md object-contain"
                         />
                         <input
                             ref="productPhotoInput"

@@ -1,5 +1,5 @@
 <script setup>
-import { Avatar } from 'primevue';
+import { Avatar, Image } from 'primevue';
 import { IconEyeCancel } from '@tabler/icons-vue';
 import { computed } from 'vue';
 
@@ -45,16 +45,17 @@ const textClass = computed(() => {
                 'flex justify-center items-center self-stretch'
             ]"
         >
-            <Avatar
-            v-if="product.product_photo"
-            :image="product.product_photo"
-            :class="avatarClass"
+            <Image
+                v-if="product.product_photo"
+                :src="product.product_photo"
+                :image-class="[avatarClass, 'rounded-md']"
+                class="bg-surface-200 dark:bg-surface-700 rounded-md"
             />
             <Avatar
-            v-else
-            :label="product.product_code"
-            :class="avatarClass"
-            size="large"
+                v-else
+                :label="product.product_code"
+                :class="avatarClass"
+                size="large"
             />
         </div>
         <div

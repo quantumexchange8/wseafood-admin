@@ -1,5 +1,5 @@
 <script setup>
-import { Card, Button, InputText, RadioButton, Avatar } from 'primevue';
+import {Card, Button, InputText, RadioButton, Avatar, Image} from 'primevue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import {generalFormat} from "@/Composables/format.js";
@@ -174,10 +174,12 @@ const submitForm = () => {
                     </div>
                     <div class="col-span-2 flex flex-col gap-1">
                         <div class="flex items-end gap-5 self-stretch">
-                            <Avatar
+                            <Image
                                 v-if="selectedCategoryPhoto"
-                                :image="selectedCategoryPhoto"
-                                class="w-20 h-20"
+                                :src="selectedCategoryPhoto"
+                                preview
+                                class="rounded-md bg-surface-200 dark:bg-surface-700"
+                                image-class="w-20 h-20 rounded-md object-contain"
                             />
                             <Avatar
                                 v-else
@@ -229,8 +231,8 @@ const submitForm = () => {
                 </div>
             </template>
             <template #content>
-                <TipTapEditor 
-                    v-model="form.description" 
+                <TipTapEditor
+                    v-model="form.description"
                     :invalid="form.errors.description"
                 />
                 <InputError :message="form.errors.description" />
