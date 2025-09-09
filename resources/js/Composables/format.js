@@ -6,12 +6,16 @@ export function generalFormat() {
         const day = formattedDate.getDate().toString().padStart(2, '0');
         const month = months[formattedDate.getMonth()];
         const year = formattedDate.getFullYear();
-        const hours = formattedDate.getHours().toString().padStart(2, '0');
+
+        let hours = formattedDate.getHours();
         const minutes = formattedDate.getMinutes().toString().padStart(2, '0');
-        const seconds = formattedDate.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
 
         if (includeTime) {
-            return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
+            return `${day} ${month} ${year} ${hours}:${minutes} ${ampm}`;
         } else {
             return `${day} ${month} ${year}`;
         }

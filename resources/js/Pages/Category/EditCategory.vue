@@ -10,18 +10,16 @@ const props = defineProps({
 
 <template>
     <AuthenticatedLayout :title="$t('public.edit_category')">
-        <div class="px-4 pt-2 pb-5 flex items-start gap-4">
-            <div class="flex flex-col items-start gap-5 flex-1">
-                <div class="flex flex-col items-start self-stretch">
-                    <h1 class="text-2xl font-bold">
-                        {{ $t('public.edit_category') }}
-                    </h1>
-                    <div class="self-stretch text-sm">
-                        {{ $t('public.edit_category_caption') }}
-                    </div>
+        <div class="flex flex-col items-start gap-5 flex-1">
+            <div class="flex flex-col items-start self-stretch">
+                <h1 class="text-2xl font-bold">
+                    {{ $t('public.edit_category') }}
+                </h1>
+                <div class="self-stretch text-sm">
+                    {{ $t('public.edit_category_caption') }}
                 </div>
-                <CategoryForm :category="category" />
             </div>
+            <CategoryForm :category="category" />
         </div>
     </AuthenticatedLayout>
 </template>

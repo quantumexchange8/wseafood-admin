@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\SelectOptionController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -156,6 +157,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/edit/{id}', [PushNotificationController::class, 'update'])->name('notification.update');
         Route::post('push_notification/{id}', [PushNotificationController::class, 'push_notification'])->name('notification.push_notification');
         Route::delete('/delete', [PushNotificationController::class, 'destroy'])->name('notification.destroy');
+    });
+
+    /**
+     * ==============================
+     *           Voucher
+     * ==============================
+     */
+    Route::prefix('voucher')->group(function () {
+        Route::get('/listing', [VoucherController::class, 'index'])->name('voucher.index');
+        Route::get('/create', [VoucherController::class, 'create'])->name('voucher.create');
+
+        Route::post('/create/validate/{step}', [VoucherController::class, 'validate_step'])->name('voucher.validate');
+        Route::post('/create/store', [VoucherController::class, 'store'])->name('voucher.store');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

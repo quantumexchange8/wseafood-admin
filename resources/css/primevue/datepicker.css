@@ -212,3 +212,7 @@
 .p-datepicker-timeonly .p-datepicker-time-picker {
     @apply border-t-0
 }
+
+.p-datepicker.p-invalid input {
+    @apply border border-red-400 dark:border-red-300
+}

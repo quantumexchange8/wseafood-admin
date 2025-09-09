@@ -33,8 +33,8 @@ defineProps({
             <Navbar />
 
             <!-- Page Content -->
-            <main class="flex flex-1 justify-center items-start px-3 pt-2 pb-12 md:px-4">
-                <div class="w-full max-w-[1440px]">
+            <main class="flex flex-1 justify-center items-start px-4 pt-2 pb-12">
+                <div class="w-full max-w-[1440px] dark:text-white">
                     <Toast />
                     <ToastList />
                     <!-- Confirmation Dialog -->

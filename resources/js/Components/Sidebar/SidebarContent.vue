@@ -6,7 +6,7 @@ import { sidebarState } from '@/Composables'
 import {
     IconLayoutDashboard,
     IconCategory,
-    IconHierarchy,
+    IconTicket,
     IconBowlChopsticks,
     IconUsers,
     IconSpeakerphone,
@@ -121,6 +121,27 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 :title="$t('public.create_product')"
                 :href="route('product.create')"
                 :active="route().current('product.create')"
+            />
+        </SidebarCollapsible>
+
+        <!-- Voucher -->
+        <SidebarCollapsible
+            :title="$t('public.voucher')"
+            :active="route().current('voucher.*')"
+        >
+            <template #icon>
+                <IconTicket size="20" stroke-width="1.5" />
+            </template>
+            <SidebarCollapsibleItem
+                :title="$t('public.voucher_listing')"
+                :href="route('voucher.index')"
+                :active="route().current('voucher.index')"
+            />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.create_voucher')"
+                :href="route('voucher.create')"
+                :active="route().current('voucher.create')"
             />
         </SidebarCollapsible>
 
