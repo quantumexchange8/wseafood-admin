@@ -1,5 +1,5 @@
 <script setup>
-import {Button, Card, Divider, DatePicker, InputText, InputNumber, MultiSelect, Select, RadioButton} from "primevue";
+import {Card, Divider, DatePicker, InputText, InputNumber, MultiSelect, Select, RadioButton} from "primevue";
 import FormLabel from "@/Components/FormLabel.vue";
 import IconAlertTooltip from "@/Components/IconAlertTooltip.vue";
 import InputError from "@/Components/InputError.vue";
@@ -190,22 +190,13 @@ watch(
                         />
 
                         <div class="flex flex-col items-start gap-1 self-stretch w-full md:max-w-80">
-                            <div class="flex gap-3 items-center w-full">
-                                <InputText
-                                    v-model="redemption.voucher_code"
-                                    id="voucher_code"
-                                    class="w-full"
-                                    placeholder="eg. XXXXXX"
-                                    :invalid="!!errors?.voucher_code"
-                                />
-
-                                <Button
-                                    type="button"
-                                    outlined
-                                    :label="$t('public.generate')"
-                                    class="w-40"
-                                />
-                            </div>
+                            <InputText
+                                v-model="redemption.voucher_code"
+                                id="voucher_code"
+                                class="w-full md:min-w-80"
+                                placeholder="eg. XXXXXX"
+                                :invalid="!!errors?.voucher_code"
+                            />
                             <InputError :message="errors?.voucher_code?.[0] ?? ''" />
                         </div>
                     </div>

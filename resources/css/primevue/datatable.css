@@ -218,7 +218,7 @@
 }
 
 .p-datatable-tbody > tr > td {
-    @apply text-start py-3 px-4 border-b border-surface-200 dark:border-surface-800
+    @apply text-start py-3 px-4 border-b border-surface-200 dark:border-surface-800 text-sm
 }
 
 .p-datatable-hoverable .p-datatable-tbody > tr:not(.p-datatable-row-selected):hover {

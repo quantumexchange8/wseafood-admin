@@ -25,4 +25,9 @@ class Voucher extends Model implements HasMedia
     {
         return $this->hasMany(VoucherValidity::class);
     }
+
+    public function redemptions(): HasMany
+    {
+        return $this->hasMany(UserVoucherRedemption::class);
+    }
 }

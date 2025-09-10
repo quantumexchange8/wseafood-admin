@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\VoucherType;
 use App\Http\Requests\StoreVoucherRequest;
 use App\Models\Voucher;
 use App\Models\VoucherMemberRules;
@@ -9,6 +10,7 @@ use App\Models\VoucherValidity;
 use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Str;
 use Throwable;
 use Carbon\Carbon;
 
@@ -16,10 +18,70 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        $last_updated_voucher = Voucher::orderByDesc('updated_at')->first();
-        return Inertia::render('Voucher/VoucherListing', [
-            'lastUpdatedDate' => $last_updated_voucher?->updated_at
+        $stats = Voucher::selectRaw('COUNT(*) as total, MAX(updated_at) as last_updated_at')->first();
+
+        return Inertia::render('Voucher/Listing/VoucherListing', [
+            'lastUpdatedDate' => $stats->last_updated_at,
+            'vouchersCount'   => $stats->total,
         ]);
+    }
+
+    public function getVoucherListingData(Request $request)
+    {
+        if ($request->has('lazyEvent')) {
+            $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
+
+            $query = Voucher::with('validities')
+                ->withCount([
+                    'redemptions',
+                    'redemptions as redeemed_count' => function ($q) {
+                        $q->where('status', VoucherType::REDEEMED);
+                    },
+                    'redemptions as used_count' => function ($q) {
+                        $q->where('status', VoucherType::USED);
+                    },
+                ]);
+
+            if ($data['filters']['global']['value']) {
+                $keyword = $data['filters']['global']['value'];
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('voucher_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('voucher_code', 'like', '%' . $keyword . '%');
+                });
+            }
+
+            if ($data['filters']['campaign_period']['value']) {
+                $range = $data['filters']['campaign_period']['value'];
+
+                $query->whereHas('validities', function ($q) use ($range) {
+                    $q->where(function ($inner) use ($range) {
+                        $inner->whereBetween('start_date', [$range[0], $range[1]])
+                            ->orWhereBetween('end_date', [$range[0], $range[1]]);
+                    });
+                });
+            }
+
+            if ($data['filters']['status']['value']) {
+                $query->whereIn('status', $data['filters']['status']['value']);
+            }
+
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->orderByDesc('created_at');
+            }
+
+            $fetchedNotifications = $query->paginate($data['rows']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $fetchedNotifications,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'data' => []]);
     }
 
     public function create()
@@ -68,21 +130,27 @@ class VoucherController extends Controller
                 ]);
             }
 
+            if ($request->claim_method != VoucherType::CODE_TO_CLAIM) {
+                $voucher->update([
+                    'voucher_code' => Str::upper(Str::random(6)),
+                ]);
+            }
+
             // Claim method
             switch ($request->input('claim_method')) {
-                case 'point_to_claim':
+                case VoucherType::POINT_TO_CLAIM:
                     $voucher->update([
                         'redeem_point' => $request->redeem_point
                     ]);
                     break;
 
-                case 'code_to_claim':
+                case VoucherType::CODE_TO_CLAIM:
                     $voucher->update([
                         'voucher_code' => $request->code_to_claim['voucher_code']
                     ]);
                     break;
 
-                case 'add_for_member':
+                case VoucherType::ADD_FOR_MEMBER:
                     $member_rule = VoucherMemberRules::create([
                         'voucher_id' => $voucher->id,
                         'activation_rule' => $request->add_for_member['activation_rule'],
@@ -143,7 +211,7 @@ class VoucherController extends Controller
                         VoucherValidity::create(array_merge($dateRange, [
                             'voucher_id' => $voucher->id,
                             'start_time' => '00:00',
-                            'end_time'   => '23:59',
+                            'end_time'   => '23:59:59',
                             'weekday'    => $day,
                         ]));
                     }
@@ -179,7 +247,7 @@ class VoucherController extends Controller
                         VoucherValidity::create(array_merge($dateRange, [
                             'voucher_id' => $voucher->id,
                             'start_time' => '00:00',
-                            'end_time'   => '23:59',
+                            'end_time'   => '23:59:59',
                             'weekday'    => $day,
                         ]));
                     }

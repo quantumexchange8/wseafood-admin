@@ -401,4 +401,11 @@ return [
     "friday" => "Friday",
     "saturday" => "Saturday",
     "select_day" => "Select day",
+    "voucher_and_code" => "Voucher & Code",
+    "claimed" => "Claimed",
+    "used" => "Used",
+    "no_campaign_period" => "No campaign period",
+    "ended" => "Ended",
+    "fully_claimed" => "Fully Claimed",
+    "list_of_voucher" => "List of voucher",
 ];

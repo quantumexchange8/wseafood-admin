@@ -39,8 +39,8 @@ return new class extends Migration {
             $table->decimal('min_spend_amount', 12)->default(0);
 
             // Settings
-            $table->string('voucher_thumbnail')->nullable();
             $table->longText('voucher_highlight')->nullable();
+            $table->longText('voucher_terms')->nullable();
 
             $table->string('status')->default('active')->index();
             $table->timestamps();

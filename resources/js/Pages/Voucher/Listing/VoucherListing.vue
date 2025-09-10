@@ -3,9 +3,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Button} from "primevue";
 import {IconPlus} from "@tabler/icons-vue";
 import {generalFormat} from "@/Composables/format.js";
+import VoucherTable from "@/Pages/Voucher/Listing/VoucherTable.vue";
 
 defineProps({
-    lastUpdatedDate: String
+    lastUpdatedDate: String,
+    vouchersCount: Number
 });
 
 const {formatDateTime} = generalFormat();
@@ -34,7 +36,9 @@ const {formatDateTime} = generalFormat();
                 </Button>
             </div>
 
-
+            <VoucherTable
+                :vouchersCount="vouchersCount"
+            />
         </div>
     </AuthenticatedLayout>
 </template>

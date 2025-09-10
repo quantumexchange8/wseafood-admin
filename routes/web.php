@@ -166,6 +166,7 @@ Route::middleware('auth')->group(function () {
      */
     Route::prefix('voucher')->group(function () {
         Route::get('/listing', [VoucherController::class, 'index'])->name('voucher.index');
+        Route::get('/getVoucherListingData', [VoucherController::class, 'getVoucherListingData'])->name('voucher.getVoucherListingData');
         Route::get('/create', [VoucherController::class, 'create'])->name('voucher.create');
 
         Route::post('/create/validate/{step}', [VoucherController::class, 'validate_step'])->name('voucher.validate');
