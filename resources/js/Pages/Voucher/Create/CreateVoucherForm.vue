@@ -1,6 +1,6 @@
 <script setup>
-import {Stepper, StepList, StepPanels, Step, StepPanel, Button} from "primevue";
-import {ref} from "vue";
+import {Badge, Drawer, Image, Stepper, StepList, StepPanels, Step, StepPanel, Button} from "primevue";
+import {computed, ref} from "vue";
 import General from "@/Pages/Voucher/Create/Step/General.vue";
 import FooterForm from "@/Components/FooterForm.vue";
 import Redemption from "@/Pages/Voucher/Create/Step/Redemption.vue";
@@ -8,6 +8,9 @@ import Setting from "@/Pages/Voucher/Create/Step/Setting.vue";
 import toast from "@/Composables/toast.js";
 import {IconLoader2} from "@tabler/icons-vue";
 import {router} from "@inertiajs/vue3";
+import dayjs from "dayjs";
+import {generalFormat} from "@/Composables/format.js";
+import {trans} from "laravel-vue-i18n";
 
 const form = ref({
     general: {
@@ -52,11 +55,14 @@ const form = ref({
     },
     setting: {
         voucher_thumbnail: null,
+        voucher_thumbnail_preview: null,
+        voucher_highlight: null,
     },
 });
 
 const formProcessing = ref(false);
 const errors = ref({})
+const {formatAmount} = generalFormat();
 
 const validateStep = async (step) => {
     try {
@@ -114,6 +120,8 @@ const submitForm = async () => {
 
         router.visit(route('voucher.index'))
     } catch (error) {
+        visible.value = false;
+
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors;
         }
@@ -129,6 +137,38 @@ const submitForm = async () => {
         formProcessing.value = false;
     }
 }
+
+const visible = ref(false);
+
+const weekdays = [
+    {label: 'monday', value: 1},
+    {label: 'tuesday', value: 2},
+    {label: 'wednesday', value: 3},
+    {label: 'thursday', value: 4},
+    {label: 'friday', value: 5},
+    {label: 'saturday', value: 6},
+    {label: 'sunday', value: 0},
+]
+
+const formattedValidDays = computed(() => {
+    const days = form.value.redemption.valid_days || []
+
+    // Sort for consistency
+    const sorted = [...days].sort((a, b) => a - b)
+
+    const isWeekdays = sorted.length === 5 && [1,2,3,4,5].every(v => sorted.includes(v))
+    const isWeekends = sorted.length === 2 && [6,0].every(v => sorted.includes(v))
+    const isEveryday = sorted.length === 7 && [0,1,2,3,4,5,6].every(v => sorted.includes(v))
+
+    if (isEveryday) return trans('public.everyday')
+    if (isWeekdays) return trans('public.weekdays')
+    if (isWeekends) return trans('public.weekends')
+
+    // else map to day names
+    return sorted
+        .map(v => trans(`public.${weekdays.find(d => d.value === v)?.label}`))
+        .join(', ')
+})
 </script>
 
 <template>
@@ -224,7 +264,7 @@ const submitForm = async () => {
                                 severity="primary"
                                 @click="async () => {
                                     if (await validateStep('setting')) {
-                                        await submitForm()
+                                        visible = true
                                     }
                                 }"
                                 :disabled="formProcessing"
@@ -243,4 +283,267 @@ const submitForm = async () => {
             </StepPanels>
         </Stepper>
     </div>
+
+    <Drawer
+        v-model:visible="visible"
+        :header="$t('public.confirmation')"
+        position="full"
+    >
+        <div class="flex flex-col w-full">
+            <!-- Image -->
+            <Image
+                :src="form.setting.voucher_thumbnail_preview"
+                class="rounded-md bg-surface-200 dark:bg-surface-700"
+                image-class="h-80 rounded-md object-cover w-full"
+            />
+
+            <!-- Step 1 -->
+            <div class="flex flex-col gap-5 py-6 items-center self-stretch">
+                <div class="flex items-center gap-2 w-full">
+                    <Badge
+                        :value="1"
+                    />
+                    <div class="text-surface-950 dark:text-white font-bold">{{ $t('public.general_voucher_detail') }}</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.voucher_type') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ $t(`public.${form['general'].voucher_type}`) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.voucher_name') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ form['general']?.voucher_name ? form['general'].voucher_name : '-' }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.description') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ form['general']?.description ? form['general'].description : '-' }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.campaign_period') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <div v-if="form['general']?.campaign_period">
+                                {{ dayjs(form['general'].campaign_period_range[0]).format('DD/MM/YYYY') }} - {{ dayjs(form['general'].campaign_period_range[1]).format('DD/MM/YYYY') }}
+                            </div>
+                            <div v-else>
+                                {{ $t('public.no_campaign_period') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.eligible_service') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ $t(`public.${form['general'].eligible_service}`) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.discount_rate') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <div v-if="form['general']?.discount_type === 'percentage'">
+                                {{ $t('public.discount_rate_capped', {percent: form['general']?.discount_rate, amount: form['general']?.capped_amount}) }}
+                            </div>
+                            <div v-else>
+                                RM {{ formatAmount(form['general'].discount_rate, 2, '') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2-->
+            <div class="flex flex-col gap-5 py-6 items-center self-stretch">
+                <div class="flex items-center gap-2 w-full">
+                    <Badge
+                        :value="2"
+                    />
+                    <div class="text-surface-950 dark:text-white font-bold">{{ $t('public.redemption_usage_condition') }}</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.claim_method') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ $t(`public.${form['redemption'].claim_method}`) }}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            <span v-if="form['redemption'].claim_method === 'point_to_claim'">{{ $t('public.point_to_redeem') }}</span>
+                            <span v-else-if="form['redemption'].claim_method === 'code_to_claim'">{{ $t('public.voucher_code') }}</span>
+                            <span v-else-if="form['redemption'].claim_method === 'add_for_member'">{{ $t('public.activation_rule') }}</span>
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <!-- Point -->
+                            <div v-if="form['redemption'].claim_method === 'point_to_claim'">
+                                {{ form['redemption']['point_to_claim']?.redeem_point ? form['redemption']['point_to_claim'].redeem_point : '-' }}
+                            </div>
+
+                            <!-- Code -->
+                            <div v-else-if="form['redemption'].claim_method === 'code_to_claim'">
+                                {{ form['redemption']['code_to_claim']?.voucher_code ? form['redemption']['code_to_claim']?.voucher_code : '-' }}
+                            </div>
+
+                            <!-- Auto add -->
+                            <div v-else-if="form['redemption'].claim_method === 'add_for_member'">
+                                <div v-if="form['redemption']['add_for_member'].activation_rule === 'first_time_registration'">
+                                    {{ $t('public.first_time_registration') }}
+                                </div>
+                                <div v-else-if="form['redemption']['add_for_member'].activation_rule === 'event_based'">
+                                    <span v-if="form['redemption']['add_for_member'].event_type === 'member_birthday'">{{ form['redemption']['add_for_member']?.event_type ? $t(`public.${form['redemption']['add_for_member']?.event_type}`) : '-' }}</span>
+                                    <span v-else>{{ form['redemption']['add_for_member']?.event_type ? $t(`public.${form['redemption']['add_for_member']?.event_type}`) : '-' }} - {{ form['redemption']['add_for_member']?.special_holiday_date ? dayjs(form['redemption']['add_for_member']?.special_holiday_date).format('DD/MM/YYYY') : '-' }}</span>
+                                </div>
+                                <div v-else-if="form['redemption']['add_for_member'].activation_rule === 'amount_paid'">
+                                    {{ $t('public.spend') }} RM {{ formatAmount(form['redemption']['add_for_member']?.amount_paid) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.limit_per_voucher') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <div v-if="form['redemption'].claim_limit">
+                                {{ formatAmount(form['redemption'].voucher_limit, 0, '') }} ({{ $t(`public.${form['redemption'].renew_voucher_limit}`) }})
+                            </div>
+                            <div v-else>
+                                {{ $t('public.unlimited') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.limit_per_member') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <div v-if="form['redemption'].claim_limit">
+                                {{ formatAmount(form['redemption'].claim_amount_per_member, 0, '') }} ({{ $t(`public.${form['redemption'].renew_claim_limit}`) }})
+                            </div>
+                            <div v-else>
+                                {{ $t('public.unlimited') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.validity') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ formatAmount(form['redemption'].validity_count, 0, '') }} {{ $t(`public.valid_type_${form['redemption'].validity_count_type}`) }}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.min_requirement') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            <div v-if="form['redemption'].requirement_type === 'no_requirement'">
+                                {{ $t('public.no_requirement') }}
+                            </div>
+                            <div v-else>
+                                {{ $t('public.min_spend') }} {{ formatAmount(form['redemption'].min_spend_amount, 2, 'RM ') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.valid_day_time') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white flex gap-1">
+                            {{ $t(`public.${form['redemption'].valid_type}`) }}
+                            <span>-</span>
+                            <div v-if="form['redemption'].valid_type === 'specific_day'" class="text-surface-500 dark:text-surface-400 font-normal">
+                                {{ formattedValidDays }}
+                            </div>
+                            <div v-else-if="form['redemption'].valid_type === 'specific_time'" class="text-surface-500 dark:text-surface-400 font-normal">
+                                {{ dayjs(form['redemption'].valid_time[0]).format('HH:mm') }} - {{ dayjs(form['redemption'].valid_time[1]).format('HH:mm') }}
+                            </div>
+                            <div v-else class="text-surface-500 dark:text-surface-400 font-normal">
+                                {{ formattedValidDays }} |
+                                {{ dayjs(form['redemption'].valid_time[0]).format('HH:mm') }} - {{ dayjs(form['redemption'].valid_time[1]).format('HH:mm') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-sm">
+                        <div class="text-surface-500 dark:text-surface-400">
+                            {{ $t('public.stacking_rule') }}
+                        </div>
+                        <div class="font-bold text-surface-950 dark:text-white">
+                            {{ form['redemption'].can_stack ? $t('public.stackable') : $t('public.not_stackable') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="flex flex-col gap-5 py-6 items-center self-stretch">
+                <div class="flex items-center gap-2 w-full">
+                    <Badge
+                        :value="3"
+                    />
+                    <div class="text-surface-950 dark:text-white font-bold">{{ $t('public.other_voucher_setting') }}</div>
+                </div>
+
+                <div class="flex flex-col gap-2 w-full text-sm">
+                    <div class="text-surface-500 dark:text-surface-400">
+                        {{ $t('public.voucher_highlight') }}
+                    </div>
+                    <div class="prose" v-html="form['setting'].voucher_highlight"></div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-between items-center border-t-2 dark:border-surface-700 pt-5">
+                <Button
+                    type="button"
+                    severity="secondary"
+                    outlined
+                    :label="$t('public.cancel')"
+                    @click="visible = false"
+                    :disabled="formProcessing"
+                />
+                <Button
+                    type="button"
+                    severity="primary"
+                    @click="submitForm"
+                    :disabled="formProcessing"
+                >
+                    <IconLoader2
+                        v-if="formProcessing"
+                        size="16"
+                        stroke-width="1.5"
+                        class="animate-spin"
+                    />
+                    {{ $t('public.create_voucher') }}
+                </Button>
+            </div>
+        </div>
+    </Drawer>
 </template>

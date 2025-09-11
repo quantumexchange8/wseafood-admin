@@ -122,6 +122,7 @@ class VoucherController extends Controller
                 'requirement_type' => $request->requirement_type,
                 'valid_type' => $request->valid_type,
                 'can_stack' => $request->can_stack,
+                'voucher_highlight' => $request->voucher_highlight,
             ]);
 
             // Discount limit
@@ -192,11 +193,16 @@ class VoucherController extends Controller
             if ($voucher->campaign_period) {
                 $start_date = Carbon::parse($request->campaign_period_range[0])->addDay()->startOfDay();
                 $end_date = Carbon::parse($request->campaign_period_range[1])->addDay()->endOfDay();
+
+                // Determine status
+                if ($start_date->isFuture()) {
+                    $voucher->status = VoucherType::SCHEDULE;
+                    $voucher->save();
+                }
             } else {
                 $start_date = null;
                 $end_date = null;
             }
-
 
             $dateRange = [
                 'start_date' => $voucher->campaign_period ? $start_date : null,

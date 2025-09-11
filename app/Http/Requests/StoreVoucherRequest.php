@@ -98,6 +98,7 @@ class StoreVoucherRequest extends FormRequest
         if ($step === 'setting' || $step === 'all') {
             $rules = array_merge($rules, [
                 'voucher_thumbnail' => ['required', 'image', 'max:8000'],
+                'voucher_highlight' => ['required'],
             ]);
         }
 
@@ -142,6 +143,7 @@ class StoreVoucherRequest extends FormRequest
             'valid_days' => trans('public.valid_day'),
             'valid_time.*' => trans('public.valid_time'),
             'voucher_thumbnail' => trans('public.image'),
+            'voucher_highlight' => trans('public.voucher_highlight'),
         ];
     }
 

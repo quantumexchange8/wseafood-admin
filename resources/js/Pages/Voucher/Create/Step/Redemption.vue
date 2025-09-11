@@ -191,7 +191,7 @@ watch(
 
                         <div class="flex flex-col items-start gap-1 self-stretch w-full md:max-w-80">
                             <InputText
-                                v-model="redemption.voucher_code"
+                                v-model="redemption.code_to_claim.voucher_code"
                                 id="voucher_code"
                                 class="w-full md:min-w-80"
                                 placeholder="eg. XXXXXX"

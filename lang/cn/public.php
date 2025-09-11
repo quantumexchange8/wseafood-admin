@@ -412,4 +412,11 @@ return [
     "claimed_with" => "使用:pointPTS 领取",
     "claimed_with_code" => "使用代码:code领取",
     "added_to_wallet_automatically" => "已自动发配给会员",
+    "voucher_highlight" => "优惠券详情",
+    "voucher_highlight_caption" => "优惠券亮点与详情",
+    "confirmation" => "确认",
+    "discount_rate_capped" => ":percent%折扣，最高RM:amount",
+    "everyday" => "每天",
+    "weekdays" => "工作日",
+    "weekends" => "周末",
 ];

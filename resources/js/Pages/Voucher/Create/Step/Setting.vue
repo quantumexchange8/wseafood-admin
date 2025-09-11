@@ -3,6 +3,7 @@ import {Card, Image, Button, Avatar} from "primevue";
 import FormLabel from "@/Components/FormLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import {ref} from "vue";
+import TipTapEditor from "@/Components/TipTapEditor.vue";
 
 const props = defineProps({
     modelValue: { type: Object, required: true },
@@ -16,13 +17,16 @@ const handleUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
         const reader = new FileReader()
-        reader.onload = () => { selectedVoucherImage.value = reader.result }
-        reader.readAsDataURL(file)
+        reader.onload = () => {
+            selectedVoucherImage.value = reader.result
 
-        emit("update:modelValue", {
-            ...props.modelValue,
-            voucher_thumbnail: file,
-        })
+            emit("update:modelValue", {
+                ...props.modelValue,
+                voucher_thumbnail: file,
+                voucher_thumbnail_preview: reader.result,
+            })
+        }
+        reader.readAsDataURL(file)
     }
 }
 
@@ -31,6 +35,7 @@ const removePhoto = () => {
     emit("update:modelValue", {
         ...props.modelValue,
         voucher_thumbnail: null,
+        voucher_thumbnail_preview: null,
     })
 }
 </script>
@@ -98,6 +103,28 @@ const removePhoto = () => {
                         </div>
                         <InputError :message="errors?.voucher_thumbnail?.[0]" />
                     </div>
+                </div>
+            </template>
+        </Card>
+
+        <Card class="w-full">
+            <template #title>
+                <div class="px-5 py-3 flex justify-between items-center self-stretch">
+                    <div class="text-lg font-bold flex gap-1 items-start">
+                        {{ $t('public.voucher_highlight') }} <span class="text-red-500 text-xs pt-1">*</span>
+                    </div>
+                    <div class="font-normal italic text-xs text-gray-400">
+                        {{ $t('public.voucher_highlight_caption') }}
+                    </div>
+                </div>
+            </template>
+            <template #content>
+                <TipTapEditor
+                    v-model="modelValue.voucher_highlight"
+                    :invalid="errors?.voucher_highlight?.[0]"
+                />
+                <div class="p-3">
+                    <InputError :message="errors?.voucher_highlight?.[0]" />
                 </div>
             </template>
         </Card>

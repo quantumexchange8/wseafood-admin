@@ -91,7 +91,7 @@ const onFilter = (event) => {
 };
 
 //filter status
-const status = ref(['active', 'inactive', 'scheduled', 'ended', 'fully_claimed']);
+const status = ref(['active', 'inactive', 'schedule', 'ended', 'fully_claimed']);
 
 //filter toggle
 const op = ref();
@@ -163,7 +163,7 @@ const getStatusColor = (status) => {
     switch (status) {
         case 'active':
             return 'bg-green-500';
-        case 'scheduled':
+        case 'schedule':
             return 'bg-blue-500';
         case 'ended':
             return 'bg-surface-500';
