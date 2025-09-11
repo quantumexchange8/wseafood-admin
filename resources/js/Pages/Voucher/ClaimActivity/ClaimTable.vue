@@ -7,7 +7,6 @@ import {
     InputIcon,
     InputText,
     Button,
-    Tag,
     ProgressSpinner,
     Popover,
     DatePicker
@@ -16,16 +15,15 @@ import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconInfinity } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import { useLangObserver } from '@/Composables/localeObserver';
-import NotificationTableAction from "@/Pages/PushNotification/Partials/NotificationTableAction.vue";
 import dayjs from "dayjs";
 import MultiSelectOption from "@/Components/MultiSelectOption.vue";
 import {generalFormat} from "@/Composables/format.js";
 
 const props = defineProps({
-    vouchersCount: Number,
+    redemptionsCount: Number,
 });
 
 const { locale } = useLangObserver();
@@ -33,7 +31,7 @@ const {formatAmount} = generalFormat();
 
 const isLoading = ref(false);
 const dt = ref(null);
-const vouchers = ref([]);
+const redemptions = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
 
@@ -60,18 +58,18 @@ const loadLazyData = (event) => {
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
 
-            const url = route('voucher.getVoucherListingData', params);
+            const url = route('voucher.getClaimActivityData', params);
             const response = await fetch(url);
             const results = await response.json();
 
-            vouchers.value = results?.data?.data;
+            redemptions.value = results?.data?.data;
 
             totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
-        vouchers.value = [];
+        redemptions.value = [];
         totalRecords.value = 0;
         isLoading.value = false;
     }
@@ -108,7 +106,7 @@ onMounted(() => {
         filters: filters.value
     };
 
-    if(props.vouchersCount !== 0) {
+    if(props.redemptionsCount !== 0) {
         loadLazyData();
     }
 })
@@ -215,17 +213,14 @@ const getStatusColor = (status) => {
             <div class="p-4 flex justify-between items-center gap-2 self-stretch">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold">
-                        {{ $t('public.list_of_voucher') }}
+                        {{ $t('public.list_of_activity') }}
                     </div>
-                    <Tag rounded>
-                        <span>{{ vouchersCount }} {{ $t('public.voucher') }}</span>
-                    </Tag>
                 </div>
             </div>
         </template>
         <template #content>
             <DataTable
-                :value="vouchers"
+                :value="redemptions"
                 lazy
                 paginator
                 removableSort
@@ -245,7 +240,7 @@ const getStatusColor = (status) => {
                 :globalFilterFields="['name', 'status']"
             >
                 <template #empty>
-                    <div v-if="vouchers.length === 0 || vouchersCount === 0">
+                    <div v-if="redemptions.length === 0 || redemptionsCount === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -264,91 +259,68 @@ const getStatusColor = (status) => {
                     </div>
                 </template>
 
-                <template v-if="vouchers?.length > 0">
+                <template v-if="redemptions?.length > 0">
+                    <Column
+                        field="redeemed_at"
+                        :header="$t('public.date')"
+                        sortable
+                        class="w-52"
+                    >
+                        <template #body="{ data }">
+                            {{ dayjs(data.redeemed_at).format('DD/MM/YYYY h:mm A') }}
+                        </template>
+                    </Column>
+
                     <Column
                         field="voucher_name"
-                        :header="$t('public.voucher_and_code')"
+                        :header="$t('public.voucher_name')"
                     >
                         <template #body="{ data }">
-                            <div class="flex flex-col text-sm">
+                            <div class="flex flex-col">
                                 <div class="font-bold">
-                                    {{ data.voucher_name }}
+                                    {{ data.voucher.voucher_name }}
                                 </div>
                                 <div class="text-surface-500 dark:text-surface-400">
-                                    {{ data.voucher_code }}
+                                    {{ data.voucher.voucher_code }}
                                 </div>
                             </div>
                         </template>
                     </Column>
 
                     <Column
-                        field="voucher_claimed"
-                        :header="$t('public.claimed')"
+                        field="claim_by"
+                        :header="$t('public.claim_by')"
                     >
                         <template #body="{ data }">
-                            <div class="flex gap-1 items-center">
-                                {{ data.redeemed_count }}
-                                <span>/</span>
-                                <div v-if="data.claim_limit === 'limited'">
-                                    {{ formatAmount(data.voucher_limit, 0, '') }}
+                            <div class="flex flex-col">
+                                <div class="font-bold">
+                                    {{ data.user.full_name }}
                                 </div>
-                                <div v-else>
-                                    <IconInfinity size="24" stroke-width="1.25" />
+                                <div class="text-surface-500 dark:text-surface-400">
+                                    {{ data.user.phone_number }}
                                 </div>
                             </div>
                         </template>
                     </Column>
 
                     <Column
-                        field="voucher_used"
-                        :header="$t('public.used')"
+                        field="claimed_method"
+                        :header="$t('public.method')"
                     >
                         <template #body="{ data }">
-                            {{ data.used_count }}
-                        </template>
-                    </Column>
-
-                    <Column
-                        field="campaign_period"
-                        :header="$t('public.campaign_period')"
-                    >
-                        <template #body="{ data }">
-                            <div v-if="data.campaign_period">
-                                {{ dayjs(data.validities[0].start_date).format('DD/MM/YYYY') }} - {{ dayjs(data.validities[0].end_date).format('DD/MM/YYYY') }}
+                            <div v-if="data.claimed_method === 'point_to_claim'">
+                                {{ $t('public.claimed_with', { point: data.voucher.redeem_point }) }}
                             </div>
-                            <div v-else>
-                                {{ $t('public.no_campaign_period') }}
+
+                            <div v-else-if="data.claimed_method === 'code_to_claim'">
+                                {{ $t('public.claimed_with_code', { code: data.voucher.voucher_code }) }}
+                            </div>
+
+                            <div v-else-if="data.claimed_method === 'add_for_member'">
+                                {{ $t('public.added_to_wallet_automatically') }}
                             </div>
                         </template>
                     </Column>
-
-                    <Column
-                        field="status"
-                        :header="$t('public.status')"
-                    >
-                        <template #body="{ data }">
-                            <Tag
-                                :value="$t(`public.${data.status}`)"
-                                :severity="getSeverity(data.status)"
-                                rounded
-                                class="text-xs"
-                            />
-                        </template>
-                    </Column>
-
-
-
-<!--                    <Column-->
-<!--                        field="action"-->
-<!--                        class="w-[100px]"-->
-<!--                        :header="$t('public.action')"-->
-<!--                    >-->
-<!--                        <template #body="{ data }">-->
-<!--                            <NotificationTableAction-->
-<!--                                :notification="data"-->
-<!--                            />-->
-<!--                        </template>-->
-<!--                    </Column>-->
                 </template>
             </DataTable>
         </template>

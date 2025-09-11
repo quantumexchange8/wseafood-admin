@@ -406,4 +406,10 @@ return [
     "ended" => "已结束",
     "fully_claimed" => "已全部领取",
     "list_of_voucher" => "优惠券列表",
+    "claim_activity" => "领取活动",
+    "list_of_activity" => "活动列表",
+    "claim_by" => "领取人",
+    "claimed_with" => "使用:pointPTS 领取",
+    "claimed_with_code" => "使用代码:code领取",
+    "added_to_wallet_automatically" => "已自动发配给会员",
 ];

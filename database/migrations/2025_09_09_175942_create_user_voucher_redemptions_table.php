@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->timestamp('redeemed_at');
             $table->string('status')->default(\App\Enums\VoucherType::REDEEMED);
             $table->json('meta')->nullable();
+            $table->string('remarks')->nullable();
             $table->timestamp('used_at')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();

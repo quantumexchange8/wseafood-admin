@@ -168,6 +168,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/listing', [VoucherController::class, 'index'])->name('voucher.index');
         Route::get('/getVoucherListingData', [VoucherController::class, 'getVoucherListingData'])->name('voucher.getVoucherListingData');
         Route::get('/create', [VoucherController::class, 'create'])->name('voucher.create');
+        Route::get('/claim_activity', [VoucherController::class, 'claim_activity'])->name('voucher.claim_activity');
+        Route::get('/getClaimActivityData', [VoucherController::class, 'getClaimActivityData'])->name('voucher.getClaimActivityData');
 
         Route::post('/create/validate/{step}', [VoucherController::class, 'validate_step'])->name('voucher.validate');
         Route::post('/create/store', [VoucherController::class, 'store'])->name('voucher.store');

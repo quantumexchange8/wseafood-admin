@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\VoucherType;
 use App\Http\Requests\StoreVoucherRequest;
+use App\Models\UserVoucherRedemption;
 use App\Models\Voucher;
 use App\Models\VoucherMemberRules;
 use App\Models\VoucherValidity;
@@ -276,5 +277,67 @@ class VoucherController extends Controller
                 'type' => 'error',
             ], 400);
         }
+    }
+
+    public function claim_activity()
+    {
+        $stats = UserVoucherRedemption::selectRaw('COUNT(*) as total, MAX(updated_at) as last_updated_at')->first();
+
+        return Inertia::render('Voucher/ClaimActivity/ClaimActivity', [
+            'lastUpdatedDate' => $stats->last_updated_at,
+            'redemptionsCount'   => $stats->total,
+        ]);
+    }
+
+    public function getClaimActivityData(Request $request)
+    {
+        if ($request->has('lazyEvent')) {
+            $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
+
+            $query = UserVoucherRedemption::with([
+                'voucher',
+                'user:id,full_name,phone_number'
+            ]);
+
+            if ($data['filters']['global']['value']) {
+                $keyword = $data['filters']['global']['value'];
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('voucher_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('voucher_code', 'like', '%' . $keyword . '%');
+                });
+            }
+
+            if ($data['filters']['campaign_period']['value']) {
+                $range = $data['filters']['campaign_period']['value'];
+
+                $query->whereHas('validities', function ($q) use ($range) {
+                    $q->where(function ($inner) use ($range) {
+                        $inner->whereBetween('start_date', [$range[0], $range[1]])
+                            ->orWhereBetween('end_date', [$range[0], $range[1]]);
+                    });
+                });
+            }
+
+            if ($data['filters']['status']['value']) {
+                $query->whereIn('status', $data['filters']['status']['value']);
+            }
+
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->orderByDesc('created_at');
+            }
+
+            $redemptions = $query->paginate($data['rows']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $redemptions,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'data' => []]);
     }
 }

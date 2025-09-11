@@ -408,4 +408,10 @@ return [
     "ended" => "Ended",
     "fully_claimed" => "Fully Claimed",
     "list_of_voucher" => "List of voucher",
+    "claim_activity" => "Claim Activity",
+    "list_of_activity" => "List of activity",
+    "claim_by" => "Claim by",
+    "claimed_with" => "Claimed with :point PTS",
+    "claimed_with_code" => "Claimed with code :code",
+    "added_to_wallet_automatically" => "Added to wallet automatically",
 ];
