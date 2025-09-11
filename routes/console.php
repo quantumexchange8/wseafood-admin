@@ -8,3 +8,5 @@ use Illuminate\Support\Facades\Artisan;
 //})->purpose('Display an inspiring quote');
 
 Schedule::command('push:notification')->everyMinute();
+Schedule::command('update:voucher-status')->daily();
+Schedule::command('distribute:vouchers')->daily();

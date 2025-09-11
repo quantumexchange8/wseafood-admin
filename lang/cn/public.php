@@ -199,7 +199,7 @@ return [
     'schedule_type' => '计划类型',
     'select_schedule_type' => '选择计划类型',
     'immediately' => '立即发送',
-    'scheduled' => '定时发送',
+    'schedule' => '定时发送',
     'schedule_time' => '计划时间',
     'notification_created' => '推送通知创建成功',
     'notification_created_caption' => '推送通知已创建：',
