@@ -430,4 +430,8 @@ return [
     "value" => "金额",
     "redeemed" => "已兑换",
     "expired" => "已过期",
+    "mark_as_used" => "标记为已使用",
+    "used_on" => "于 :date 使用",
+    "expired_on" => "于 :date 过期",
+    "voucher_expired" => "此优惠券已过期。",
 ];

@@ -306,6 +306,9 @@ class VoucherController extends Controller
 
             $query = UserVoucherRedemption::with([
                 'voucher',
+                'voucher.media',
+                'voucher.validities',
+                'voucher.member_rule',
                 'user:id,full_name,phone_number'
             ]);
 
@@ -451,11 +454,24 @@ class VoucherController extends Controller
         }
 
         $user = User::find($request->user_id);
-        $user_voucher = UserVoucherRedemption::firstWhere([
+        $user_voucher = UserVoucherRedemption::with([
+            'voucher',
+            'voucher.media',
+            'voucher.validities',
+            'user:id,full_name,phone_number'
+        ])->where([
             'user_id' => $user->id,
             'voucher_id' => $request->voucher_id,
             'status' => VoucherType::REDEEMED,
-        ]);
+        ])->first();
+
+        if ($user_voucher->expired_at && $user_voucher->expired_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'title' => trans('public.voucher_expired'),
+                'type' => 'warning'
+            ], 400);
+        }
 
         $user_voucher->update([
             'used_at' => now(),
@@ -467,6 +483,7 @@ class VoucherController extends Controller
             'title' => trans('public.voucher_created'),
             'message' => trans('public.voucher_created_message'),
             'type' => 'success',
+            'data' => $user_voucher,
         ]);
     }
 }

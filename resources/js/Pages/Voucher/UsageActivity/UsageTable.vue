@@ -139,12 +139,6 @@ const clearFilterGlobal = () => {
     filters.value['global'].value = null;
 }
 
-watchEffect(() => {
-    if (usePage().props.toast !== null) {
-        loadLazyData();
-    }
-});
-
 const applyFilter = () => {
     loadLazyData();
 };

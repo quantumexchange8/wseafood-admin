@@ -9,6 +9,7 @@ import {ref, watch} from "vue";
 import debounce from "lodash/debounce.js";
 import toast from "@/Composables/toast.js";
 import LoadingMask from "@/Pages/Voucher/UsageActivity/LoadingMask.vue";
+import dayjs from "dayjs";
 
 const form = ref({
     user_id: '',
@@ -220,12 +221,12 @@ const submitForm = async () => {
                                     <div class="flex flex-col rounded-2xl border shadow-input dark:border-surface-700">
                                         <!-- Image -->
                                         <div class="rounded-tl-xl rounded-tr-xl bg-surface-200 dark:bg-surface-700 h-24 w-full"></div>
-                                        <div class="flex flex-col text-sm p-3">
+                                        <div class="flex flex-col gap-1 text-sm p-3">
                                             <div class="font-bold text-surface-950 dark:text-white">
                                                 {{ $t('public.no_voucher_found') }}
                                             </div>
-                                            <div class="text-surface-500 dark:text-surface-400">
-                                                {{ $t('public.voucher_code') }}
+                                            <div class="px-2 py-1 flex gap-2 items-center rounded-lg bg-surface-200 dark:bg-surface-800 text-xs w-fit font-medium text-surface-500 dark:text-surface-300">
+                                                {{ $t('public.expired_on', {date: 'DD/MM/YYYY'}) }}
                                             </div>
                                         </div>
                                     </div>
@@ -251,12 +252,13 @@ const submitForm = async () => {
                                             class="rounded-tl-2xl rounded-tr-2xl bg-surface-200 dark:bg-surface-700"
                                             image-class="h-24 rounded-tl-2xl rounded-tr-2xl object-cover w-full"
                                         />
-                                        <div class="flex flex-col text-sm p-3">
+                                        <div class="flex flex-col gap-1 text-sm p-3">
                                             <div class="font-bold text-surface-950 dark:text-white">
-                                                {{ redemption.voucher.voucher_name }}
+                                                {{ redemption.voucher.voucher_name }} <span class="text-surface-500 dark:text-surface-400 font-normal">({{ redemption.voucher.voucher_code }})</span>
                                             </div>
-                                            <div class="text-surface-500 dark:text-surface-400">
-                                                {{ redemption.voucher.voucher_code }}
+
+                                            <div class="px-2 py-1 flex gap-2 items-center rounded-lg bg-surface-200 dark:bg-surface-800 text-xs w-fit font-medium text-surface-500 dark:text-surface-300">
+                                                {{ $t('public.expired_on', {date: dayjs(redemption.expired_at).format('DD/MM/YYYY')}) }}
                                             </div>
                                         </div>
                                     </div>

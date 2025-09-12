@@ -14,12 +14,12 @@ import StatusSwitch from "@/Components/StatusSwitch.vue";
             >
                 <!-- Image -->
                 <div class="rounded-tl-xl rounded-tr-xl bg-surface-200 dark:bg-surface-700 h-24 w-full"></div>
-                <div class="flex flex-col text-sm p-3">
+                <div class="flex flex-col gap-1 text-sm p-3">
                     <div class="font-bold text-surface-950 dark:text-white">
-                        {{ $t('public.voucher_name') }}
+                        {{ $t('public.no_voucher_found') }}
                     </div>
-                    <div class="text-surface-500 dark:text-surface-400">
-                        {{ $t('public.voucher_code') }}
+                    <div class="px-2 py-1 flex gap-2 items-center rounded-lg bg-surface-200 dark:bg-surface-800 text-xs w-fit font-medium text-surface-500 dark:text-surface-300">
+                        {{ $t('public.expired_on', {date: 'DD/MM/YYYY'}) }}
                     </div>
                 </div>
             </div>

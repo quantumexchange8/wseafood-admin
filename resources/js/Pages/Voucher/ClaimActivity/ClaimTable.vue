@@ -21,6 +21,7 @@ import { useLangObserver } from '@/Composables/localeObserver';
 import dayjs from "dayjs";
 import MultiSelectOption from "@/Components/MultiSelectOption.vue";
 import {generalFormat} from "@/Composables/format.js";
+import ClaimTableAction from "@/Pages/Voucher/ClaimActivity/ClaimTableAction.vue";
 
 const props = defineProps({
     redemptionsCount: Number,
@@ -117,7 +118,14 @@ onMounted(() => {
     if(props.redemptionsCount !== 0) {
         loadLazyData();
     }
-})
+});
+
+const updateRedemption = (updatedVoucher) => {
+    const index = redemptions.value.findIndex(data => data.id === updatedVoucher.id);
+    if (index !== -1) {
+        redemptions.value[index] = updatedVoucher;
+    }
+};
 
 watch(
     filters.value['global'],
@@ -137,12 +145,6 @@ const clearFilterGlobal = () => {
     filters.value['global'].value = null;
 }
 
-watchEffect(() => {
-    if (usePage().props.toast !== null) {
-        loadLazyData();
-    }
-});
-
 const applyFilter = () => {
     loadLazyData();
 };
@@ -156,7 +158,7 @@ const getSeverity = (status) => {
             return 'info';
 
         case 'expired':
-            return 'danger';
+            return 'warn';
     }
 }
 
@@ -167,7 +169,7 @@ const getStatusColor = (status) => {
         case 'redeemed':
             return 'bg-blue-500';
         case 'expired':
-            return 'bg-red-500';
+            return 'bg-yellow-500';
         default:
             return 'bg-surface-600';
     }
@@ -331,6 +333,17 @@ const getStatusColor = (status) => {
                                 :severity="getSeverity(data.status)"
                                 rounded
                                 class="text-xs"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column
+                        field="action"
+                    >
+                        <template #body="{ data }">
+                            <ClaimTableAction
+                                :redemption="data"
+                                @updated:redemption="updateRedemption"
                             />
                         </template>
                     </Column>

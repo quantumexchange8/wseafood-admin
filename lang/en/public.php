@@ -432,4 +432,8 @@ return [
     "value" => "Value",
     "redeemed" => "Redeemed",
     "expired" => "Expired",
+    "mark_as_used" => "Mark as used",
+    "used_on" => "Used on :date",
+    "expired_on" => "Expired on :date",
+    "voucher_expired" => "This voucher has expired.",
 ];
