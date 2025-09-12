@@ -7,7 +7,6 @@ import {
     InputIcon,
     InputText,
     Button,
-    Tag,
     ProgressSpinner,
     Popover,
     DatePicker
@@ -16,16 +15,15 @@ import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
 import { ref, watch, defineProps, watchEffect, onMounted } from 'vue';
 import { debounce } from 'lodash';
-import { IconSearch, IconAdjustments, IconXboxX, IconInfinity } from '@tabler/icons-vue';
+import { IconSearch, IconAdjustments, IconXboxX } from '@tabler/icons-vue';
 import Empty from '@/Components/Empty.vue';
 import { useLangObserver } from '@/Composables/localeObserver';
-import NotificationTableAction from "@/Pages/PushNotification/Partials/NotificationTableAction.vue";
 import dayjs from "dayjs";
 import MultiSelectOption from "@/Components/MultiSelectOption.vue";
 import {generalFormat} from "@/Composables/format.js";
 
 const props = defineProps({
-    vouchersCount: Number,
+    usageCount: Number,
 });
 
 const { locale } = useLangObserver();
@@ -33,15 +31,15 @@ const {formatAmount} = generalFormat();
 
 const isLoading = ref(false);
 const dt = ref(null);
-const vouchers = ref([]);
+const usages = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
-const bc = new BroadcastChannel('voucher-updates');
+const bc = new BroadcastChannel('voucher-usage-updates');
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    status: { value: null, matchMode: FilterMatchMode.EQUALS },
-    campaign_period: { value: null, matchMode: FilterMatchMode.EQUALS },
+    date: { value: null, matchMode: FilterMatchMode.EQUALS },
+    claim_methods: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
 const lazyParams = ref({});
@@ -61,18 +59,18 @@ const loadLazyData = (event) => {
                 lazyEvent: JSON.stringify(lazyParams.value)
             };
 
-            const url = route('voucher.getVoucherListingData', params);
+            const url = route('voucher.getUsageActivityData', params);
             const response = await fetch(url);
             const results = await response.json();
 
-            vouchers.value = results?.data?.data;
+            usages.value = results?.data?.data;
 
             totalRecords.value = results?.data?.total;
             isLoading.value = false;
 
         }, 100);
     }  catch (e) {
-        vouchers.value = [];
+        usages.value = [];
         totalRecords.value = 0;
         isLoading.value = false;
     }
@@ -91,8 +89,12 @@ const onFilter = (event) => {
     loadLazyData(event);
 };
 
-//filter status
-const status = ref(['active', 'inactive', 'schedule', 'ended', 'fully_claimed']);
+//filter claim methods
+const claimMethods = [
+    'point_to_claim',
+    'code_to_claim',
+    'add_for_member',
+];
 
 //filter toggle
 const op = ref();
@@ -109,12 +111,12 @@ onMounted(() => {
         filters: filters.value
     };
 
-    if(props.vouchersCount !== 0) {
+    if(props.usageCount !== 0) {
         loadLazyData();
     }
 
     bc.onmessage = (event) => {
-        if (event.data.type === 'add_voucher') {
+        if (event.data.type === 'voucher_used') {
             loadLazyData({ first: first.value, page: 0 });
         }
     };
@@ -129,8 +131,8 @@ watch(
 
 const clearAll = () => {
     filters.value['global'].value = null;
-    filters.value['status'].value = null;
-    filters.value['campaign_period'].value = null;
+    filters.value['date'].value = null;
+    filters.value['claim_methods'].value = null;
 };
 
 const clearFilterGlobal = () => {
@@ -145,42 +147,6 @@ watchEffect(() => {
 
 const applyFilter = () => {
     loadLazyData();
-};
-
-const getSeverity = (status) => {
-    switch (status) {
-        case 'active':
-            return 'success';
-
-        case 'schedule':
-            return 'info';
-
-        case 'ended':
-            return 'secondary';
-
-        case 'fully_claimed':
-            return 'danger';
-
-        case 'inactive':
-            return 'warning';
-    }
-}
-
-const getStatusColor = (status) => {
-    switch (status) {
-        case 'active':
-            return 'bg-green-500';
-        case 'schedule':
-            return 'bg-blue-500';
-        case 'ended':
-            return 'bg-surface-500';
-        case 'fully_claimed':
-            return 'bg-red-500';
-        case 'inactive':
-            return 'bg-yellow-500';
-        default:
-            return 'bg-surface-600';
-    }
 };
 </script>
 <template>
@@ -222,17 +188,14 @@ const getStatusColor = (status) => {
             <div class="p-4 flex justify-between items-center gap-2 self-stretch">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold">
-                        {{ $t('public.list_of_voucher') }}
+                        {{ $t('public.list_of_activity') }}
                     </div>
-                    <Tag rounded>
-                        <span>{{ vouchersCount }} {{ $t('public.voucher') }}</span>
-                    </Tag>
                 </div>
             </div>
         </template>
         <template #content>
             <DataTable
-                :value="vouchers"
+                :value="usages"
                 lazy
                 paginator
                 removableSort
@@ -249,10 +212,10 @@ const getStatusColor = (status) => {
                 @page="onPage($event)"
                 @sort="onSort($event)"
                 @filter="onFilter($event)"
-                :globalFilterFields="['name', 'status']"
+                :globalFilterFields="['name']"
             >
                 <template #empty>
-                    <div v-if="vouchers.length === 0 || vouchersCount === 0">
+                    <div v-if="usages.length === 0 || usageCount === 0">
                         <Empty
                             :title="$t('public.no_data_found')"
                         />
@@ -271,91 +234,72 @@ const getStatusColor = (status) => {
                     </div>
                 </template>
 
-                <template v-if="vouchers?.length > 0">
+                <template v-if="usages?.length > 0">
+                    <Column
+                        field="used_at"
+                        :header="$t('public.date')"
+                        sortable
+                        class="w-52"
+                    >
+                        <template #body="{ data }">
+                            {{ dayjs(data.used_at).format('DD/MM/YYYY h:mm A') }}
+                        </template>
+                    </Column>
+
                     <Column
                         field="voucher_name"
-                        :header="$t('public.voucher_and_code')"
+                        :header="$t('public.voucher_name')"
                     >
                         <template #body="{ data }">
-                            <div class="flex flex-col text-sm">
+                            <div class="flex flex-col">
                                 <div class="font-bold">
-                                    {{ data.voucher_name }}
+                                    {{ data.voucher.voucher_name }}
                                 </div>
                                 <div class="text-surface-500 dark:text-surface-400">
-                                    {{ data.voucher_code }}
+                                    {{ data.voucher.voucher_code }}
                                 </div>
                             </div>
                         </template>
                     </Column>
 
                     <Column
-                        field="voucher_claimed"
-                        :header="$t('public.claimed')"
+                        field="claim_by"
+                        :header="$t('public.used_by')"
                     >
                         <template #body="{ data }">
-                            <div class="flex gap-1 items-center">
-                                {{ data.redeemed_count }}
-                                <span>/</span>
-                                <div v-if="data.claim_limit === 'limited'">
-                                    {{ formatAmount(data.voucher_limit, 0, '') }}
+                            <div class="flex flex-col">
+                                <div class="font-bold">
+                                    {{ data.user.full_name }}
                                 </div>
-                                <div v-else>
-                                    <IconInfinity size="24" stroke-width="1.25" />
+                                <div class="text-surface-500 dark:text-surface-400">
+                                    {{ data.user.phone_number }}
                                 </div>
                             </div>
                         </template>
                     </Column>
 
                     <Column
-                        field="voucher_used"
-                        :header="$t('public.used')"
+                        field="remarks"
+                        :header="$t('public.remark')"
                     >
                         <template #body="{ data }">
-                            {{ data.used_count }}
+                            {{ data.remarks ?? '-' }}
                         </template>
                     </Column>
 
                     <Column
-                        field="campaign_period"
-                        :header="$t('public.campaign_period')"
+                        field="value"
+                        :header="$t('public.value')"
                     >
                         <template #body="{ data }">
-                            <div v-if="data.campaign_period">
-                                {{ dayjs(data.validities[0].start_date).format('DD/MM/YYYY') }} - {{ dayjs(data.validities[0].end_date).format('DD/MM/YYYY') }}
+                            <div v-if="data.voucher.discount_type === 'percentage'">
+                                {{ $t('public.discount_rate_capped', {percent: data.voucher.discount_rate, amount: data.voucher.capped_amount}) }}
                             </div>
                             <div v-else>
-                                {{ $t('public.no_campaign_period') }}
+                                {{ formatAmount(data.voucher.discount_rate, 2, 'RM ') }}
                             </div>
                         </template>
                     </Column>
-
-                    <Column
-                        field="status"
-                        :header="$t('public.status')"
-                    >
-                        <template #body="{ data }">
-                            <Tag
-                                :value="$t(`public.${data.status}`)"
-                                :severity="getSeverity(data.status)"
-                                rounded
-                                class="text-xs"
-                            />
-                        </template>
-                    </Column>
-
-
-
-<!--                    <Column-->
-<!--                        field="action"-->
-<!--                        class="w-[100px]"-->
-<!--                        :header="$t('public.action')"-->
-<!--                    >-->
-<!--                        <template #body="{ data }">-->
-<!--                            <NotificationTableAction-->
-<!--                                :notification="data"-->
-<!--                            />-->
-<!--                        </template>-->
-<!--                    </Column>-->
                 </template>
             </DataTable>
         </template>
@@ -365,11 +309,11 @@ const getStatusColor = (status) => {
         <div class="flex flex-col gap-6 w-60">
             <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.campaign_period') }}
+                    {{ $t('public.date') }}
                 </div>
                 <div class="w-full flex flex-wrap gap-2">
                     <DatePicker
-                        v-model="filters['campaign_period'].value"
+                        v-model="filters['date'].value"
                         selectionMode="range"
                         :manualInput="false"
                         dateFormat="dd/mm/yy"
@@ -381,22 +325,16 @@ const getStatusColor = (status) => {
 
             <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.status') }}
+                    {{ $t('public.claim_method') }}
                 </div>
                 <div class="w-full flex flex-wrap gap-2">
                     <MultiSelectOption
-                        v-model="filters['status'].value"
-                        :options="status"
+                        v-model="filters['claim_methods'].value"
+                        :options="claimMethods"
                         multiple
                     >
                         <template #option="{ option, selected }">
                             <div class="flex items-center gap-2">
-                                <div
-                                    :class="[
-                                    getStatusColor(option),
-                                    'w-2 h-2 rounded-full'
-                                ]"
-                                ></div>
                                 <div class="text-xs font-bold">
                                     {{ $t(`public.${option}`) }}
                                 </div>

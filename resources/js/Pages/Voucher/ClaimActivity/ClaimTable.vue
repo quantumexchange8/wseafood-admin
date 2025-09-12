@@ -9,7 +9,7 @@ import {
     Button,
     ProgressSpinner,
     Popover,
-    DatePicker
+    DatePicker, Tag
 } from 'primevue';
 import {FilterMatchMode} from "@primevue/core/api";
 import { usePage } from '@inertiajs/vue3';
@@ -38,7 +38,8 @@ const first = ref(0);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     status: { value: null, matchMode: FilterMatchMode.EQUALS },
-    campaign_period: { value: null, matchMode: FilterMatchMode.EQUALS },
+    date: { value: null, matchMode: FilterMatchMode.EQUALS },
+    claim_methods: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
 const lazyParams = ref({});
@@ -89,7 +90,14 @@ const onFilter = (event) => {
 };
 
 //filter status
-const status = ref(['active', 'inactive', 'scheduled', 'ended', 'fully_claimed']);
+const status = ref(['redeemed', 'used', 'expired']);
+
+//filter claim methods
+const claimMethods = [
+    'point_to_claim',
+    'code_to_claim',
+    'add_for_member',
+];
 
 //filter toggle
 const op = ref();
@@ -121,7 +129,8 @@ watch(
 const clearAll = () => {
     filters.value['global'].value = null;
     filters.value['status'].value = null;
-    filters.value['campaign_period'].value = null;
+    filters.value['date'].value = null;
+    filters.value['claim_methods'].value = null;
 };
 
 const clearFilterGlobal = () => {
@@ -140,35 +149,25 @@ const applyFilter = () => {
 
 const getSeverity = (status) => {
     switch (status) {
-        case 'active':
+        case 'used':
             return 'success';
 
-        case 'schedule':
+        case 'redeemed':
             return 'info';
 
-        case 'ended':
-            return 'secondary';
-
-        case 'fully_claimed':
+        case 'expired':
             return 'danger';
-
-        case 'inactive':
-            return 'warning';
     }
 }
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'active':
+        case 'used':
             return 'bg-green-500';
-        case 'scheduled':
+        case 'redeemed':
             return 'bg-blue-500';
-        case 'ended':
-            return 'bg-surface-500';
-        case 'fully_claimed':
+        case 'expired':
             return 'bg-red-500';
-        case 'inactive':
-            return 'bg-yellow-500';
         default:
             return 'bg-surface-600';
     }
@@ -321,6 +320,20 @@ const getStatusColor = (status) => {
                             </div>
                         </template>
                     </Column>
+
+                    <Column
+                        field="status"
+                        :header="$t('public.status')"
+                    >
+                        <template #body="{ data }">
+                            <Tag
+                                :value="$t(`public.${data.status}`)"
+                                :severity="getSeverity(data.status)"
+                                rounded
+                                class="text-xs"
+                            />
+                        </template>
+                    </Column>
                 </template>
             </DataTable>
         </template>
@@ -330,17 +343,38 @@ const getStatusColor = (status) => {
         <div class="flex flex-col gap-6 w-60">
             <div class="flex flex-col gap-4 items-center self-stretch">
                 <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
-                    {{ $t('public.campaign_period') }}
+                    {{ $t('public.date') }}
                 </div>
                 <div class="w-full flex flex-wrap gap-2">
                     <DatePicker
-                        v-model="filters['campaign_period'].value"
+                        v-model="filters['date'].value"
                         selectionMode="range"
                         :manualInput="false"
                         dateFormat="dd/mm/yy"
                         placeholder="dd/mm/yyyy - dd/mm/yyyy"
                         class="w-full"
                     />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 items-center self-stretch">
+                <div class="flex self-stretch text-xs text-surface-950 dark:text-white font-semibold">
+                    {{ $t('public.claim_method') }}
+                </div>
+                <div class="w-full flex flex-wrap gap-2">
+                    <MultiSelectOption
+                        v-model="filters['claim_methods'].value"
+                        :options="claimMethods"
+                        multiple
+                    >
+                        <template #option="{ option, selected }">
+                            <div class="flex items-center gap-2">
+                                <div class="text-xs font-bold">
+                                    {{ $t(`public.${option}`) }}
+                                </div>
+                            </div>
+                        </template>
+                    </MultiSelectOption>
                 </div>
             </div>
 

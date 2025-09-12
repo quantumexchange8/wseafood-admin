@@ -7,12 +7,11 @@ import Redemption from "@/Pages/Voucher/Create/Step/Redemption.vue";
 import Setting from "@/Pages/Voucher/Create/Step/Setting.vue";
 import toast from "@/Composables/toast.js";
 import {IconLoader2} from "@tabler/icons-vue";
-import {router} from "@inertiajs/vue3";
 import dayjs from "dayjs";
 import {generalFormat} from "@/Composables/format.js";
 import {trans} from "laravel-vue-i18n";
 
-const form = ref({
+const defaultForm = () => ({
     general: {
         voucher_type: 'value_discount',
         voucher_name: '',
@@ -58,11 +57,14 @@ const form = ref({
         voucher_thumbnail_preview: null,
         voucher_highlight: null,
     },
-});
+})
+
+const form = ref(defaultForm());
 
 const formProcessing = ref(false);
 const errors = ref({})
 const {formatAmount} = generalFormat();
+const bc = new BroadcastChannel('voucher-updates');
 
 const validateStep = async (step) => {
     try {
@@ -118,7 +120,10 @@ const submitForm = async () => {
             message: response.data.message,
         });
 
-        router.visit(route('voucher.index'))
+        form.value = defaultForm()
+        visible.value = false
+
+        bc.postMessage({ type: 'add_voucher' });
     } catch (error) {
         visible.value = false;
 
@@ -265,6 +270,7 @@ const formattedValidDays = computed(() => {
                                 @click="async () => {
                                     if (await validateStep('setting')) {
                                         visible = true
+                                        activateCallback('1')
                                     }
                                 }"
                                 :disabled="formProcessing"
@@ -293,8 +299,8 @@ const formattedValidDays = computed(() => {
             <!-- Image -->
             <Image
                 :src="form.setting.voucher_thumbnail_preview"
-                class="rounded-md bg-surface-200 dark:bg-surface-700"
-                image-class="h-80 rounded-md object-cover w-full"
+                class="rounded-lg bg-surface-200 dark:bg-surface-700"
+                image-class="h-80 rounded-md object-contain w-full"
             />
 
             <!-- Step 1 -->
@@ -361,7 +367,7 @@ const formattedValidDays = computed(() => {
                                 {{ $t('public.discount_rate_capped', {percent: form['general']?.discount_rate, amount: form['general']?.capped_amount}) }}
                             </div>
                             <div v-else>
-                                RM {{ formatAmount(form['general'].discount_rate, 2, '') }}
+                                {{ formatAmount(form['general'].discount_rate, 2, 'RM ') }}
                             </div>
                         </div>
                     </div>
@@ -515,7 +521,7 @@ const formattedValidDays = computed(() => {
                     <div class="text-surface-500 dark:text-surface-400">
                         {{ $t('public.voucher_highlight') }}
                     </div>
-                    <div class="prose" v-html="form['setting'].voucher_highlight"></div>
+                    <div class="prose dark:prose-invert" v-html="form['setting'].voucher_highlight"></div>
                 </div>
             </div>
 

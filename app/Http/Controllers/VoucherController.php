@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\VoucherType;
 use App\Http\Requests\StoreVoucherRequest;
+use App\Models\User;
 use App\Models\UserVoucherRedemption;
 use App\Models\Voucher;
 use App\Models\VoucherMemberRules;
 use App\Models\VoucherValidity;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Str;
 use Throwable;
@@ -36,7 +38,7 @@ class VoucherController extends Controller
                 ->withCount([
                     'redemptions',
                     'redemptions as redeemed_count' => function ($q) {
-                        $q->where('status', VoucherType::REDEEMED);
+                        $q->whereNotNull('redeemed_at');
                     },
                     'redemptions as used_count' => function ($q) {
                         $q->where('status', VoucherType::USED);
@@ -57,8 +59,11 @@ class VoucherController extends Controller
 
                 $query->whereHas('validities', function ($q) use ($range) {
                     $q->where(function ($inner) use ($range) {
-                        $inner->whereBetween('start_date', [$range[0], $range[1]])
-                            ->orWhereBetween('end_date', [$range[0], $range[1]]);
+                        $start_date = Carbon::parse($range[0])->addDay()->startOfDay();
+                        $end_date = Carbon::parse($range[1])->addDay()->endOfDay();
+
+                        $inner->whereBetween('start_date', [$start_date, $end_date])
+                            ->orWhereBetween('end_date', [$start_date, $end_date]);
                     });
                 });
             }
@@ -271,7 +276,6 @@ class VoucherController extends Controller
                 'title' => trans('public.voucher_created'),
                 'message' => trans('public.voucher_created_message'),
                 'type' => 'success',
-                'voucher' => $voucher,
             ]);
 
         } catch (Throwable $e) {
@@ -309,20 +313,27 @@ class VoucherController extends Controller
                 $keyword = $data['filters']['global']['value'];
 
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('voucher_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('voucher_code', 'like', '%' . $keyword . '%');
+                    $q->whereHas('user', function ($q) use ($keyword) {
+                        $q->where('full_name', 'like', '%' . $keyword . '%')
+                            ->orWhere('phone_number', 'like', '%' . $keyword . '%')
+                            ->orWhere('email', 'like', '%' . $keyword . '%');
+                    })->orWhereHas('voucher', function ($q) use ($keyword) {
+                        $q->where('voucher_name', 'like', '%' . $keyword . '%')
+                            ->orWhere('voucher_code', 'like', '%' . $keyword . '%');
+                    });
                 });
             }
 
-            if ($data['filters']['campaign_period']['value']) {
-                $range = $data['filters']['campaign_period']['value'];
+            if ($data['filters']['date']['value']) {
+                $range = $data['filters']['date']['value'];
+                $start_date = Carbon::parse($range[0])->addDay()->startOfDay();
+                $end_date = Carbon::parse($range[1])->addDay()->endOfDay();
 
-                $query->whereHas('validities', function ($q) use ($range) {
-                    $q->where(function ($inner) use ($range) {
-                        $inner->whereBetween('start_date', [$range[0], $range[1]])
-                            ->orWhereBetween('end_date', [$range[0], $range[1]]);
-                    });
-                });
+                $query->whereBetween('redeemed_at', [$start_date, $end_date]);
+            }
+
+            if ($data['filters']['claim_methods']['value']) {
+                $query->whereIn('claimed_method', $data['filters']['claim_methods']['value']);
             }
 
             if ($data['filters']['status']['value']) {
@@ -333,7 +344,7 @@ class VoucherController extends Controller
                 $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
                 $query->orderBy($data['sortField'], $order);
             } else {
-                $query->orderByDesc('created_at');
+                $query->orderByDesc('redeemed_at');
             }
 
             $redemptions = $query->paginate($data['rows']);
@@ -345,5 +356,117 @@ class VoucherController extends Controller
         }
 
         return response()->json(['success' => false, 'data' => []]);
+    }
+
+    public function usage_activity()
+    {
+        $stats = UserVoucherRedemption::where('status', VoucherType::USED)
+            ->selectRaw('COUNT(*) as total, MAX(updated_at) as last_updated_at')
+            ->first();
+
+        return Inertia::render('Voucher/UsageActivity/UsageActivity', [
+            'lastUpdatedDate' => $stats->last_updated_at,
+            'usageCount'   => $stats->total,
+        ]);
+    }
+
+    public function voucher_usage()
+    {
+        return Inertia::render('Voucher/UsageActivity/UseVoucherForm');
+    }
+
+    public function getUsageActivityData(Request $request)
+    {
+        if ($request->has('lazyEvent')) {
+            $data = json_decode($request->only(['lazyEvent'])['lazyEvent'], true);
+
+            $query = UserVoucherRedemption::with([
+                'voucher',
+                'user:id,full_name,phone_number'
+            ])
+                ->where('status', VoucherType::USED);
+
+            if ($data['filters']['global']['value']) {
+                $keyword = $data['filters']['global']['value'];
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->whereHas('user', function ($q) use ($keyword) {
+                        $q->where('full_name', 'like', '%' . $keyword . '%')
+                            ->orWhere('phone_number', 'like', '%' . $keyword . '%')
+                            ->orWhere('email', 'like', '%' . $keyword . '%');
+                    })->orWhereHas('voucher', function ($q) use ($keyword) {
+                        $q->where('voucher_name', 'like', '%' . $keyword . '%')
+                            ->orWhere('voucher_code', 'like', '%' . $keyword . '%');
+                    });
+                });
+            }
+
+            if ($data['filters']['date']['value']) {
+                $range = $data['filters']['date']['value'];
+                $start_date = Carbon::parse($range[0])->addDay()->startOfDay();
+                $end_date = Carbon::parse($range[1])->addDay()->endOfDay();
+
+                $query->whereBetween('used_at', [$start_date, $end_date]);
+            }
+
+            if ($data['filters']['claim_methods']['value']) {
+                $query->whereIn('claimed_method', $data['filters']['claim_methods']['value']);
+            }
+
+            if ($data['sortField'] && $data['sortOrder']) {
+                $order = $data['sortOrder'] == 1 ? 'asc' : 'desc';
+                $query->orderBy($data['sortField'], $order);
+            } else {
+                $query->orderByDesc('used_at');
+            }
+
+            $redemptions = $query->paginate($data['rows']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $redemptions,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'data' => []]);
+    }
+
+    public function useVoucher(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => ['required'],
+            'voucher_id' => ['required'],
+            'remarks' => ['required'],
+        ])->setAttributeNames([
+            'user_id' => trans('public.member'),
+            'voucher_id' => trans('public.voucher'),
+            'remarks' => trans('public.remark'),
+        ]);
+        $validator->validate();
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = User::find($request->user_id);
+        $user_voucher = UserVoucherRedemption::firstWhere([
+            'user_id' => $user->id,
+            'voucher_id' => $request->voucher_id,
+            'status' => VoucherType::REDEEMED,
+        ]);
+
+        $user_voucher->update([
+            'used_at' => now(),
+            'status' => VoucherType::USED,
+            'remarks' => $request->remarks,
+        ]);
+
+        return response()->json([
+            'title' => trans('public.voucher_created'),
+            'message' => trans('public.voucher_created_message'),
+            'type' => 'success',
+        ]);
     }
 }

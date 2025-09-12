@@ -19,6 +19,7 @@ class UserVoucherRedemption extends Model
         'meta',
         'used_at',
         'expired_at',
+        'remarks',
     ];
 
     protected function casts(): array

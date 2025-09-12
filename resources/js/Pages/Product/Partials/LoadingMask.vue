@@ -68,16 +68,16 @@ const count = computed(() => {
                 </template>
             </Card>
         </div>
-<!--        <div class="absolute inset-0 top-5 bg-slate-500 bg-opacity-10 flex items-center justify-center z-10">-->
-<!--            <div class="flex flex-col justify-center items-center gap-5 self-stretch">-->
-<!--                <ProgressSpinner-->
-<!--                    strokeWidth="4"-->
-<!--                    class="w-16 h-16"-->
-<!--                />-->
-<!--                <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">-->
-<!--                    {{ $t('public.loading_data') }}-->
-<!--                </span>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="absolute inset-0 top-5 bg-slate-500 bg-opacity-10 flex items-center justify-center z-10">
+            <div class="flex flex-col justify-center items-center gap-5 self-stretch">
+                <ProgressSpinner
+                    strokeWidth="4"
+                    class="w-16 h-16"
+                />
+                <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
+                    {{ $t('public.loading_data') }}
+                </span>
+            </div>
+        </div>
     </div>
 </template>

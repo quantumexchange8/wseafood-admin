@@ -149,6 +149,12 @@ import SidebarCategoryLabel from "@/Components/Sidebar/SidebarCategoryLabel.vue"
                 :href="route('voucher.claim_activity')"
                 :active="route().current('voucher.claim_activity')"
             />
+
+            <SidebarCollapsibleItem
+                :title="$t('public.usage_activity')"
+                :href="route('voucher.usage_activity')"
+                :active="route().current('voucher.usage_activity') || route().current('voucher.voucher_usage')"
+            />
         </SidebarCollapsible>
 
         <SidebarCategoryLabel

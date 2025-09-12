@@ -29,6 +29,7 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/getMembers', [SelectOptionController::class, 'getMembers'])->name('getMembers');
+    Route::get('/getUserVouchers', [SelectOptionController::class, 'getUserVouchers'])->name('getUserVouchers');
 
     /**
      * ==============================
@@ -168,11 +169,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/listing', [VoucherController::class, 'index'])->name('voucher.index');
         Route::get('/getVoucherListingData', [VoucherController::class, 'getVoucherListingData'])->name('voucher.getVoucherListingData');
         Route::get('/create', [VoucherController::class, 'create'])->name('voucher.create');
-        Route::get('/claim_activity', [VoucherController::class, 'claim_activity'])->name('voucher.claim_activity');
-        Route::get('/getClaimActivityData', [VoucherController::class, 'getClaimActivityData'])->name('voucher.getClaimActivityData');
 
         Route::post('/create/validate/{step}', [VoucherController::class, 'validate_step'])->name('voucher.validate');
         Route::post('/create/store', [VoucherController::class, 'store'])->name('voucher.store');
+
+        // Claim activity
+        Route::get('/claim_activity', [VoucherController::class, 'claim_activity'])->name('voucher.claim_activity');
+        Route::get('/getClaimActivityData', [VoucherController::class, 'getClaimActivityData'])->name('voucher.getClaimActivityData');
+
+        // Usage activity
+        Route::get('/usage_activity', [VoucherController::class, 'usage_activity'])->name('voucher.usage_activity');
+        Route::get('/voucher_usage', [VoucherController::class, 'voucher_usage'])->name('voucher.voucher_usage');
+        Route::get('/getUsageActivityData', [VoucherController::class, 'getUsageActivityData'])->name('voucher.getUsageActivityData');
+
+        Route::post('/useVoucher', [VoucherController::class, 'useVoucher'])->name('voucher.useVoucher');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
