@@ -367,7 +367,7 @@ return [
     "usage_criteria_caption" => "设置此优惠券的折扣金额及条件",
     "validity" => "有效期",
     "validity_caption" => "优惠券添加到钱包后，用户需在多少天内使用？",
-    "valid_type_day" => "添加到钱包后多少天内有效",
+    "valid_type_day" => "天内有效",
     "min_requirement" => "最低要求",
     "no_requirement" => "无限制",
     "min_spend" => "最低消费",
@@ -434,4 +434,5 @@ return [
     "used_on" => "于 :date 使用",
     "expired_on" => "于 :date 过期",
     "voucher_expired" => "此优惠券已过期。",
+    "day_after_added" => "添加到钱包后:day天内有效",
 ];

@@ -459,7 +459,7 @@ const formattedValidDays = computed(() => {
                             {{ $t('public.validity') }}
                         </div>
                         <div class="font-bold text-surface-950 dark:text-white">
-                            {{ formatAmount(form['redemption'].validity_count, 0, '') }} {{ $t(`public.valid_type_${form['redemption'].validity_count_type}`) }}
+                            {{ $t(`public.${form['redemption'].validity_count_type}_after_added`, {day: formatAmount(form['redemption'].validity_count, 0, '')}) }}
                         </div>
                     </div>
 

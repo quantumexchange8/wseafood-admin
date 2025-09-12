@@ -515,7 +515,7 @@ watch(
                                     fluid
                                     :max="modelValue.discount_type === 'percentage' ? 100 : null"
                                     :invalid="!!errors?.validity_count"
-                                    input-class="max-w-20"
+                                    class="max-w-20"
                                 />
 
                                 <Select

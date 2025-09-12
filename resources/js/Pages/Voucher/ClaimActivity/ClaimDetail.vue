@@ -221,7 +221,7 @@ const formattedValidDays = computed(() => {
                         {{ $t('public.validity') }}
                     </div>
                     <div class="font-bold text-surface-950 dark:text-white">
-                        {{ formatAmount(redemption.voucher.validity_count, 0, '') }} {{ $t(`public.valid_type_${redemption.voucher.validity_count_type}`) }}
+                        {{ $t(`public.${redemption.voucher.validity_count_type}_after_added`, {day: formatAmount(redemption.voucher.validity_count, 0, '')}) }}
                     </div>
                 </div>
 

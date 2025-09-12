@@ -436,4 +436,5 @@ return [
     "used_on" => "Used on :date",
     "expired_on" => "Expired on :date",
     "voucher_expired" => "This voucher has expired.",
+    "day_after_added" => ":day days after added to wallet",
 ];
