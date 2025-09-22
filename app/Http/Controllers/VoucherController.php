@@ -453,17 +453,36 @@ class VoucherController extends Controller
             ], 422);
         }
 
-        $user = User::find($request->user_id);
         $user_voucher = UserVoucherRedemption::with([
             'voucher',
             'voucher.media',
             'voucher.validities',
             'user:id,full_name,phone_number'
-        ])->where([
-            'user_id' => $user->id,
-            'voucher_id' => $request->voucher_id,
-            'status' => VoucherType::REDEEMED,
-        ])->first();
+        ])->find($request->voucher_id);
+
+        if (!$user_voucher) {
+            return response()->json([
+                'success' => false,
+                'title' => trans('public.no_voucher_found'),
+                'type' => 'error'
+            ], 400);
+        }
+
+        if ($user_voucher->status == VoucherType::USED) {
+            return response()->json([
+                'success' => false,
+                'title' => trans('public.voucher_used'),
+                'type' => 'error'
+            ], 400);
+        }
+
+        if ($user_voucher->status == VoucherType::EXPIRED) {
+            return response()->json([
+                'success' => false,
+                'title' => trans('public.voucher_expired'),
+                'type' => 'error'
+            ], 400);
+        }
 
         if ($user_voucher->expired_at && $user_voucher->expired_at->isPast()) {
             return response()->json([

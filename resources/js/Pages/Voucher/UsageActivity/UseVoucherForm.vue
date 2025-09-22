@@ -241,10 +241,10 @@ const submitForm = async () => {
                                     <div
                                         v-for="redemption in userVouchers"
                                         class="flex flex-col rounded-2xl border shadow-input hover:cursor-pointer select-none transition-all duration-200"
-                                        :class="selectedVoucher?.id === redemption.voucher.id
+                                        :class="selectedVoucher?.id === redemption.id
                                        ? 'border-primary bg-primary-50 dark:bg-primary-700/40'
                                        : 'dark:border-surface-700 hover:border-primary hover:bg-primary-50 hover:dark:bg-primary-700/40'"
-                                        @click="selectVoucher(redemption.voucher)"
+                                        @click="selectVoucher(redemption)"
                                     >
                                         <!-- Image -->
                                         <Image

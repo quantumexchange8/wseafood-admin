@@ -435,4 +435,5 @@ return [
     "expired_on" => "于 :date 过期",
     "voucher_expired" => "此优惠券已过期。",
     "day_after_added" => "添加到钱包后:day天内有效",
+    "voucher_used" => "此优惠券已使用。",
 ];

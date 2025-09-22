@@ -35,6 +35,7 @@ const dt = ref(null);
 const redemptions = ref([]);
 const totalRecords = ref(0);
 const first = ref(0);
+const bc = new BroadcastChannel('voucher-usage-updates');
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -118,6 +119,12 @@ onMounted(() => {
     if(props.redemptionsCount !== 0) {
         loadLazyData();
     }
+
+    bc.onmessage = (event) => {
+        if (event.data.type === 'voucher_used') {
+            loadLazyData({ first: first.value, page: 0 });
+        }
+    };
 });
 
 const updateRedemption = (updatedVoucher) => {

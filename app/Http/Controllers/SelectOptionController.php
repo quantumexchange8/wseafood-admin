@@ -29,6 +29,7 @@ class SelectOptionController extends Controller
                 'user_id' => $request->user_id,
                 'status' => VoucherType::REDEEMED
             ])
+            ->orderByDesc('expired_at')
             ->get();
 
         return response()->json($vouchers);
